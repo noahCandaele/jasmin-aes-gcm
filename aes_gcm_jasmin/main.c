@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
+// TODO à enlever
+#include "../secret.h"
 
 uint32_t hello_world();
 

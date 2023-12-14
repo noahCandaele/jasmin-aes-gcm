@@ -1,10 +1,7 @@
-default: aes_gcm main
+default: main
 
-main:
-	gcc main.c -o main.out
-
-aes_gcm: aes_gcm.h
-	gcc aes_gcm.c
+main: main.c aes_gcm.c aes_gcm.h
+	gcc main.c aes_gcm.c -o main.out -lssl -lcrypto
 
 clean: 
 	rm -fv *.out

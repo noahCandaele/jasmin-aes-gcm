@@ -1,5 +1,10 @@
+#include <stddef.h>
+
 #include "aes_gcm.h"
-#include "aes.h"
+
+int generate_key(size_t key_len) {
+    return 44;
+}
 
 // Initialization logic for AES-GCM context, key expansion, IV setup, etc.
 void aes_gcm_init(AES_GCM_Context *ctx, const unsigned char *key, size_t key_len, const unsigned char *iv, size_t iv_len) {
