@@ -1,5 +1,5 @@
 NAME  = rapport
-EXAMPLE  = $(NAME)-example
+EXAMPLE  = $(NAME)-per
 -LOGO = logo-uca.png
 SHELL = bash
 PWD   = $(shell pwd)
@@ -7,8 +7,7 @@ VERS  = $(shell ltxfileinfo -v $(NAME).dtx|sed -e 's/^v//')
 LOCAL = $(shell kpsewhich --var-value TEXMFLOCAL)
 UTREE = $(shell kpsewhich --var-value TEXMFHOME)
 
-all:	$(NAME).pdf
-	test -e README.txt && mv README.txt README || exit 0
+all:	example
 
 $(NAME).pdf: $(NAME).dtx
 	pdflatex -shell-escape -recorder -interaction=batchmode $(NAME).dtx >/dev/null
@@ -18,8 +17,8 @@ $(NAME).pdf: $(NAME).dtx
 	pdflatex --recorder --interaction=nonstopmode $(NAME).dtx > /dev/null
 
 clean:
-	rm -f $(NAME).{aux,fls,glo,gls,hd,idx,ilg,ind,ins,log,out}
-	rm -f $(EXAMPLE)*.{aux,bbl,blgfls,glo,gls,hd,idx,ilg,ind,ins,log,loe,lof,lot,out,toc}
+	rm -f *.{aux,blg,fls,glo,gls,hd,idx,ilg,ind,ins,log,out}
+	rm -f *.{aux,bbl,blgfls,glo,gls,hd,idx,ilg,ind,ins,log,loe,lof,lot,out,toc}
 
 distclean: clean
 	rm -f $(NAME).{pdf,cls} README
@@ -45,7 +44,7 @@ zip: all
 	zip -Drq $(PWD)/$(NAME)-$(VERS).zip $(NAME)/{README,$(NAME).{pdf,cls,dtx}} $(NAME)/$(LOGO)
 	rm $(NAME)
 
-example: $(NAME).pdf $(EXAMPLE).tex
+example: $(EXAMPLE).tex
 	pdflatex --shell-escape $(EXAMPLE).tex
 	bibtex $(EXAMPLE)
 	pdflatex --shell-escape $(EXAMPLE).tex
