@@ -1,0 +1,23 @@
+/* Since sometimes this is needed, the user has access to the low-level
+   instructions.
+   They can directly call assembly instructions with syntax "#INSTR". They also
+   have access to the flags.
+*/
+export fn func (reg u64 x) -> reg u64 {
+  reg u64 res;
+
+  res = 0;
+
+  reg bool f SF;
+  // When a flag is assigned to a variable with the same name, there is a
+  // compact syntax. "SF=SF" can be written just "SF".
+  ?{CF=f, SF}, res = #ADD(res, x);
+  if f {
+    res = 1;
+  }
+  if SF {
+    res += 1;
+  }
+
+  return res;
+}

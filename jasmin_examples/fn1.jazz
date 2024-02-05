@@ -1,0 +1,8 @@
+// One of the simplest functions that can be written in Jasmin.
+// This is a function returning 5.
+export fn f () -> reg u64 {
+  reg u64 x;
+  x = 0;
+  x += 5;
+  return x;
+}
