@@ -5,10 +5,11 @@ Noah CANDAELE and Anthony IOZZIA
 ## Environment installation
 
 ### Install Jasmin (tested on Ubuntu)
-- `sudo apt update && sudo apt install -y gcc curl`
-- `sh <(curl -L https://nixos.org/nix/install) --no-daemon`
-- `nix-env -iA nixpkgs.jasmin-compiler`
-- Reboot system
+- Update package repositories: `sudo apt update`
+- Install packages: `sudo apt install -y gcc curl`
+- Install the Nix package manager: `sh <(curl -L https://nixos.org/nix/install) --no-daemon`
+- Set the necessary environment variables: `. ~/.nix-profile/etc/profile.d/nix.sh`
+- Install Jasmin compiler: `nix-env -iA nixpkgs.jasmin-compiler`
 - Test installation: `jasminc -version`
 
 ### Configure syntax highlighting for Jasmin code in Visual Studio Code
