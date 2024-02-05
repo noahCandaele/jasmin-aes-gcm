@@ -23,16 +23,15 @@ Sources:
 - [Nix package manager installation instructions](https://nixos.org/download.html)
 - [Jasmin installation instructions](https://github.com/jasmin-lang/jasmin/wiki/Installation-instructions)
 
-## Environment update
-Update Jasmin Compiler to the latest version:
-- Check current version: `jasminc -version`
-- Remove current version: `nix-env -e jasmin-compiler`
-- Update Nix package repositories: `nix-channel --update`
-- Install Jasmin Compiler latest version: `nix-env -iA nixpkgs.jasmin-compiler`
-- Check installed version: `jasminc -version`
-
 ## Run
 
 - `cd <directory>`
 - `make`
 - `./main.out`
+
+## Environment update
+Update Jasmin Compiler to the latest version:
+- Check current version: `jasminc -version`
+- Update Nix package repositories: `nix-channel --update`
+- Install Jasmin Compiler latest version: `nix-env -iA nixpkgs.jasmin-compiler`
+- Check installed version: `jasminc -version`
