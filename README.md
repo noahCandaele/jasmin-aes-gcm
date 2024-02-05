@@ -24,6 +24,20 @@ Sources:
 - [Nix package manager installation instructions](https://nixos.org/download.html)
 - [Jasmin installation instructions](https://github.com/jasmin-lang/jasmin/wiki/Installation-instructions)
 
+## Docker
+We provide a Dockerfile in the `Docker` directory to build a Docker image with the Jasmin compiler preinstalled. A container can then be created using this image. Here are useful commands to work with Docker:
+- Build an image: `docker build -t <image_name> <path_to_directory_containing_dockerfile>`
+- Create a container, based on an image, with a volume that links a host directory with a container directory: `docker run -it -v <host_workspace_path>:<container_workspace> --name <container_name> <image_name>`
+- Exit the container without stopping it (from inside the container): `Ctrl + P`, `Ctrl + Q`
+- Exit the container and stop it (from inside the container): `exit`
+- Join a running container: `docker attach <container_name>`
+- Stop a container: `docker stop <container_name>`
+- Start a container: `docker start <container_name>`
+
+Example:
+- Build the image with the Jasmin compiler installed: `docker build -t jasmin Docker/`
+- Create and run a container based on this image: `docker run -it -v C:\Workspace:/workspace --name my-container jasmin`
+
 ## Run
 
 - `cd <directory>`
