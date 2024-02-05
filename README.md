@@ -2,9 +2,11 @@
 
 Noah CANDAELE and Anthony IOZZIA
 
-## Environment installation
+## Environment setup
 
-Install Jasmin (tested on Ubuntu):
+### Classic installation
+
+Install Jasmin (tested on Ubuntu 22.04):
 - Update package repositories: `sudo apt update`
 - Install packages: `sudo apt install -y gcc curl`
 - Install the Nix package manager: `sh <(curl -L https://nixos.org/nix/install) --no-daemon`
@@ -13,19 +15,22 @@ Install Jasmin (tested on Ubuntu):
 - Reboot system
 - Test installation: `jasminc -version`
 
-Configure syntax highlighting for Jasmin code in Visual Studio Code:
-- Open any `.jazz` file
-- Click on `Plain Text` in the bottom right corner
-- Click on `Configure File Association for '.jazz'...`
-- Search for `rust`
-- Click on `Rust`
-
 Sources:
 - [Nix package manager installation instructions](https://nixos.org/download.html)
 - [Jasmin installation instructions](https://github.com/jasmin-lang/jasmin/wiki/Installation-instructions)
 
-## Docker
-We provide a Dockerfile in the `Docker` directory to build a Docker image with the Jasmin compiler preinstalled. A container can then be created using this image. Here are useful commands to work with Docker:
+If you later need to update the Jasmin compiler to the latest version:
+- Check current version: `jasminc -version`
+- Update Nix package repositories: `nix-channel --update`
+- Install Jasmin Compiler latest version: `nix-env -iA nixpkgs.jasmin-compiler`
+- Check installed version: `jasminc -version`
+
+### Docker
+We provide a Dockerfile in the `Docker` directory to build a Docker image with the Jasmin compiler preinstalled. A container can then be created using this image.
+
+This Dockerfile has been successfully tested with a Ubuntu 22.04 base image.
+
+Here are useful commands to work with Docker:
 - Build an image: `docker build -t <image_name> <path_to_directory_containing_dockerfile>`
 - Create a container, based on an image, with a volume that links a host directory with a container directory: `docker run -it -v <host_workspace_path>:<container_workspace> --name <container_name> <image_name>`
 - Exit the container without stopping it (from inside the container): `Ctrl + P`, `Ctrl + Q`
@@ -34,19 +39,19 @@ We provide a Dockerfile in the `Docker` directory to build a Docker image with t
 - Stop a container: `docker stop <container_name>`
 - Start a container: `docker start <container_name>`
 
-Example:
+Example usage:
 - Build the image with the Jasmin compiler installed: `docker build -t jasmin Docker/`
 - Create and run a container based on this image: `docker run -it -v C:\Workspace:/workspace --name my-container jasmin`
 
-## Run
+### Configure syntax highlighting for Jasmin code in Visual Studio Code:
+- Open any `.jazz` file
+- Click on `Plain Text` in the bottom right corner
+- Click on `Configure File Association for '.jazz'...`
+- Search for `rust`
+- Click on `Rust`
+
+## Run Jasmin code
 
 - `cd <directory>`
 - `make`
 - `./main.out`
-
-## Environment update
-Update Jasmin Compiler to the latest version:
-- Check current version: `jasminc -version`
-- Update Nix package repositories: `nix-channel --update`
-- Install Jasmin Compiler latest version: `nix-env -iA nixpkgs.jasmin-compiler`
-- Check installed version: `jasminc -version`
