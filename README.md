@@ -10,6 +10,7 @@ Install Jasmin (tested on Ubuntu):
 - Install the Nix package manager: `sh <(curl -L https://nixos.org/nix/install) --no-daemon`
 - Set the necessary environment variables: `. ~/.nix-profile/etc/profile.d/nix.sh`
 - Install Jasmin compiler: `nix-env -iA nixpkgs.jasmin-compiler`
+- Reboot system
 - Test installation: `jasminc -version`
 
 Configure syntax highlighting for Jasmin code in Visual Studio Code:
