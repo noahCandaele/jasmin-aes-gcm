@@ -12,7 +12,7 @@ int main() {
         my_sbox[i] = 0;
     }
 
-    // print the address of the array
+    printf("Size: %ld\n", sizeof(my_sbox)/sizeof(uint64_t));
     printf("Address of the array: %p\n", my_sbox);
     // Call the Jasmin function to change the element at index 3 to 42
     init_aes_sbox(*my_sbox);
