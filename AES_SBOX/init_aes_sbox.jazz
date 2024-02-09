@@ -1,0 +1,72 @@
+// rotate left 8 bits
+inline fn rotate_value(reg u8 x, reg u8 shift) -> reg u8 {
+  reg u8 result;
+  result = (x << shift) | (x >> (8 - shift));
+  return result;
+}
+
+export fn init_aes_sbox(reg u32 sbox){
+  reg u8 p;
+  reg u8 q;
+
+  p = 1;
+  q = 1;
+
+  // inline int i;
+  // for i = 0 to 4 { // TODO change to 254
+  //   // multiply p by 3
+  //   reg u8 temp;
+  //   temp = p;
+  //   temp <<= 1;
+  //   temp ^= p;
+  //   if (p >= 0x80) {
+  //     temp ^= 0x1B;
+  //   }
+  //   p = temp;
+
+  //   // divide q by 3 (equals multiplication by 0xf6)
+  //   temp = q;
+  //   temp <<= 1;
+  //   q ^= temp;
+
+  //   // q ^= q << 2;
+  //   temp = q;
+  //   temp <<= 2;
+  //   q ^= temp;
+
+  //   // q ^= q << 4;
+  //   temp = q;
+  //   temp <<= 4;
+  //   q ^= temp;
+
+  //   if (q >= 0x80) {
+  //     q ^= 0x09;
+  //   }
+
+    /* compute the affine transformation */
+    // reg u8 xformed;
+    // xformed = q;
+    // temp = rotate_value(q, 1);
+    // xformed ^= temp;
+    // temp = rotate_value(q, 2);
+    // xformed ^= temp;
+    // temp = rotate_value(q, 3);
+    // xformed ^= temp;
+    // temp = rotate_value(q, 4);
+    // xformed ^= temp;
+
+
+    // reg u64 temp2;
+    // temp2 = (64u) p;
+    // temp = 0x63;
+    // xformed ^= temp;
+    // reg u64 temp3;
+    // temp3 = (64u) xformed;
+    // [sbox+temp2] = xformed;
+    // [(64u)sbox] = 0x63;
+  // }
+
+
+  // 0 is a special case since it has no inverse
+  [addr] = 0x63;
+}
