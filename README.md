@@ -2,6 +2,8 @@
 
 Noah CANDAELE and Anthony IOZZIA
 
+[Official Jasmin GitHub repository](https://github.com/jasmin-lang/jasmin)
+
 ## Environment setup
 
 ### Classic installation
@@ -30,18 +32,22 @@ We provide a Dockerfile in the `Docker` directory to build a Docker image with t
 
 This Dockerfile has been successfully tested with a Ubuntu 22.04 base image.
 
-Here are useful commands to work with Docker:
-- Build an image: `docker build -t <image_name> <path_to_directory_containing_dockerfile>`
-- Create a container, based on an image, with a volume that links a host directory with a container directory: `docker run -it -v <host_workspace_path>:<container_workspace> --name <container_name> <image_name>`
+Remark: on linux, running the docker commands requires root privileges (insert `sudo` in front of every command, or run `sudo su` once).
+
+Here are some important commands to work with Docker:
+- Build an image from a Dockerfile: `docker build -t <image_name> <path_to_directory_containing_dockerfile>`
+    - Example: build an image with the provided Dockerfile: `docker build -t jasmin Docker/`
+- Create a container, based on an image, with a volume that links a host directory with a container directory: `docker run -it -v <host_workspace_path>:<container_workspace_path> --name <container_name> <image_name>`
+    - Example: create and run a container based on the previously created image: `docker run -it -v C:\Workspace:/workspace --name my-container jasmin`.
+    - In the container, you now have access to the files present in the directory <host_workspace_path> on the host machine.
 - Exit the container without stopping it (from inside the container): `Ctrl + P`, `Ctrl + Q`
-- Exit the container and stop it (from inside the container): `exit`
 - Join a running container: `docker attach <container_name>`
+- Exit the container and stop it (from inside the container): `exit`
 - Stop a container: `docker stop <container_name>`
 - Start a container: `docker start <container_name>`
-
-Example usage:
-- Build the image with the Jasmin compiler installed: `docker build -t jasmin Docker/`
-- Create and run a container based on this image: `docker run -it -v C:\Workspace:/workspace --name my-container jasmin`
+- List all images: `docker image ls`
+- List all containers: `docker container ls -a`
+    - Remark: running this command without the `-a` flag displays only the running containers.
 
 ### Configure syntax highlighting for Jasmin code in Visual Studio Code:
 - Open any `.jazz` file
