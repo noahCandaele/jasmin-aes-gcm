@@ -8,7 +8,7 @@ Semestre d'automne 2023-2024
 
 Students: Noah CANDAELE, Anthony IOZZIA (Master 2 computer science cybersecurity)  
 Supervisor: Sid TOUATI  
-Co-supervisors: Benjamin GREGOIRE, Jean-Christophe LÉCHENET  
+Co-supervisors: Benjamin GRÉGOIRE, Jean-Christophe LÉCHENET  
 
 [Official Jasmin GitHub repository](https://github.com/jasmin-lang/jasmin)
 
