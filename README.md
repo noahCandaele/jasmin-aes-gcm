@@ -1,6 +1,4 @@
-# AES-GCM in Jasmin
-
-**Efficient and secure implementation of AES-GCM in Jasmin**
+# Efficient and secure implementation of AES-GCM in Jasmin
 
 Projet d'Études et de Recherche  
 Université Côte d'Azur  
