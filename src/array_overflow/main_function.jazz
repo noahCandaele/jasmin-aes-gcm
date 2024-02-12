@@ -1,4 +1,0 @@
-export fn main_function(reg u64 arr){
-	[arr + 5] = 300;
-	// [arr + 5] = 333314;
-}
