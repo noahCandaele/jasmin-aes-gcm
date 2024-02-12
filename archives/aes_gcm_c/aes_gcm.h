@@ -4,7 +4,7 @@
 #include <stddef.h>
 
 typedef struct {
-    // Add necessary variables to hold state, keys, IV, etc.
+	// Add necessary variables to hold state, keys, IV, etc.
 } AES_GCM_Context;
 
 int generate_key(size_t key_len);

@@ -7,7 +7,7 @@
    a value after "return".
 */
 export fn f1 () -> reg u64 {
-  return 0; // unexpected token
+	return 0; // unexpected token
 }
 
 /* The calling conventions on x86 state that the first argument is passed in
@@ -16,23 +16,23 @@ export fn f1 () -> reg u64 {
    them explicitly.
 */
 export fn f2 (reg u64 x) -> reg u64 {
-  return x;
-  // register allocation: cannot allocate x.182 into RAX.68,
-  // the variable is already allocated in RDI.61
+	return x;
+	// register allocation: cannot allocate x.182 into RAX.68,
+	// the variable is already allocated in RDI.61
 
 }
 
 /* The correct version is this one. */
 export fn f2_2 (reg u64 x) -> reg u64 {
-  reg u64 y;
-  y = x;
-  return y;
+	reg u64 y;
+	y = x;
+	return y;
 }
 
 /* This can also be written this way, but this is less readble. */
 export fn f2_3 (reg u64 x) -> reg u64 {
-  x = x;
-  return x;
+	x = x;
+	return x;
 }
 
 /* Currently, the Jasmin compiler accepts only registers as arguments to
@@ -41,9 +41,9 @@ export fn f2_3 (reg u64 x) -> reg u64 {
    arguments passed on the stack should be allowed too.
 */
 export fn f3 (reg u64 x y z a b c d e) -> reg u64 {
-  // register allocation: too many parameters according to the ABI
-  // (only 6 available on this architecture)
-  reg u64 r;
-  r = x;
-  return r;
+	// register allocation: too many parameters according to the ABI
+	// (only 6 available on this architecture)
+	reg u64 r;
+	r = x;
+	return r;
 }

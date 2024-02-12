@@ -3,13 +3,13 @@ FROM ubuntu:latest
 
 # Install necessary dependencies
 RUN apt-get update && \
-    apt-get install -y \
-    sudo \
-    curl \
-    xz-utils \
-    gpg \
-    gcc \
-    make
+	apt-get install -y \
+	sudo \
+	curl \
+	xz-utils \
+	gpg \
+	gcc \
+	make
 
 # Create a non-root user for Nix
 RUN useradd -m -s /bin/bash nixuser
