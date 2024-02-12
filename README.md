@@ -34,7 +34,7 @@ If you later need to update the Jasmin compiler to the latest version:
 - Check installed version: `jasminc -version`
 
 ### Docker
-We provide a Dockerfile in the `Docker` directory to build a Docker image with the Jasmin compiler preinstalled. A container can then be created using this image.
+We provide a Dockerfile in the `docker` directory to build a Docker image with the Jasmin compiler preinstalled. A container can then be created using this image.
 
 This Dockerfile has been successfully tested with a Ubuntu 22.04 base image.
 
