@@ -1,3 +1,5 @@
+// https://en.wikipedia.org/wiki/Rijndael_S-box
+
 /************************************************************
  * Static S-box (hardcoded, more efficient)                 *
  ************************************************************/
@@ -39,8 +41,7 @@ inline fn rotate_left_8bit_value(reg u8 value, inline u8 shift) -> reg u8 {
 	 
 	 return result;
 	}
-	
-// Algorithm: https://en.wikipedia.org/wiki/Rijndael_S-box
+
 inline fn compute_sbox(reg ptr u8[256] sbox) -> reg ptr u8[256] {
 	reg u8 p,q;
 

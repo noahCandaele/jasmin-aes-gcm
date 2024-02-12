@@ -45,7 +45,7 @@ int test_sbox_static()
 
 		if (elem_control != elem_returned)
 		{
-			printf("sbox[%" PRIu8 "] should be %02" PRIx8 " but returned %02" PRIx8 "\n", i, elem_control, elem_returned);
+			printf("sbox[%" PRIu8 "] should be 0x%02" PRIx8 " but returned 0x%02" PRIx8 "\n", i, elem_control, elem_returned);
 			return 1;
 		}
 	}
@@ -82,6 +82,22 @@ int test_sbox_dynamic()
 			printf("%02" PRIx8 " ", sbox[col + SBOX_SIDE * line]);
 		}
 		printf("\n");
+	}
+
+	// Test sbox
+	for (int line = 0; line < SBOX_SIDE; line++)
+	{
+		for (int col = 0; col < SBOX_SIDE; col++)
+		{
+			const uint8_t elem_control = sbox_data[col + SBOX_SIDE * line];
+			const uint8_t elem_returned = sbox[col + SBOX_SIDE * line];
+
+			if (elem_control != elem_returned)
+			{
+				printf("sbox[%d] (line %d, column %d) should be 0x%02" PRIx8 " but returned 0x%02" PRIx8 "\n", col + SBOX_SIDE * line, line, col, elem_control, elem_returned);
+				return 1;
+			}
+		}
 	}
 
 	free(sbox);
