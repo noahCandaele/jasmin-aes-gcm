@@ -36,10 +36,10 @@ Remark: on linux, running the docker commands requires root privileges (insert `
 
 Here are some important commands to work with Docker:
 - Build an image from a Dockerfile: `docker build -t <image_name> <path_to_directory_containing_dockerfile>`
-    - Example: build an image with the provided Dockerfile: `docker build -t jasmin Docker/`
+	- Example: build an image with the provided Dockerfile: `docker build -t jasmin Docker/`
 - Create a container, based on an image, with a volume that links a host directory with a container directory: `docker run -it -v <host_workspace_path>:<container_workspace_path> --name <container_name> <image_name>`
-    - Example: create and run a container based on the previously created image: `docker run -it -v C:\Workspace:/workspace --name my-container jasmin`.
-    - In the container, you now have access to the files present in the directory <host_workspace_path> on the host machine.
+	- Example: create and run a container based on the previously created image: `docker run -it -v C:\Workspace:/workspace --name my-container jasmin`.
+	- In the container, you now have access to the files present in the directory <host_workspace_path> on the host machine.
 - Exit the container without stopping it (from inside the container): `Ctrl + P`, `Ctrl + Q`
 - Join a running container: `docker attach <container_name>`
 - Exit the container and stop it (from inside the container): `exit`
@@ -47,7 +47,7 @@ Here are some important commands to work with Docker:
 - Start a container: `docker start <container_name>`
 - List all images: `docker image ls`
 - List all containers: `docker container ls -a`
-    - Remark: running this command without the `-a` flag displays only the running containers.
+	- Remark: running this command without the `-a` flag displays only the running containers.
 
 ### Configure syntax highlighting for Jasmin code in Visual Studio Code:
 - Open any `.jazz` file
@@ -61,3 +61,6 @@ Here are some important commands to work with Docker:
 - `cd <directory>`
 - `make`
 - `./main.out`
+
+ms-vscode-remote.remote-containers
+ms-azuretools.vscode-docker
