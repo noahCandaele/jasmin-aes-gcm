@@ -2,7 +2,7 @@
 
 Projet d'Études et de Recherche  
 Université Côte d'Azur  
-Semestre d'automne 2023-2024  
+Autumn semester 2023-2024  
 
 Students: Noah CANDAELE, Anthony IOZZIA (Master 2 computer science cybersecurity)  
 Supervisor: Sid TOUATI  
