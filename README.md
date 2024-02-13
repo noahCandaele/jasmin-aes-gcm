@@ -81,4 +81,4 @@ Source: [Developing inside a Container](https://code.visualstudio.com/docs/devco
 
 - `cd <directory>`
 - `make`
-- `./main.out`
+- `./<name>.out`
