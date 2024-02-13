@@ -76,10 +76,14 @@ Source: [Developing inside a Container](https://code.visualstudio.com/docs/devco
 - Click on `Configure File Association for '.jazz'...`
 - Search for `rust`
 - Click on `Rust`
+- Repeat the same steps with a `.jinc` file
 
 ## Run Jasmin code
 
 - `cd <directory>`
 - Compile: `make`
 - Run: `make run` or `./<name>.out`
-- Check safety: `make checksafety`
+- Run checks:
+	- Run all checks: `make checks`
+	- Check safety: `make checksafety`
+	- Check constant time: `make checkCT`
