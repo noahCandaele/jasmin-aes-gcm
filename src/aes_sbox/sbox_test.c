@@ -36,7 +36,7 @@ int test_sbox_static()
 
 	const uint64_t index = 255;
 	const uint8_t result = sbox_static_get_element(index);
-	printf("Here is an element: sbox[%" PRId64 "] = 0x%02" PRIx8 "\n", index, result);
+	printf("Here is an element: sbox[%" PRIu64 "] = 0x%02" PRIx8 "\n", index, result);
 
 	for (int i = 0; i < SBOX_SIDE * SBOX_SIDE; i++)
 	{

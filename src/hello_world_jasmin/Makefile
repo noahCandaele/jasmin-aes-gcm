@@ -1,12 +1,19 @@
-default: all
+default: compile
 
-all: jasmin main
-
+compile: jasmin main
 jasmin:
 	jasminc hello_world.jazz -o hello_world.s
-
 main:
-	gcc main.c hello_world.s -o main.out -z noexecstack
+	gcc main.c hello_world.s -o main.out
 
-clean: 
-	rm -fv *.out *.s
+run:
+	@./main.out
+
+checks: checksafety checkCT
+checksafety:
+	jasminc -checksafety hello_world.jazz
+checkCT:
+	jasminc -checkCT hello_world.jazz
+
+clean:
+	@rm -fv *.out *.s
