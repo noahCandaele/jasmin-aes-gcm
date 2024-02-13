@@ -66,7 +66,7 @@ You might want to open VS Code in the container. For example, when opening C sou
 	- Dev Containers: `ms-vscode-remote.remote-containers`
 - Click on the `Docker` extension
 - Right click on the container, click `Attach Visual Studio Code`
-- You can now open a directory of your choice in the container, for example `<container_workspace_path>`
+- You can now open a directory of your choice in the container. `File` -> `Open Folder...` -> select the directory -> `OK`. For example, open `<container_workspace_path>` to work on the files shared with the host.
 
 Source: [Developing inside a Container](https://code.visualstudio.com/docs/devcontainers/containers)
 
