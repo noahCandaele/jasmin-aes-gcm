@@ -2,23 +2,4 @@ export fn hello_world() -> #secret reg u32 {
 	reg u32 x;
 	x = 42;
 	return x;
-}
-
-
-// export fn enc_256_v2(reg u128 k, reg u128 n, reg u256 p) -> reg u256 {
-// 	reg u128 mask, c1, c2, n1, n2, p1, p2;
-// 	reg u128[11] rkeys;
-// 	reg u256 c;
-	
-// 	rkeys = keys_expand(k);
-// 	mask  = aes_rounds(rkeys, n);
-// 	p1    = extract(p, 0); 
-// 	c1    = mask ^ p1;
-// 	n2    = flip0(n); 
-// 	mask  = aes_rounds(rkeys, n2);
-// 	p2    = extract(p, 1);
-// 	c2    = mask ^ p2;
-// 	c     = concat(c1,c2);
-// 	return c;
-// }
-  
+}  
