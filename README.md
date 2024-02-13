@@ -80,5 +80,6 @@ Source: [Developing inside a Container](https://code.visualstudio.com/docs/devco
 ## Run Jasmin code
 
 - `cd <directory>`
-- `make`
-- `./<name>.out`
+- Compile: `make`
+- Run: `make run` or `./<name>.out`
+- Check safety: `make checksafety`
