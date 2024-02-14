@@ -12,9 +12,11 @@
 #include <string.h>
 
 #define ARRAY_SIZE_128_BIT 16
+#define ARRAY_SIZE_192_BIT 24
+#define ARRAY_SIZE_256_BIT 32
 
-extern __m128i aes_jazz(__m128i key, __m128i plain);
-extern __m128i invaes_jazz(__m128i key, __m128i cipher);
+extern __m128i aes_jazz(__m256i key, __m128i plain);
+extern __m128i invaes_jazz(__m256i key, __m128i cipher);
 
 static inline void native_cpuid(uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx) {
 	asm volatile("cpuid"
@@ -48,37 +50,6 @@ static void check_cpuflags(void) {
 			"There is a high probability that the program triggers "
 			"an \"Illegal instruction\" exception\n");
 	}
-}
-
-void print_u128(__m128i in) {
-    alignas(16) uint16_t v[8];
-    _mm_store_si128((__m128i*)v, in);
-    printf("v8_u16: %x %x %x %x,  %x %x %x %x\n", v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7]);
-}
-
-void vincent() {
-	int8_t key[] 	= {0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c};
-	int8_t plain[] 	= {0x32, 0x43, 0xf6, 0xa8, 0x88, 0x5a, 0x30, 0x8d, 0x31, 0x31, 0x98, 0xa2, 0xe0, 0x37, 0x07, 0x34};
-	int8_t cipher[] = {0x39, 0x25, 0x84, 0x1d, 0x02, 0xdc, 0x09, 0xfb, 0xdc, 0x11, 0x85, 0x97, 0x19, 0x6a, 0x0b, 0x32};
-
-	check_cpuflags();
-
-	printf("Test vector\n");
-	__m128i key_m128i  = _mm_loadu_si128((__m128i *) key);
-	__m128i plain_m128i  = _mm_loadu_si128((__m128i *) plain);
-	__m128i cipher_m128i = _mm_loadu_si128((__m128i *) cipher);
-	// _mm_storeu_si128
-	printf("key: 	"); print_u128(key_m128i);
-	printf("plain: 	"); print_u128(plain_m128i);
-	printf("cipher: "); print_u128(cipher_m128i);
-
-	printf("Jasmin-generated encryption\n");
-	__m128i cipher_computed = aes_jazz(key_m128i, plain_m128i);
-	printf("cipher: "); print_u128(cipher_computed);
-
-	printf("Jasmin-generated decryption\n");
-	__m128i plain_computed = invaes_jazz(key_m128i, cipher_computed);
-	printf("plain: 	"); print_u128(plain_computed);
 }
 
 int8_t* string_hex_to_int8_array(const char* hex_string) {
@@ -123,11 +94,11 @@ void u128_to_arr(__m128i value, int8_t* arr) {
 void nou() {
 	printf("nou test\n");
 	
-	int8_t* key = string_hex_to_int8_array("5468617473206D79204B756E67204675");
-	int8_t* plain = string_hex_to_int8_array("54776F204F6E65204E696E652054776F");
-	int8_t* cipher = string_hex_to_int8_array("29C3505F571420F6402299B31A02D73A");
+	int8_t* key = string_hex_to_int8_array("c47b0294dbbbee0fec4757f22ffeee3587ca4730c3d33b691df38bab076bc558");
+	int8_t* plain = string_hex_to_int8_array("00000000000000000000000000000000");
+	int8_t* cipher = string_hex_to_int8_array("46f2fb342d6f0ab477476fc501242c5f");
 
-	printf("key: 	"); printInt8Array(key, ARRAY_SIZE_128_BIT);
+	printf("key: 	"); printInt8Array(key, ARRAY_SIZE_256_BIT);
 	printf("plain: 	"); printInt8Array(plain, ARRAY_SIZE_128_BIT);
 	printf("cipher: "); printInt8Array(cipher, ARRAY_SIZE_128_BIT);
 
@@ -141,8 +112,6 @@ void nou() {
 }
 
 int main() {
-	// vincent();
-
 	nou();
 
 	return 0;
