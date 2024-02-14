@@ -2,4 +2,4 @@ export fn hello_world() -> #secret reg u32 {
 	reg u32 x;
 	x = 42;
 	return x;
-}  
+}
