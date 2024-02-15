@@ -1,10 +1,13 @@
+CFLAGS = -mavx
+# mavx: enable AVX instructions
+
 default: compile
 
 compile: jasmin main
 jasmin:
 	jasminc aes.jazz -o aes.s
 main:
-	gcc aes.c aes.s -o aes.out
+	gcc $(CFLAGS) aes.c aes.s -o aes.out
 
 run:
 	@./aes.out

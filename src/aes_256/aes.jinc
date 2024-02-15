@@ -112,7 +112,7 @@ inline fn invaes_rounds (reg u128[11] rkeys, reg u128 in) -> reg u128 {
 /* Functions typically called from other Jasmin programs.
 Note they always compute key expansion, and this may
 not be good in terms of performance. */
-inline fn aes(reg u128 key, reg u128 plain) -> reg u128 {
+inline fn aes(reg u256 key, reg u128 plain) -> reg u128 {
 	reg u128 cipher;
 	reg u128[11] rkeys;
 
@@ -121,7 +121,7 @@ inline fn aes(reg u128 key, reg u128 plain) -> reg u128 {
 	return cipher;
 }
 
-inline fn invaes(reg u128 key, reg u128 cipher) -> reg u128 {
+inline fn invaes(reg u256 key, reg u128 cipher) -> reg u128 {
 	reg u128 plain;
 	reg u128[11] rkeys;
 
