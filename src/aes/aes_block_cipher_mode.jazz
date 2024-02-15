@@ -11,8 +11,13 @@ export fn aes_block_cipher_mode_jazz(reg u128 key, reg u128 counter, reg u128 pl
 	return cipher;
 }
 
-// export fn invaes_block_cipher_mode_jazz(#secret reg u128 key, #public reg u128 cipher) -> #secret reg u128 {
-// 	reg u128 plain;
-// 	plain = invaes(key, cipher);
-// 	return plain;
-// }
+export fn invaes_block_cipher_mode_jazz(reg u128 key, reg u128 counter, reg u128 cipher) -> reg u128 {
+	reg u128 cipher_counter;
+	cipher_counter = aes(key, counter);
+
+	reg u128 plain;
+	plain = cipher;
+	plain ^= cipher_counter;
+
+	return plain;
+}
