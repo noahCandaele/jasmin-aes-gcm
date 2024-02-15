@@ -1,4 +1,4 @@
-CFLAGS = -mavx -mrdrnd
+CFLAGS = -mavx -mrdrnd -lm
 # -z noexecstack: mark the resulting executable as not requiring an executable stack
 # -mavx: enable AVX instructions
 # -mrdrnd: m machine, rd read, rnd random
