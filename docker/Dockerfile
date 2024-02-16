@@ -12,19 +12,19 @@ RUN apt-get update && \
 	make
 
 # Create a non-root user for Nix
-RUN useradd -m -s /bin/bash nixuser
+RUN useradd -m -s /bin/bash user
 
 # Allow the non-root user to execute commands with sudo
-RUN echo "nixuser ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/nixuser
+RUN echo "user ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers.d/user
 
 # Switch to the non-root user
-USER nixuser
+USER user
 
 # Download and install Nix
 RUN curl -L https://nixos.org/nix/install | sh
 
 # Add the Nix binary directory to the PATH
-ENV PATH="/home/nixuser/.nix-profile/bin:$PATH"
+ENV PATH="/home/user/.nix-profile/bin:$PATH"
 
 # Set up the Nix store
 RUN nix-collect-garbage

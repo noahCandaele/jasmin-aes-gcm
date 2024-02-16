@@ -44,10 +44,19 @@ If not already done, install Docker.
 
 Here are some important commands to work with Docker:
 - Build an image from a Dockerfile: `docker build -t <image_name> <path_to_directory_containing_dockerfile>`
+	- Explanation of the options used:
+		- `-t`: specify the desired image name
 	- Example: build an image with the provided Dockerfile: `docker build -t jasmin docker/`
-- Create a container, based on an image, with a volume that links a host directory with a container directory: `docker run -it -v <host_workspace_path>:<container_workspace_path> --name <container_name> <image_name>`
-	- Example: create and run a container based on the previously created image: `docker run -it -v C:\Workspace:/workspace --name my-container jasmin`.
+- Create a container, based on an image, with a volume that links a host directory with a container directory: `docker run -it -v <host_workspace_path>:<container_workspace_path> --hostname <hostname> --name <container_name> <image_name>`
+	- Explanation of the options used:
+		- `-i`: interactive mode (keep a container running and interact with it)
+		- `-t`: provides a pseudo-terminal for the container, allowing you to interact with it as if you were using a real terminal
+		- `-v`: create a volume that links a host directory with a container directory
+		- `--hostname`: specify the host name of the container
+		- `--name`: specify the name of the container
+	- Example: create and run a container based on the previously created image: `docker run -it -v C:\Workspace:/workspace --hostname jasmin-container --name jasmin-container jasmin`.
 	- In the container, you now have access to the files present in the directory <host_workspace_path> on the host machine.
+	- If you have multiple containers based on the same image, give them different host names so that you can differentiate between them while in the terminal.
 - Exit the container without stopping it (from inside the container): `Ctrl + P`, `Ctrl + Q`
 - Join a running container: `docker attach <container_name>`
 - Exit the container and stop it (from inside the container): `exit`
@@ -55,7 +64,7 @@ Here are some important commands to work with Docker:
 - Start a container: `docker start <container_name>`
 - List all images: `docker image ls`
 - List all containers: `docker container ls -a`
-	- Remark: running this command without the `-a` flag displays only the running containers.
+	- Remark: running this command without the `-a` option displays only the running containers.
 
 ### Open project from a Docker container in Visual Studio Code
 You might want to open VS Code in the container. For example, when opening C source files in Windows, if GCC is not installed, C libraries are unknown. With this method, VS Code will have the environment of the container, and will detect the C libraries if GCC is installed in the container. It is generally better to give VS Code the development environment, to fully take advantage of its features, notably code completion and syntax highlighting.
