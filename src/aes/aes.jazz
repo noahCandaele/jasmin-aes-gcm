@@ -5,8 +5,6 @@
 
 require "aes.jinc"
 
-// TODO #public plain et cipher ?
-
 export fn aes_jazz(#secret reg u128 key, #secret reg u128 plain) -> #public reg u128 {
 	reg u128 cipher;
 	cipher = aes(key, plain);

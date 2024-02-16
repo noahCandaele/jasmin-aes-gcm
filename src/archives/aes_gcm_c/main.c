@@ -2,7 +2,6 @@
 #include <string.h>
 #include <openssl/aes.h>
 #include "aes_gcm.h"
-// TODO à enlever
 #include "../secret.h"
 
 int main() {

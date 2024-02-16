@@ -51,7 +51,7 @@ inline fn keys_expand(reg u128 key) -> reg u128[11] {
 	reg u128 temp2;
 	inline int round, rcon;
 	rkeys[0] = key;
-	temp2 = #set0_128(); // TODO question pourquoi on ne met pas 0 directement dans temp2 ?
+	temp2 = #set0_128();
 	for round = 1 to 11 {
 		rcon = rcon_get(round);
 		(key, temp2) = key_expand(rcon, key, temp2);
