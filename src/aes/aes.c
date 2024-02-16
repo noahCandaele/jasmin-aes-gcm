@@ -534,7 +534,7 @@ int test_aes128_block_cipher_mode_encryption_full() {
 	
 	// TODO free tout
 	// TODO test pas complet
-	return RETURN_SUCCESS;
+	return RETURN_FAIL;
 }
 
 int main() {
