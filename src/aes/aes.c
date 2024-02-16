@@ -131,6 +131,33 @@ void print_ascii_representation(int8_t arr[], size_t size) {
 	printf("\n");
 }
 
+// void string_to_hex(char* input, char* output) {
+//     size_t len = strlen(input);
+
+//     for (size_t i = 0, j = 0; i < len; ++i, j += 2) {
+//         sprintf(output + j, "%02x", input[i] & 0xFF);
+//     }
+
+//     output[len * 2] = '\0'; // Null-terminate the resulting string
+// }
+
+void string_to_hex(char* input, char* output)
+{
+    int loop;
+    int i;
+
+    i = 0;
+    loop = 0;
+
+    while (input[loop] != '\0') {
+        sprintf((char*)(output + i), "%02X", input[loop]);
+        loop += 1;
+        i += 2;
+    }
+    //insert NULL at the end of the output string
+    output[i++] = '\0';
+}
+
 __m128i arr_to_u128(int8_t* arr) {
 	return _mm_loadu_si128((__m128i *) arr);
 }
@@ -333,10 +360,11 @@ int test_aes128_block_cipher_mode_encryption_module() {
 		printf("test_aes128_block_cipher_mode: allocation of key, iv, plain or cipher failed");
 		return RETURN_FAIL;
 	}
-	string_hex_to_int8_array("00000000000000000000000000000000", key, NB_BYTES_128_BITS);
+	// TODO remettre
+	string_hex_to_int8_array("5468617473206D79204B756E67204675", key, NB_BYTES_128_BITS);
 	string_hex_to_int8_array("f34481ec3cc627bacd5dc3fb08f273e6", iv, NB_BYTES_128_BITS);
-	string_hex_to_int8_array("00000000000000000000000000000000", plain, NB_BYTES_128_BITS);
-	string_hex_to_int8_array("0336763e966d92595a567cc9ce537f5e", cipher, NB_BYTES_128_BITS);
+	string_hex_to_int8_array("54776F204F6E65204E696E652054776F", plain, NB_BYTES_128_BITS);
+	string_hex_to_int8_array("479be376295fc8547276c4c9a76d2822", cipher, NB_BYTES_128_BITS);
 
 	printf("Jasmin-generated encryption\n");
 	int8_t* cipher_computed = (int8_t*)malloc(NB_BYTES_128_BITS * sizeof(int8_t));
@@ -418,10 +446,19 @@ int test_aes128_block_cipher_mode_encryption_full() {
 	printf("Test AES block cipher mode of operation, encryption part, full\n");
 
 	// char* plaintext_full = "On teste avec ca, on va voir si ca marche, si ca marche ca marche, si ca marche pas ca marche pas.";
-	char* plaintext_full = "abcdefghijklmnopqrstuvwxyz0123456789";
+	char* plaintext_full = "lorem ipsum dol";
+	// char* plaintext_full = "efghijklmnopqrstuvwxyz0123456789";
+	// char* plaintext_full = "efghijklmnopqrst";
 
-	// Cut plaintext in 128-bit blocks
+
+	size_t len = strlen(plaintext_full);
+    // char* plaintext_hex_full = (char*)malloc(len * 2 + 1); // Each character will be represented by 2 hex digits, plus 1 for null terminator
+	int8_t* plaintext_hex_full = (int8_t*)malloc(NB_BYTES_128_BITS * sizeof(int8_t));
+	// string_to_hex(plaintext_full, plaintext_hex_full);
 	
+
+	string_hex_to_int8_array("54776F204F6E65204E696E652054776F", plaintext_hex_full, NB_BYTES_128_BITS);
+	printf("plaintext full hex: "); print_int8_array(plaintext_hex_full, strlen(plaintext_hex_full));
 	
 	int8_t* key = (int8_t*)malloc(NB_BYTES_128_BITS * sizeof(int8_t));
 	int8_t* iv = (int8_t*)malloc(NB_BYTES_128_BITS * sizeof(int8_t));
@@ -431,11 +468,17 @@ int test_aes128_block_cipher_mode_encryption_full() {
 		return RETURN_FAIL;
 	}
 	string_hex_to_int8_array("5468617473206D79204B756E67204675", key, NB_BYTES_128_BITS);
-	generate_iv(iv);
+	// generate_iv(iv);
+	string_hex_to_int8_array("f34481ec3cc627bacd5dc3fb08f273e6", iv, NB_BYTES_128_BITS);
+
+	// string_hex_to_int8_array("5468617473206D79204B756E67204675", key, NB_BYTES_128_BITS);
+	// string_hex_to_int8_array("f34481ec3cc627bacd5dc3fb08f273e6", iv, NB_BYTES_128_BITS);
+	// string_hex_to_int8_array("54776F204F6E65204E696E652054776F", plain, NB_BYTES_128_BITS);
+	// string_hex_to_int8_array("479be376295fc8547276c4c9a76d2822", cipher, NB_BYTES_128_BITS);
 
 	// list of cipher blocks
-	int nb_cipher_blocks = ceil(strlen(plaintext_full) / 16.0);
-	printf("strlen(plaintext_full): %zu\n", strlen(plaintext_full));
+	int nb_cipher_blocks = ceil(strlen(plaintext_hex_full) / 16.0);
+	printf("strlen(plaintext_full): %zu\n", strlen(plaintext_hex_full));
 	printf("nb_cipher_blocks: %d\n", nb_cipher_blocks);
 	int8_t* cipher_blocks = (int8_t*)malloc(nb_cipher_blocks * NB_BYTES_128_BITS * sizeof(int8_t));
 	if (cipher_blocks == NULL) {
@@ -451,17 +494,20 @@ int test_aes128_block_cipher_mode_encryption_full() {
 			return RETURN_FAIL;
 		}
 		// get ith block of plaintext
-		string_hex_to_int8_array(plaintext_full + i * NB_BYTES_128_BITS, plain, NB_BYTES_128_BITS);
-		
+		string_hex_to_int8_array(plaintext_hex_full + i * NB_BYTES_128_BITS*2*sizeof(char), plain, NB_BYTES_128_BITS);
+
+		// print plain
+		printf("plain block %zu (hex)  : ", i);
+		print_int8_array(plain, NB_BYTES_128_BITS); 
 		aes_block_cipher_mode(key, iv, plain, cipher);
 		// add cipher to list of cipher blocks
-		memcpy(cipher_blocks + i * NB_BYTES_128_BITS, cipher, NB_BYTES_128_BITS);
+		memcpy(cipher_blocks + i * NB_BYTES_128_BITS*sizeof(int8_t), cipher, NB_BYTES_128_BITS);
 		free(plain); free(cipher);
 	}
 	// print cipher blocks
 	for (size_t i = 0; i < nb_cipher_blocks; ++i) {
 		printf("cipher block %zu: ", i);
-		print_int8_array(cipher_blocks + i * NB_BYTES_128_BITS, NB_BYTES_128_BITS);
+		print_int8_array(cipher_blocks + i * NB_BYTES_128_BITS*sizeof(int8_t), NB_BYTES_128_BITS);
 	}
 	// decrypt cipher blocks
 	int8_t* plain_computed_full = (int8_t*)malloc(nb_cipher_blocks*NB_BYTES_128_BITS * sizeof(int8_t));
@@ -472,16 +518,19 @@ int test_aes128_block_cipher_mode_encryption_full() {
 			return RETURN_FAIL;
 		}
 		invaes_block_cipher_mode(key, iv, cipher_blocks + i * NB_BYTES_128_BITS, plain_computed);
-		print_int8_array(plain_computed, NB_BYTES_128_BITS);
 		memcpy(plain_computed_full + i * NB_BYTES_128_BITS, plain_computed, NB_BYTES_128_BITS);
 		free(plain_computed);
 	}
 	// print plain computed
 	for (size_t i = 0; i < nb_cipher_blocks; ++i) {
-		printf("plain computed block %zu: ", i);
+		printf("plain computed block %zu (hex)  : ", i);
 		print_int8_array(plain_computed_full + i * NB_BYTES_128_BITS, NB_BYTES_128_BITS);
+		printf("plain computed block %zu (ascii): ", i);
+		print_ascii_representation(plain_computed_full + i * NB_BYTES_128_BITS, NB_BYTES_128_BITS);
 	}
 	// convert plain computed to string
+	printf("full plaintext (hex)  : "); print_int8_array(plain_computed_full, nb_cipher_blocks*NB_BYTES_128_BITS);
+	printf("full plaintext (ascii): "); print_ascii_representation(plain_computed_full, nb_cipher_blocks*NB_BYTES_128_BITS);
 	
 	// TODO free tout
 	// TODO test pas complet

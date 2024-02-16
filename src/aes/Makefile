@@ -2,6 +2,7 @@ CFLAGS = -mavx -mrdrnd -lm
 # -z noexecstack: mark the resulting executable as not requiring an executable stack
 # -mavx: enable AVX instructions
 # -mrdrnd: m machine, rd read, rnd random
+# -lm: math
 
 JAZZFLAGS =
 # -lazy-regalloc: used to avoid the error "register allocation failed" when compiling the .jazz file (too many registers used)
@@ -10,11 +11,11 @@ default: compile
 
 compile: jasmin_aes jasmin_aes_block_cipher_mode main
 jasmin_aes:
-	jasminc $(JAZZFLAGS) aes.jazz -o aes.s
+	jasminc aes.jazz -o aes.s $(JAZZFLAGS)
 jasmin_aes_block_cipher_mode:
-	jasminc $(JAZZFLAGS) aes_block_cipher_mode.jazz -o aes_block_cipher_mode.s
+	jasminc aes_block_cipher_mode.jazz -o aes_block_cipher_mode.s $(JAZZFLAGS)
 main:
-	gcc $(CFLAGS) aes.c aes.s aes_block_cipher_mode.s -o aes.out
+	gcc aes.c aes.s aes_block_cipher_mode.s -o aes.out $(CFLAGS)
 
 run:
 	@./aes.out
