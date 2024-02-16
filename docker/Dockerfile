@@ -32,5 +32,8 @@ RUN nix-collect-garbage
 # Install Jasmin compiler
 RUN nix-env -iA nixpkgs.jasmin-compiler
 
+# Color the container bash prompt
+ENV force_color_prompt=yes
+
 # Set the work directory
 WORKDIR /workspace
