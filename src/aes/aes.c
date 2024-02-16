@@ -493,7 +493,7 @@ int test_aes128_block_cipher_mode_encryption_full() {
 			printf("test_aes128_block_cipher_mode_encryption_full: allocation failed");
 			return RETURN_FAIL;
 		}
-		// get ith block of plaintext
+		// get ith block of plaintext // TODO mistake here
 		string_hex_to_int8_array(plaintext_hex_full + i * NB_BYTES_128_BITS*2*sizeof(char), plain, NB_BYTES_128_BITS);
 
 		// print plain

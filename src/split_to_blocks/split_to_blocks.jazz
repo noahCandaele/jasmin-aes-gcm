@@ -1,0 +1,41 @@
+/// This function takes a string, an ID, and a length as input and shrinks the string to a block of 16 bytes.
+/// The resulting block is stored in the memory pointed to by `ptrout`.
+/// 
+/// # Arguments
+/// 
+/// * `ptrin` - A pointer to the input string.
+/// * `ptrout` - A pointer to the output block of 16 bytes.
+/// * `length` - The length of the input string.
+/// * `id` - The ID of the block to extract the string.
+export fn shrinkstr(reg u64 ptrin, reg u64 ptrout, reg u32 lenght, reg u32 id){
+	// calculate if the given block is in the range 0..mod(length, 16)
+	reg u32 total;
+	total = id;
+	total += 1;
+	total *= 16;
+	total -= lenght;
+
+	// calculate the pointer to the block
+	reg u64 ptr_block;
+	ptr_block = (64u)id;
+	ptr_block *= 16;
+	ptr_block += ptrin;
+
+	// if the block is in the range 0..mod(length, 16), then copy the block to the output
+	if total > 0{
+		reg u128[1] m;
+		m[0] = (u128)[ptr_block];
+		(u128)[ptrout] = m[0];
+	}else{
+		// if the block is not in the range copy the block byte by byte
+		reg u8 i;
+		i = 0;
+		while (total < 0){
+			(u8)[ptrout] = (u8)[ptr_block];
+			ptr_block += 1;
+			total += 1;
+			i+=1;
+		}
+	}
+	
+}
