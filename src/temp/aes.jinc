@@ -1,0 +1,131 @@
+/*******************************************************************
+* This code is adapted from Vincent LAPORTE, Cyber In Nancy 2022: *
+* https://members.loria.fr/VLaporte/files/CyberIn2022.html        *
+*******************************************************************/
+
+/* Jasmin implementation of AES using AES-NI */
+/* This can be reused without change wherever
+AES-NI is needed to compute vanilla AES or
+its inverse */
+
+
+// Round constant
+// This function is hardcoded for performance and should only be used for
+// 1 <= i <= 10.
+inline fn rcon_get(inline int i) -> inline int {
+	inline int c;
+	c =  (i == 1) ? 0x01 :
+		((i == 2) ? 0x02 :
+		((i == 3) ? 0x04 :
+		((i == 4) ? 0x08 :
+		((i == 5) ? 0x10 :
+		((i == 6) ? 0x20 :
+		((i == 7) ? 0x40 :
+		((i == 8) ? 0x80 :
+		((i == 9) ? 0x1b :
+		/*i == 10*/ 0x36))))))));
+	return c;
+}
+
+inline fn key_combine(reg u128 rkey, reg u128 temp1, reg u128 temp2) 
+	-> reg u128, reg u128 {
+	temp1 = #VPSHUFD(temp1, (4u2)[3,3,3,3]);
+	temp2 = #VSHUFPS(temp2, rkey, (4u2)[0,1,0,0]);
+	rkey ^= temp2;
+	temp2 = #VSHUFPS(temp2, rkey, (4u2)[2,0,3,0]);
+	rkey ^= temp2; 
+	rkey ^= temp1;
+	return rkey, temp2;
+}  
+
+inline fn key_expand(inline int rcon, reg u128 rkey, reg u128 temp2) 
+	-> reg u128, reg u128 {
+	reg u128 temp1;
+	temp1 = #VAESKEYGENASSIST(rkey, rcon);
+	rkey, temp2 = key_combine(rkey, temp1, temp2);
+	return rkey, temp2;
+}
+
+inline fn keys_expand(reg u128 key) -> reg u128[11] {
+	reg u128[11] rkeys;
+	reg u128 temp2;
+	inline int round, rcon;
+	rkeys[0] = key;
+	temp2 = #set0_128();
+	for round = 1 to 11 {
+		rcon = rcon_get(round);
+		(key, temp2) = key_expand(rcon, key, temp2);
+		rkeys[round] = key;
+	}   
+	return rkeys;    
+} 
+
+inline fn keys_expand_inv(reg u128 key) -> reg u128[11] {
+	reg u128[11] rkeys;
+	reg u128 temp2;
+	inline int round, rcon;
+	rkeys[0] = key;
+	temp2    = #set0_128();
+	for round = 1 to 11 {
+		rcon = rcon_get(round);
+		(key, temp2) = key_expand(rcon, key, temp2);
+		if (round != 10) {
+			rkeys[round] = #AESIMC(key);
+		} else {
+			rkeys[round] = key;
+		}
+	}   
+	return rkeys;    
+} 
+
+inline fn aes_rounds (reg u128[11] rkeys, reg u128 in) -> reg u128 {
+	reg u128 state;
+	inline int round;
+	state = in;
+	state ^= rkeys[0]; 
+	for round = 1 to 10 { 
+		state = #AESENC(state, rkeys[round]);
+	}
+	state = #AESENCLAST(state, rkeys[10]);
+	return state; 
+}
+
+inline fn AddRoundKey(reg u128 state, stack u128 rk) -> reg u128 {
+	state = state ^ rk;
+	return state;
+}
+
+inline fn invaes_rounds (reg u128[11] rkeys, reg u128 in) -> reg u128 {
+	reg u128 state;
+	inline int round;
+	stack u128 rk;
+	state = in;
+	rk = rkeys[10];
+	state = AddRoundKey(state,rk); 
+	for round = 9 downto 0 { 
+		state = #AESDEC(state, rkeys[round]);
+	}
+	state = #AESDECLAST(state, rkeys[0]);
+	return state; 
+}
+
+/* Functions typically called from other Jasmin programs.
+Note they always compute key expansion, and this may
+not be good in terms of performance. */
+inline fn aes(reg u128 key, reg u128 plain) -> reg u128 {
+	reg u128 cipher;
+	reg u128[11] rkeys;
+
+	rkeys = keys_expand(key);
+	cipher = aes_rounds(rkeys, plain);
+	return cipher;
+}
+
+inline fn invaes(reg u128 key, reg u128 cipher) -> reg u128 {
+	reg u128 plain;
+	reg u128[11] rkeys;
+
+	rkeys = keys_expand_inv(key);
+	plain = invaes_rounds(rkeys, cipher);
+	return plain;
+}

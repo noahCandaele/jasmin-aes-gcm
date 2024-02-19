@@ -1,0 +1,23 @@
+export fn add1(reg u64 ptrin){
+	reg u16 result;
+	result = (u16)[ptrin];
+	result = #INC_16(result);
+	// result += (16u)1;
+	(u16)[ptrin] = result;
+	// [ptrin] += 1;
+}
+
+export fn xor(reg u64 ptrin){
+	reg u16 result;
+	result = (u16)[ptrin];
+	result ^= (16u)1;
+	(u16)[ptrin] = result;
+}
+
+export
+fn shift() -> reg u64 {
+    reg u64 y;
+	y = 1;
+    y <<= 32;
+    return y;
+}
