@@ -10,9 +10,9 @@ export fn random64() -> reg u64 {
 }
 
 // export fn random128() -> reg u128 {
-// 	reg u64 res;
-// 	stack u64[1] r;
-// 	reg ptr u64[1] p;
+// 	reg u128 res;
+// 	stack u128[1] r;
+// 	reg ptr u128[1] p;
 // 	p = r;
 // 	p = #randombytes(p);
 // 	r = p;

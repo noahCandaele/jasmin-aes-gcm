@@ -1,3 +1,6 @@
+// File taken from the official Jasmin GitHub repository:
+// compiler/syscall/jasmin_syscall.h
+
 #include <stdint.h>
 #ifndef JASMIN_SYSCALL
 #define JASMIN_SYSCALL
