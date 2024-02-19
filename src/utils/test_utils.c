@@ -109,15 +109,15 @@ int test_convert_hex_string_to_uint8_array() {
 
 int test_convert_uint64_to_uint8_array() {
 	printf("######## Test convert uint64 to uint8 array ########\n");
-
-	uint64_t value = 1;
+	
+	uint64_t value = 0b0000100000000111000001100000010100000100000000110000001000000001;
 	uint8_t arr[NB_BYTES_64_BITS];
 	convert_uint64_to_uint8_array(value, arr);
 
 	printf("hex: "); print_uint8_array_as_hex(arr, NB_BYTES_64_BITS, true);
 	printf("bin: "); print_uint8_array_as_binary(arr, NB_BYTES_64_BITS, true);
 
-	uint8_t expected_arr[] = {0, 0, 0, 0, 0, 0, 0, 1};
+	uint8_t expected_arr[] = {0b00001000, 0b00000111, 0b00000110, 0b00000101, 0b00000100, 0b00000011, 0b00000010, 0b00000001};
 	if (!compare_uint8_arrays(arr, expected_arr, NB_BYTES_64_BITS)) {
 		return CODE_FAIL;
 	}

@@ -1,3 +1,6 @@
+#ifndef UTILS_H
+#define UTILS_H
+
 #define BASE_16 16
 
 #define NB_BYTES_64_BITS 8
@@ -27,3 +30,5 @@ bool compare_uint8_arrays(const uint8_t* array1, const uint8_t* array2, size_t s
 
 void convert_hex_string_to_uint8_array(char* hex_string, uint8_t* uint8_array, size_t uint8_array_size);
 void convert_uint64_to_uint8_array(uint64_t value, uint8_t* arr);
+
+#endif
