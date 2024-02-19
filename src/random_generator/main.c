@@ -13,6 +13,8 @@ extern uint64_t random32();
 extern uint64_t random64();
 extern __m128i random128();
 extern __m128i iv_init();
+extern uint64_t endianness64();
+extern __m128i endianness128();
 
 int test_random32() {
 	printf("######## Test random 32 bits ########\n");
@@ -64,12 +66,38 @@ int test_iv_init() {
 	return CODE_INFO;
 }
 
+int test_endianness64() {
+	printf("######## Test endianness 64 bit ########\n");
+
+	uint64_t res = endianness64();
+
+	uint8_t arr[NB_BYTES_64_BITS];
+	convert_uint64_to_uint8_array(res, arr);
+	printf("hex: "); print_uint8_array_as_hex(arr, NB_BYTES_64_BITS, true);
+
+	return CODE_INFO;
+}
+
+int test_endianness128() {
+	printf("######## Test endianness 128 bit ########\n");
+
+	__m128i res = endianness128();
+	uint8_t arr[NB_BYTES_128_BITS];
+	u128_to_arr(res, arr);
+
+	printf("hex: "); print_uint8_array_as_hex(arr, NB_BYTES_128_BITS, true);
+
+	return CODE_INFO;
+}
+
 int main()
 {
 	print_test_return_status(test_random32());
 	print_test_return_status(test_random64());
 	print_test_return_status(test_random128());
 	print_test_return_status(test_iv_init());
+	print_test_return_status(test_endianness64());
+	print_test_return_status(test_endianness128());
 
 	return 0;
 }
