@@ -11,6 +11,7 @@
 #define BASE16 16
 
 #define NB_BYTES_64_BITS 8
+#define NB_BYTES_128_BITS 16
 
 extern uint64_t random64();
 
@@ -30,11 +31,11 @@ extern uint64_t random64();
 // 	memcpy(arr, &value, NB_BYTES_64_BITS);
 // }
 
-void convert_hex_string_to_uint8_array(char* hex_string, uint8_t* int8_array, size_t array_size) {
+void convert_hex_string_to_uint8_array(char* hex_string, uint8_t* uint8_array, size_t array_size) {
 	for (size_t i = 0; i < array_size; ++i) {
 		char hex[2] = { hex_string[i * 2], hex_string[i * 2 + 1] };
 		// cast to int8_t
-		int8_array[i] = (uint8_t)strtol(hex, NULL, BASE16);
+		uint8_array[i] = (uint8_t)strtol(hex, NULL, BASE16);
 	}
 }
 
@@ -74,45 +75,56 @@ void print_uint8_array_as_ascii(uint8_t* arr, size_t size, bool with_spaces) {
 	printf("\n");
 }
 
-// void print_uint_arr_as_binary(uint8_t* arr, size_t size, bool with_spaces) {
-// 	for (size_t i = 0; i < size; ++i) {
-// 		for (size_t j = 0; j < 8; ++j) {
-// 			printf("%d", (arr[i] >> (7 - j)) & 1);
-// 		}
+void print_uint8_array_as_binary(uint8_t* arr, size_t size, bool with_spaces) {
+	for (size_t i = 0; i < size; ++i) {
+		for (size_t j = 0; j < 8; ++j) {
+			printf("%d", (arr[i] >> (7 - j)) & 1);
+		}
 
-// 		if(with_spaces) {
-// 			// Add a space after every 4 characters
-// 			if ((i + 1) % 2 == 0 && i + 1 < size) {
-// 				printf(" ");
-// 			}
-// 		}
-// 	}
-// 	printf("\n");
-// }
-
-void test_print() {
-	uint8_t plain[16];
-	convert_hex_string_to_uint8_array("54776F204F6E65204E696E652054776F", plain, 16);
-
-    print_uint8_array_as_hex(plain, 16, true);
-	print_uint8_array_as_ascii(plain, 16, true);
+		if(with_spaces) {
+			// Add a space after every 16 characters
+			if ((i + 1) % 2 == 0 && i + 1 < size) {
+				printf(" ");
+			}
+		}
+	}
+	printf("\n");
 }
 
+void test_print() {
+	uint8_t plain[NB_BYTES_128_BITS];
+	convert_hex_string_to_uint8_array("54776F204F6E65204E696E652054776F", plain, NB_BYTES_128_BITS);
 
+    print_uint8_array_as_hex(plain, NB_BYTES_128_BITS, true);
+	print_uint8_array_as_ascii(plain, NB_BYTES_128_BITS, true);
+	print_uint8_array_as_binary(plain, NB_BYTES_128_BITS, true);
+}
 
 
 int main()
 {
+	// test_print();
+
+
 	int8_t* arr = (int8_t*)malloc(NB_BYTES_64_BITS * sizeof(int8_t));
 	if (arr == NULL) {
 		printf("Malloc failed");
 		return 1;
 	}
-
-
-	uint64_t result = random64();
-	convert_uint64_to_uint8_array(result, arr);
+	convert_uint64_to_uint8_array(1, arr);
 	print_uint8_array_as_hex(arr, NB_BYTES_64_BITS, true);
+	print_uint8_array_as_binary(arr, NB_BYTES_64_BITS, true);
+
+	// int8_t* arr = (int8_t*)malloc(NB_BYTES_64_BITS * sizeof(int8_t));
+	// if (arr == NULL) {
+	// 	printf("Malloc failed");
+	// 	return 1;
+	// }
+
+
+	// uint64_t result = random64();
+	// convert_uint64_to_uint8_array(result, arr);
+	// print_uint8_array_as_hex(arr, NB_BYTES_64_BITS, true);
 
 	return 0;
 }
