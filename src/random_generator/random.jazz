@@ -32,14 +32,28 @@ export fn random128() -> reg u128 {
 }
 
 export fn iv_init() -> reg u128 {
-	reg u64 rand64;
-	#inline rand64 = random64();
-
 	reg u32 rand32;
 	#inline rand32 = random32();
 
 	reg u128 res;
-	res = (128u)rand64;
+	res = (128u)rand32;
+
+	res = #VPSHUFD(res, 0x0C);
+
+
+
+
+
+
+
+	// reg u64 rand64;
+	// #inline rand64 = random64();
+
+	// reg u32 rand32;
+	// #inline rand32 = random32();
+
+	// reg u128 res;
+	// res = (128u)rand64;
 
 	// res <<= 32;
 	// reg u128 temp;
