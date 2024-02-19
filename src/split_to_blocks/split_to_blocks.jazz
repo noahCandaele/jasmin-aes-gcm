@@ -7,7 +7,7 @@
 /// * `ptrout` - A pointer to the output block of 16 bytes.
 /// * `length` - The length of the input string.
 /// * `id` - The ID of the block to extract the string.
-export fn shrinkstr(reg u64 ptrin, reg u64 ptrout, reg u32 lenght, reg u32 id){
+inline fn shrinking(reg u64 ptrin, reg u64 ptrout, reg u32 lenght, reg u32 id){
 	// calculate if the given block is in the range 0..mod(length, 16)
 	reg u32 total;
 	total = id;
@@ -38,4 +38,9 @@ export fn shrinkstr(reg u64 ptrin, reg u64 ptrout, reg u32 lenght, reg u32 id){
 		}
 	}
 	
+}
+
+
+export fn shrinkstr(reg u64 ptrin, reg u64 ptrout, reg u32 lenght, reg u32 id){
+	shrinking(ptrin, ptrout, lenght, id);
 }
