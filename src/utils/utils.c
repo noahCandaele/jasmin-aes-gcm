@@ -95,12 +95,8 @@ void convert_hex_string_to_uint8_array(char* hex_string, uint8_t* uint8_array, s
 	}
 }
 
-
-
-
-// // void convert_uint64_to_uint8_array(uint64_t value, uint8_t* arr) {
-// // 	for (size_t i = 0; i < NB_BYTES_64_BITS; ++i) {
-// // 		arr[i] = (value >> (i * 8)) & 0xFF;
-// // 	}
-// // }
-
+void convert_uint64_to_uint8_array(uint64_t value, uint8_t* arr) {
+    for (size_t i = 0; i < NB_BYTES_64_BITS; ++i) {
+        arr[i] = (value >> ((NB_BYTES_64_BITS - 1 - i) * 8)) & 0xFF;
+    }
+}

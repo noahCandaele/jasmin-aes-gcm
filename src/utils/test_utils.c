@@ -91,20 +91,36 @@ int test_convert_hex_string_to_uint8_array() {
 
 	char hex_str[] = "12ab";
 	size_t nb_bytes = nb_bytes_hex_string(hex_str);
+	printf("nb_bytes: %zu\n", nb_bytes);
 
 	uint8_t arr[nb_bytes];
 	convert_hex_string_to_uint8_array(hex_str, arr, nb_bytes);
 
-	uint8_t expected_arr[] = {65, 66, 67, 68};
-	for (int i = 0; i < 4; i++) {
-		printf("%d -> %"PRIu8"\n", i, arr[i]);
-	}
+	uint8_t expected_arr[] = {18, 171}; // for hex "12ab": 2 bytes
 	if (!compare_uint8_arrays(arr, expected_arr, nb_bytes)) {
-		// return CODE_FAIL;
+		return CODE_FAIL;
 	}
 
     printf("hex: "); print_uint8_array_as_hex(arr, nb_bytes, true);
     printf("bin: "); print_uint8_array_as_binary(arr, nb_bytes, true);
+
+	return CODE_SUCCESS;
+}
+
+int test_convert_uint64_to_uint8_array() {
+	printf("######## Test convert uint64 to uint8 array ########\n");
+
+	uint64_t value = 1;
+	uint8_t arr[NB_BYTES_64_BITS];
+	convert_uint64_to_uint8_array(value, arr);
+
+	printf("hex: "); print_uint8_array_as_hex(arr, NB_BYTES_64_BITS, true);
+	printf("bin: "); print_uint8_array_as_binary(arr, NB_BYTES_64_BITS, true);
+
+	uint8_t expected_arr[] = {0, 0, 0, 0, 0, 0, 0, 1};
+	if (!compare_uint8_arrays(arr, expected_arr, NB_BYTES_64_BITS)) {
+		return CODE_FAIL;
+	}
 
 	return CODE_SUCCESS;
 }
@@ -119,6 +135,7 @@ int main()
 	print_test_return_status(test_compare_uint8_arrays());
 
 	print_test_return_status(test_convert_hex_string_to_uint8_array());
+	print_test_return_status(test_convert_uint64_to_uint8_array());
 
 	return CODE_SUCCESS;
 }
