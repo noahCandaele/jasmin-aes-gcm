@@ -1,0 +1,34 @@
+require "split_to_blocks.jazz"
+require "aes.jazz"
+
+// TODO check if the user is not giving a string of size longer than counter max size
+export fn aes_count(reg u64 ptrin, reg u64 ptrout, reg u32 lenght, reg u128 key, reg u128 iv){
+	reg u32 x block_id counter;
+	block_id = 0;
+	x = 0;
+
+	while(x < lenght){
+		reg u64 addr_ptrout;
+		addr_ptrout = ptrout;
+		reg u64 y;
+		y = (64u)x;
+		addr_ptrout += y;
+		// get a block of 16 bytes from the input string
+		shrinking(ptrin, addr_ptrout, lenght, block_id);
+
+		reg u128 result plain;
+		result = aes(key, iv);
+
+		// save the result in out
+		plain = (u128)[addr_ptrout];
+		result ^= plain;
+		(u128)[addr_ptrout] = result;
+		reg u128 new_iv;
+		new_iv = iv;
+		new_inc = #INC_128(new_iv);
+		iv = new_iv;
+
+		block_id += 1;
+		x += 16;
+	}
+}

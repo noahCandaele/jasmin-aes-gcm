@@ -1,0 +1,13 @@
+export fn add1(reg u64 ptrin){
+	// reg u16 result;
+	// result = (16u)[ptrin];
+	// result += 1;
+	// (u16)[ptrin] = result;
+
+	[ptrin] += 1;
+
+	// reg u64 p;
+	// p = 64u[ptrin+0];
+	// stack u64[1] s = p;
+	// s[u8 0] += 1;
+}

@@ -1,0 +1,18 @@
+/*******************************************************************
+* This code is adapted from Vincent LAPORTE, Cyber In Nancy 2022: *
+* https://members.loria.fr/VLaporte/files/CyberIn2022.html        *
+*******************************************************************/
+
+require "aes.jinc"
+
+export fn aes_jazz(#secret reg u128 key, #secret reg u128 plain) -> #public reg u128 {
+	reg u128 cipher;
+	cipher = aes(key, plain);
+	return cipher;
+}
+
+export fn invaes_jazz(#secret reg u128 key, #public reg u128 cipher) -> #secret reg u128 {
+	reg u128 plain;
+	plain = invaes(key, cipher);
+	return plain;
+}
