@@ -5,6 +5,11 @@
 
 #include "utils.h"
 
+int test_cpu_compatibility(void) {
+	printf("######## Checking CPU compatibility ########\n");
+	return check_cpu_compatibility();
+}
+
 int test_print_uint8_array_as_binary() {
 	printf("######## Test print uint8 array as binary ########\n");
 	uint8_t arr[] = {0x04, 0x03, 0x02, 0x01};
@@ -145,6 +150,8 @@ int test_convert_uint64_to_uint8_array() {
 
 int main()
 {
+	print_test_return_status(test_cpu_compatibility());
+
 	print_test_return_status(test_print_uint8_array_as_binary());
 	print_test_return_status(test_print_uint8_array_as_hex());
 	print_test_return_status(test_print_uint8_array_as_ascii());

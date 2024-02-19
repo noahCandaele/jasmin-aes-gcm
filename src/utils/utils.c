@@ -29,6 +29,46 @@ void print_test_return_status(int return_code)
 	printf("\n");
 }
 
+static inline void native_cpuid(uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx) {
+	asm volatile("cpuid"
+				 : "=a" (*eax),
+				   "=b" (*ebx),
+				   "=c" (*ecx),
+				   "=d" (*edx)
+				 : "0" (*eax), "2" (*ecx));
+}
+
+static int check_cpuflags(void) {
+	uint32_t eax = 1, ebx, ecx, edx;
+	int arggl = 0;
+
+	native_cpuid(&eax, &ebx, &ecx, &edx);
+
+	if (!(ecx & (1 << 25))) {
+		(void) fprintf(stderr, "Your CPU does not seem to have the AES instruction set\n");
+		arggl += 1;
+		return CODE_WARNING;
+	}
+
+	if (!(ecx & (1 << 28))) {
+		(void) fprintf(stderr, "Your CPU does not seem to have the AVX instruction set\n");
+		arggl += 1;
+		return CODE_WARNING;
+	}
+
+	if (arggl) {
+		(void) fprintf(stderr, "There is a high probability that the program triggers "
+			"an \"Illegal instruction\" exception\n");
+		return CODE_WARNING;
+	}
+
+	return CODE_SUCCESS;
+}
+
+int check_cpu_compatibility(void) {
+	return check_cpuflags();
+}
+
 void print_uint8_array_as_binary(uint8_t* arr, size_t size, bool with_spaces) {
 	for (size_t i = 0; i < size; ++i) {
 		for (size_t j = 0; j < 8; ++j) {
@@ -64,6 +104,7 @@ void print_uint8_array_as_ascii(uint8_t* arr, size_t size, bool with_spaces) {
 		printf("%c", (char)arr[i]);
 
 		if(with_spaces) {
+			printf(" "); // Add a space after every character, since each ascii character is 1 byte (= 2 hex chars)
 			// Add a space after every 4 characters
 			if ((i + 1) % 2 == 0 && i + 1 < size) {
 				printf(" ");
@@ -115,3 +156,9 @@ __m128i arr_to_u128(int8_t* arr) {
 void u128_to_arr(__m128i value, int8_t* arr) {
 	_mm_storeu_si128((__m128i *)arr, value);
 }
+
+// __m256i arr_to_u256(int8_t* arr) {
+//     __m128i* ptr = (__m128i*)arr;
+//     __m256i result = _mm256_set_m128i(_mm_loadu_si128(ptr + 1), _mm_loadu_si128(ptr));
+//     return result;
+// }

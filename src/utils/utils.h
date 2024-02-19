@@ -22,6 +22,8 @@
 #define CODE_WARNING 2
 #define CODE_INFO 3
 
+int check_cpu_compatibility(void);
+
 void print_test_return_status(int return_code);
 
 void print_uint8_array_as_binary(uint8_t* arr, size_t size, bool with_spaces);
