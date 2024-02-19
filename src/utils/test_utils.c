@@ -107,6 +107,24 @@ int test_convert_hex_string_to_uint8_array() {
 	return CODE_SUCCESS;
 }
 
+int test_convert_uint32_to_uint8_array() {
+	printf("######## Test convert uint32 to uint8 array ########\n");
+	
+	uint32_t value = 0b00000100000000110000001000000001;
+	uint8_t arr[NB_BYTES_32_BITS];
+	convert_uint32_to_uint8_array(value, arr);
+
+	printf("hex: "); print_uint8_array_as_hex(arr, NB_BYTES_32_BITS, true);
+	printf("bin: "); print_uint8_array_as_binary(arr, NB_BYTES_32_BITS, true);
+
+	uint8_t expected_arr[] = {0b00000100, 0b00000011, 0b00000010, 0b00000001};
+	if (!compare_uint8_arrays(arr, expected_arr, NB_BYTES_32_BITS)) {
+		return CODE_FAIL;
+	}
+
+	return CODE_SUCCESS;
+}
+
 int test_convert_uint64_to_uint8_array() {
 	printf("######## Test convert uint64 to uint8 array ########\n");
 	
@@ -135,6 +153,7 @@ int main()
 	print_test_return_status(test_compare_uint8_arrays());
 
 	print_test_return_status(test_convert_hex_string_to_uint8_array());
+	print_test_return_status(test_convert_uint32_to_uint8_array());
 	print_test_return_status(test_convert_uint64_to_uint8_array());
 
 	return CODE_SUCCESS;

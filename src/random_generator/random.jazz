@@ -1,3 +1,14 @@
+export fn random32() -> reg u32 {
+	reg u32 res;
+	stack u32[1] r;
+	reg ptr u32[1] p;
+	p = r;
+	p = #randombytes(p);
+	r = p;
+	res = r[0];
+	return res;
+}
+
 export fn random64() -> reg u64 {
 	reg u64 res;
 	stack u64[1] r;
@@ -9,13 +20,46 @@ export fn random64() -> reg u64 {
 	return res;
 }
 
-// export fn random128() -> reg u128 {
-// 	reg u128 res;
-// 	stack u128[1] r;
-// 	reg ptr u128[1] p;
-// 	p = r;
-// 	p = #randombytes(p);
-// 	r = p;
-// 	res = r[0];
-// 	return res;
-// }
+export fn random128() -> reg u128 {
+	reg u128 res;
+	stack u128[1] r;
+	reg ptr u128[1] p;
+	p = r;
+	p = #randombytes(p);
+	r = p;
+	res = r[0];
+	return res;
+}
+
+export fn iv_init() -> reg u128 {
+	reg u64 rand64;
+	#inline rand64 = random64();
+
+	reg u32 rand32;
+	#inline rand32 = random32();
+
+	reg u128 res;
+	res = (128u)rand64;
+
+	// res <<= 32;
+	// reg u128 temp;
+	// temp = (128u)rand32;
+	// res |= temp;
+	// res <<= 32;
+
+
+
+
+	// res = 0;
+
+	// #inline res = random128();
+
+	// reg u128 mask;
+	// mask = 0xFFFFFFFFFFFFFFFFFFFFFFFF00000000;
+
+	// // set 32 LSB to 0 for res
+	// res &= mask;
+
+
+	return res;
+}

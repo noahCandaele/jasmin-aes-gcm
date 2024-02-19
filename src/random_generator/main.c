@@ -5,126 +5,71 @@
 #include <smmintrin.h>
 #include <stdbool.h>
 
+#include "../utils/utils.h"
 // TODO importer randombytes jasmin correctement (voir reponse Benjamin zulip)
 #include "../../lib/jasmin_syscall/jasmin_syscall.h"
 
-#define BASE16 16
-
-#define NB_BYTES_64_BITS 8
-#define NB_BYTES_128_BITS 16
-
+extern uint64_t random32();
 extern uint64_t random64();
+extern __m128i random128();
+extern __m128i iv_init();
 
-// __m128i arr_to_u128(int8_t *arr)
-// {
-// 	return _mm_loadu_si128((__m128i *)arr);
-// }
+int test_random32() {
+	printf("######## Test random 32 bits ########\n");
+	uint32_t res = random64();
 
-// void u128_to_arr(__m128i value, int8_t *arr)
-// {
-// 	_mm_storeu_si128((__m128i *)arr, value);
-// }
+	uint8_t arr[NB_BYTES_32_BITS];
+	convert_uint32_to_uint8_array(res, arr);
+	printf("bin: "); print_uint8_array_as_binary(arr, NB_BYTES_32_BITS, true);
+	printf("hex: "); print_uint8_array_as_hex(arr, NB_BYTES_32_BITS, true);
 
-
-// void convert_uint64_to_uint8_array(uint64_t value, uint8_t *arr)
-// {
-// 	memcpy(arr, &value, NB_BYTES_64_BITS);
-// }
-
-void convert_hex_string_to_uint8_array(char* hex_string, uint8_t* uint8_array, size_t array_size) {
-	for (size_t i = 0; i < array_size; ++i) {
-		char hex[2] = { hex_string[i * 2], hex_string[i * 2 + 1] };
-		// cast to int8_t
-		uint8_array[i] = (uint8_t)strtol(hex, NULL, BASE16);
-	}
+	return CODE_INFO;
 }
 
-void convert_uint64_to_uint8_array(uint64_t value, uint8_t* arr) {
-	for (size_t i = 0; i < NB_BYTES_64_BITS; ++i) {
-		arr[i] = (value >> (i * 8)) & 0xFF;
-	}
+int test_random64() {
+	printf("######## Test random 64 bits ########\n");
+	uint64_t res = random64();
+
+	uint8_t arr[NB_BYTES_64_BITS];
+	convert_uint64_to_uint8_array(res, arr);
+	printf("bin: "); print_uint8_array_as_binary(arr, NB_BYTES_64_BITS, true);
+	printf("hex: "); print_uint8_array_as_hex(arr, NB_BYTES_64_BITS, true);
+
+	return CODE_INFO;
 }
 
-void print_uint8_array_as_hex(uint8_t *arr, size_t size, bool with_spaces)
-{
-	for (int i = 0; i < size; i++)
-	{
-		printf("%02x", (unsigned char)arr[i]);
+int test_random128() {
+	printf("######## Test random 128 bits ########\n");
 
-		if(with_spaces) {
-			// Add a space after every 4 characters
-			if ((i + 1) % 2 == 0 && i + 1 < size) {
-				printf(" ");
-			}
-		}
-	}
-	printf("\n");
+	__m128i res = random128();
+	uint8_t arr[NB_BYTES_128_BITS];
+	u128_to_arr(res, arr);
+
+	printf("bin: "); print_uint8_array_as_binary(arr, NB_BYTES_128_BITS, true);
+	printf("hex: "); print_uint8_array_as_hex(arr, NB_BYTES_128_BITS, true);
+
+	return CODE_INFO;
 }
 
-void print_uint8_array_as_ascii(uint8_t* arr, size_t size, bool with_spaces) {
-	for (size_t i = 0; i < size; ++i) {
-		printf("%c ", (char)arr[i]);
+int test_iv_init() {
+	printf("######## Test IV init ########\n");
 
-		if(with_spaces) {
-			// Add a space after every 4 characters
-			if ((i + 1) % 2 == 0 && i + 1 < size) {
-				printf(" ");
-			}
-		}
-	}
-	printf("\n");
+	__m128i res = iv_init();
+	uint8_t arr[NB_BYTES_128_BITS];
+	u128_to_arr(res, arr);
+
+	printf("bin: "); print_uint8_array_as_binary(arr, NB_BYTES_128_BITS, true);
+	printf("hex: "); print_uint8_array_as_hex(arr, NB_BYTES_128_BITS, true);
+
+	return CODE_INFO;
 }
-
-void print_uint8_array_as_binary(uint8_t* arr, size_t size, bool with_spaces) {
-	for (size_t i = 0; i < size; ++i) {
-		for (size_t j = 0; j < 8; ++j) {
-			printf("%d", (arr[i] >> (7 - j)) & 1);
-		}
-
-		if(with_spaces) {
-			// Add a space after every 16 characters
-			if ((i + 1) % 2 == 0 && i + 1 < size) {
-				printf(" ");
-			}
-		}
-	}
-	printf("\n");
-}
-
-void test_print() {
-	uint8_t plain[NB_BYTES_128_BITS];
-	convert_hex_string_to_uint8_array("54776F204F6E65204E696E652054776F", plain, NB_BYTES_128_BITS);
-
-    print_uint8_array_as_hex(plain, NB_BYTES_128_BITS, true);
-	print_uint8_array_as_ascii(plain, NB_BYTES_128_BITS, true);
-	print_uint8_array_as_binary(plain, NB_BYTES_128_BITS, true);
-}
-
 
 int main()
 {
-	// test_print();
-
-
-	int8_t* arr = (int8_t*)malloc(NB_BYTES_64_BITS * sizeof(int8_t));
-	if (arr == NULL) {
-		printf("Malloc failed");
-		return 1;
-	}
-	convert_uint64_to_uint8_array(1, arr);
-	print_uint8_array_as_hex(arr, NB_BYTES_64_BITS, true);
-	print_uint8_array_as_binary(arr, NB_BYTES_64_BITS, true);
-
-	// int8_t* arr = (int8_t*)malloc(NB_BYTES_64_BITS * sizeof(int8_t));
-	// if (arr == NULL) {
-	// 	printf("Malloc failed");
-	// 	return 1;
-	// }
-
-
-	// uint64_t result = random64();
-	// convert_uint64_to_uint8_array(result, arr);
-	// print_uint8_array_as_hex(arr, NB_BYTES_64_BITS, true);
+	print_test_return_status(test_random32());
+	print_test_return_status(test_random64());
+	print_test_return_status(test_random128());
+	print_test_return_status(test_iv_init());
 
 	return 0;
 }

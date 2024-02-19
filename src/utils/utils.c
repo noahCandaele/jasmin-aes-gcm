@@ -4,6 +4,7 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
+#include <immintrin.h>
 
 #include "utils.h"
 
@@ -95,8 +96,22 @@ void convert_hex_string_to_uint8_array(char* hex_string, uint8_t* uint8_array, s
 	}
 }
 
+void convert_uint32_to_uint8_array(uint32_t value, uint8_t* arr) {
+    for (size_t i = 0; i < NB_BYTES_32_BITS; ++i) {
+        arr[i] = (value >> ((NB_BYTES_32_BITS - 1 - i) * 8)) & 0xFF;
+    }
+}
+
 void convert_uint64_to_uint8_array(uint64_t value, uint8_t* arr) {
     for (size_t i = 0; i < NB_BYTES_64_BITS; ++i) {
         arr[i] = (value >> ((NB_BYTES_64_BITS - 1 - i) * 8)) & 0xFF;
     }
+}
+
+__m128i arr_to_u128(int8_t* arr) {
+	return _mm_loadu_si128((__m128i *) arr);
+}
+
+void u128_to_arr(__m128i value, int8_t* arr) {
+	_mm_storeu_si128((__m128i *)arr, value);
 }
