@@ -14,7 +14,7 @@ extern uint64_t random64();
 extern __m128i random128();
 extern __m128i iv_init();
 extern uint64_t endianness64();
-extern __m128i endianness128();
+extern void endianness128(uint8_t* arr);
 extern __m128i increment();
 
 int test_random32() {
@@ -82,9 +82,8 @@ int test_endianness64() {
 int test_endianness128() {
 	printf("######## Test endianness 128 bit ########\n");
 
-	__m128i res = endianness128();
 	uint8_t arr[NB_BYTES_128_BITS];
-	u128_to_arr(res, arr);
+	endianness128(arr);
 
 	printf("hex: "); print_uint8_array_as_hex(arr, NB_BYTES_128_BITS, true);
 

@@ -25,15 +25,25 @@ export fn aes_count(reg u64 ptrin, reg u64 ptrout, reg u32 lenght, reg u128 key,
 		// TODO remove comment line to return the result
 		// (u128)[addr_ptrout] = result;
 
-		// increment the counter
-		stack u128[1] iv_stack;
-		iv_stack[0] = iv;
-		reg u32 counter;
+		// // increment the counter
+		// stack u128[1] iv_stack;
+		// iv_stack[0] = iv;
+		// reg u32 counter;
 
-		counter = iv_stack[u32 3];
-		_, _, _, _, counter = #INC_32(counter);
-		iv_stack[u32 3] = counter;
-		iv = iv_stack[0];
+		// // reg u32 temp_u32 = (32u)iv;//TODO cast
+
+		// counter = iv_stack[u32 3];
+		// _, _, _, _, counter = #INC_32(counter);
+		// iv_stack[u32 3] = counter;
+		// iv = iv_stack[0];
+
+
+		reg u32 a;
+		a = #VPEXTR_32(iv, 0);
+		a += 1;
+
+		iv = #VPINSR_4u32(iv, a, 0);
+
 		
 		// TODO remove the next line to return the result
 		(u128)[addr_ptrout] = iv;

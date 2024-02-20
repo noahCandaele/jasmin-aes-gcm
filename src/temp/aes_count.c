@@ -31,10 +31,12 @@ void string_hex_to_int8_array(char hex_string[], int8_t* int8_array, size_t arra
 
 int main() {
 	int8_t* key = (int8_t*)malloc(NB_BYTES_128_BITS * sizeof(int8_t));
-	int8_t* IV = (int8_t*)malloc(NB_BYTES_128_BITS * sizeof(int8_t));
+	// int8_t* IV = (int8_t*)malloc(NB_BYTES_128_BITS * sizeof(int8_t));
 
 	string_hex_to_int8_array("5468617473206D79204B756E67204675", key, NB_BYTES_128_BITS);
-	string_hex_to_int8_array("f34481ec3cc627bacd5dc3fb08f273e6", IV, NB_BYTES_128_BITS);
+	// string_hex_to_int8_array("f34481ec3cc627bacd5dc3fb08f273e6", IV, NB_BYTES_128_BITS);
+	uint8_t IV[] = {0xe6, 0x73, 0xf2, 0x08, 0xfb, 0xc3, 0x5d, 0xcd, 0xba, 0x27, 0x62, 0xcc, 0xec, 0x81, 0x44, 0xf3};
+	char* str_IV = "e673f208fbc35dcdba2762ccec8144f3";
 	// print key 
 	// for (size_t i = 0; i < NB_BYTES_128_BITS; ++i) {
 	// 	printf("%02x", (unsigned char)IV[i]);
@@ -65,10 +67,17 @@ int main() {
 	printf("Output string size: %ld\n", strlen(strout));
 	// print strout as hex
 	printf("Returned IV:\n");
-	for (size_t i = 0; i < strlen(strout); ++i) {
+	// for (size_t i = 0; i < strlen(strout); ++i) {
+	// 	printf("%02x", (unsigned char)strout[i]);
+	// }
+	// printf("\n");
+
+	for (int i = strlen(strout)-1; i >= 0; i--)
+	{
 		printf("%02x", (unsigned char)strout[i]);
 	}
 	printf("\n");
+
 	printf("Initial IV:\nf34481ec3cc627bacd5dc3fb08f273e6\n");
 
 	return 0;
