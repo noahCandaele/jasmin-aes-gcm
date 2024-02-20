@@ -36,10 +36,10 @@ int main() {
 	string_hex_to_int8_array("5468617473206D79204B756E67204675", key, NB_BYTES_128_BITS);
 	string_hex_to_int8_array("f34481ec3cc627bacd5dc3fb08f273e6", IV, NB_BYTES_128_BITS);
 	// print key 
-	for (size_t i = 0; i < NB_BYTES_128_BITS; ++i) {
-		printf("%02x", (unsigned char)IV[i]);
-	}
-	printf("\n");
+	// for (size_t i = 0; i < NB_BYTES_128_BITS; ++i) {
+	// 	printf("%02x", (unsigned char)IV[i]);
+	// }
+	// printf("\n");
 	// string_hex_to_int8_array("54776F204F6E65204E696E652054776F", plain, NB_BYTES_128_BITS);
 	// string_hex_to_int8_array("479be376295fc8547276c4c9a76d2822", cipher, NB_BYTES_128_BITS);
 
@@ -64,11 +64,12 @@ int main() {
 	printf("Output string: %s\n", strout);
 	printf("Output string size: %ld\n", strlen(strout));
 	// print strout as hex
+	printf("Returned IV:\n");
 	for (size_t i = 0; i < strlen(strout); ++i) {
 		printf("%02x", (unsigned char)strout[i]);
 	}
 	printf("\n");
-	printf("f34481ec3cc627bacd5dc3fb08f273e6\n");
+	printf("Initial IV:\nf34481ec3cc627bacd5dc3fb08f273e6\n");
 
 	return 0;
 }
