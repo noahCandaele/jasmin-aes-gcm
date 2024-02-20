@@ -22,11 +22,24 @@ export fn aes_count(reg u64 ptrin, reg u64 ptrout, reg u32 lenght, reg u128 key,
 		// save the result in out
 		plain = (u128)[addr_ptrout];
 		result ^= plain;
-		(u128)[addr_ptrout] = result;
-		reg u128 new_iv;
-		new_iv = iv;
-		new_inc = #INC_128(new_iv);
-		iv = new_iv;
+		// (u128)[addr_ptrout] = result;
+
+		// increment the counter
+		stack u128[1] iv_stack;
+		iv_stack[0] = iv;
+		reg u32 counter;
+
+		counter = iv_stack[u32 3];
+		_, _, _, _, counter = #INC_32(counter);
+		iv_stack[u32 3] = counter;
+		iv = iv_stack[0];
+		// reg u128 new_iv;
+		// new_iv = iv;
+		// new_iv = #INC_128(new_iv);
+		// iv = new_iv;
+		(u128)[addr_ptrout] = iv;
+
+
 
 		block_id += 1;
 		x += 16;

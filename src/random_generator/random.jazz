@@ -69,7 +69,7 @@ export fn iv_init() -> reg u128 {
 
 	rand32_u128 |= rand64_u128;
 
-
+	// rand32_u128 += 1; // TODO ne fonctionne pas
 
 
 
@@ -121,6 +121,15 @@ export fn endianness128() -> reg u128 {
 	reg u128 res;
 	reg u64 res64;
 	res64 = 0x0123456789abcdef;
+	res = (128u)res64;
+	return res;
+}
+
+export fn increment() -> reg u128 {
+	reg u128 res;
+	reg u64 res64;
+	res64 = 0x0123456789abcdef;
+	res64 += 1;
 	res = (128u)res64;
 	return res;
 }

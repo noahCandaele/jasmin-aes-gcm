@@ -68,6 +68,7 @@ int main() {
 		printf("%02x", (unsigned char)strout[i]);
 	}
 	printf("\n");
+	printf("f34481ec3cc627bacd5dc3fb08f273e6\n");
 
 	return 0;
 }

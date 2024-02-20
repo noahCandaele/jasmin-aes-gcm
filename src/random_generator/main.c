@@ -15,6 +15,7 @@ extern __m128i random128();
 extern __m128i iv_init();
 extern uint64_t endianness64();
 extern __m128i endianness128();
+extern __m128i increment();
 
 int test_random32() {
 	printf("######## Test random 32 bits ########\n");
@@ -90,6 +91,18 @@ int test_endianness128() {
 	return CODE_INFO;
 }
 
+int test_increment() {
+	printf("######## Test increment 128 bit ########\n");
+
+	__m128i res = increment();
+	uint8_t arr[NB_BYTES_128_BITS];
+	u128_to_arr(res, arr);
+
+	printf("hex: "); print_uint8_array_as_hex(arr, NB_BYTES_128_BITS, true);
+
+	return CODE_INFO;
+}
+
 int main()
 {
 	print_test_return_status(test_random32());
@@ -98,6 +111,7 @@ int main()
 	print_test_return_status(test_iv_init());
 	print_test_return_status(test_endianness64());
 	print_test_return_status(test_endianness128());
+	print_test_return_status(test_increment());
 
 	return 0;
 }

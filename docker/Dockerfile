@@ -9,7 +9,8 @@ RUN apt-get update && \
 	xz-utils \
 	gpg \
 	gcc \
-	make
+	make \
+	vim
 
 # Create a non-root user for Nix
 RUN useradd -m -s /bin/bash user
