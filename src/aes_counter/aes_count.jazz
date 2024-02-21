@@ -4,7 +4,7 @@ require "../random_generator/random.jazz"
 
 // TODO check if the user is not giving a string of size longer than counter max size
 inline fn aes_counter(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u32 length, reg u128 key, reg u128 iv) {
-	reg u32 bit_index block_id counter;
+	reg u32 bit_index block_id;
 	block_id = 0;
 	bit_index = 0;
 
@@ -15,13 +15,25 @@ inline fn aes_counter(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u32 length, 
 		bit_index_u64 = (64u)bit_index;
 		addr_ptrout += bit_index_u64;
 		// get a block of 16 bytes from the input string
-		reg u64 ptr_plain_reg; // TODO remove
-		ptr_plain_reg = ptr_plain;
-		shrinking(ptr_plain_reg, addr_ptrout, length, block_id);
+		shrinking(ptr_plain, addr_ptrout, length, block_id);
 
-		reg u128 result plain;
+		reg u128 result;
+
+		// SPILL
+		stack u32 s_bit_index s_block_id;
+		stack u64 s_addr_ptrout;
+		s_bit_index = bit_index;
+		s_block_id = block_id;
+		s_addr_ptrout = addr_ptrout;
+
 		result = aes(key, iv);
 
+		// UNSPILL
+		addr_ptrout = s_addr_ptrout;
+
+
+
+		reg u128 plain;
 		// save the result in out
 		plain = (u128)[addr_ptrout];
 		result ^= plain;
@@ -35,6 +47,10 @@ inline fn aes_counter(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u32 length, 
 
 		// if needed to return the IV for debugging
 		// (u128)[addr_ptrout] = iv;
+		
+		// UNSPILL
+		bit_index = s_bit_index;
+		block_id = s_block_id;
 
 		// increment the block id
 		block_id += 1;
@@ -44,10 +60,17 @@ inline fn aes_counter(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u32 length, 
 
 
 export fn aes_count(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u32 length, reg u64 ptr_key) {
-	reg u128 key;
-	key = (u128)[ptr_key];
+	ptr_plain = ptr_plain;
+	ptrout_cipher = ptrout_cipher;
+	length = length;
+	ptr_key = ptr_key;
+	
 	reg u128 iv;
 	iv = iv_init();
+	
+	reg u128 key;
+	key = (u128)[ptr_key];
+
 	aes_counter(ptr_plain, ptrout_cipher, length, key, iv);
 }
 
