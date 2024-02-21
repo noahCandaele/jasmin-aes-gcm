@@ -1,0 +1,23 @@
+export fn jasmin_u32(reg u64 ptr_byte_array) {
+	reg u32 res;
+	res = 0x01234567;
+	(u32)[ptr_byte_array] = res;
+}
+
+export fn jasmin_u64(reg u64 ptr_byte_array) {
+	reg u64 res;
+	res = 0x0123456789abcdef;
+	(u64)[ptr_byte_array] = res;
+}
+
+export fn jasmin_u128(reg u64 ptr_byte_array) {
+	reg u128 res;
+
+	reg u64 val;
+	val = 0x0123456789abcdef;
+	res = #VPINSR_2u64(res, val, 0);
+	val = 0x0102030405060708;
+	res = #VPINSR_2u64(res, val, 1);
+
+	(u128)[ptr_byte_array] = res;
+}
