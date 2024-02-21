@@ -6,7 +6,6 @@
 #include <stdbool.h>
 
 #include "../utils/utils.h"
-// TODO importer randombytes jasmin correctement (voir reponse Benjamin zulip)
 #include "../../lib/jasmin_syscall/jasmin_syscall.h"
 
 extern uint64_t random32();

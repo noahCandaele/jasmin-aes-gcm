@@ -32,85 +32,22 @@ export fn random128() -> reg u128 {
 }
 
 export fn iv_init() -> reg u128 {
-	// reg u32 rand32;
-	// #inline rand32 = random32();
-
-	// reg u64 rand64;
-	// #inline rand64 = random64();
-
-	// reg u128 res;
-	// res = (128u)rand64;
-
-	// reg u128 rand32_u128;
-	// rand32_u128 = (128u)rand32;
-
-	// // https://www.felixcloutier.com/x86/pshufd
-	// res = #VPSHUFD(rand32_u128, 0x0C);
-
 	reg u32 rand32;
-	// #inline rand32 = random32();
-	rand32 = 0x12345678;
+	#inline rand32 = random32();
+	// rand32 = 0x12345678;
 
 	// reg u128 rand32_u128;
 	// rand32_u128 = (128u)rand32;
 
 	reg u64 rand64;
-	// #inline rand64 = random64();
-	rand64 = 0xaaaabbbbccccdddd;
+	#inline rand64 = random64();
+	// rand64 = 0xaaaabbbbccccdddd;
 
-	// reg u128 rand64_u128;
-	// rand64_u128 = (128u)rand64;
-	
 	reg u128 res;
 	res = #set0_128();
 
 	res = #VPINSR_4u32(res, rand32, 1);
 	res = #VPINSR_2u64(res, rand64, 1);
-
-// 	// https://www.felixcloutier.com/x86/pshufd
-// 	// rand32_u128 = #VPSHUFD(rand32_u128, 0x45); // bin: 01 00 01 01 -> third position is the 32 bit value, other positions are shifted to 0
-// 	rand32_u128 = #VPSHUFD(rand32_u128, 4u2); // bin: 01 00 01 01 -> third position is the 32 bit value, other positions are shifted to 0
-// //4u2[3,2,0,1]
-// 	rand32_u128 |= rand64_u128;
-
-// 	// rand32_u128 += 1; // TODO ne fonctionne pas
-
-
-
-
-
-
-
-
-
-	// reg u64 rand64;
-	// #inline rand64 = random64();
-
-	// reg u32 rand32;
-	// #inline rand32 = random32();
-
-	// reg u128 res;
-	// res = (128u)rand64;
-
-	// res <<= 32;
-	// reg u128 temp;
-	// temp = (128u)rand32;
-	// res |= temp;
-	// res <<= 32;
-
-
-
-
-	// res = 0;
-
-	// #inline res = random128();
-
-	// reg u128 mask;
-	// mask = 0xFFFFFFFFFFFFFFFFFFFFFFFF00000000;
-
-	// // set 32 LSB to 0 for res
-	// res &= mask;
-
 
 	return res;
 }

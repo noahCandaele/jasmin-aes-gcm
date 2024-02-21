@@ -21,6 +21,14 @@ extern __m128i invaes_jazz(__m128i key, __m128i cipher);
 extern __m128i aes_block_cipher_mode_jazz(__m128i key, __m128i counter, __m128i plain);
 extern __m128i invaes_block_cipher_mode_jazz(__m128i key, __m128i counter, __m128i cipher);
 
+__m128i arr_to_u128(int8_t* arr) {
+	return _mm_loadu_si128((__m128i *) arr);
+}
+
+void u128_to_arr(__m128i value, int8_t* arr) {
+	_mm_storeu_si128((__m128i *)arr, value);
+}
+
 static int test_cpu_compatibility(void) {
 	printf("######## Checking CPU compatibility ########\n");
 	return check_cpu_compatibility();
