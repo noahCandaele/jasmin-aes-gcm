@@ -8,6 +8,8 @@
 
 #include "utils.h"
 
+// Convention: least signigicant bytes are at the start of the array
+
 void print_test_return_status(int return_code)
 {
 	if (return_code == CODE_SUCCESS)
@@ -70,30 +72,23 @@ int check_cpu_compatibility(void) {
 }
 
 void print_uint8_array_as_binary(uint8_t* arr, size_t size, bool with_spaces) {
-	for (size_t i = 0; i < size; ++i) {
-		for (size_t j = 0; j < 8; ++j) {
-			printf("%d", (arr[i] >> (7 - j)) & 1);
+	for (int i = size - 1; i >= 0; i--) {
+		for (int j = 7; j >= 0; j--) {
+			printf("%d", (arr[i] >> j) & 1);
 		}
-
-		if(with_spaces) {
-			// Add a space after every byte
-			printf(" ");
-		}
+		if(with_spaces) printf(" "); // Add space after every byte
 	}
 	printf("\n");
 }
 
 void print_uint8_array_as_hex(uint8_t *arr, size_t size, bool with_spaces)
 {
-	for (int i = 0; i < size; i++)
+	for (int i = size - 1; i >= 0; i--)
 	{
 		printf("%02x", (unsigned char)arr[i]);
 
 		if(with_spaces) {
-			// Add a space after every 4 characters
-			if ((i + 1) % 2 == 0 && i + 1 < size) {
-				printf(" ");
-			}
+			printf(" "); // Add a space after every byte
 		}
 	}
 	printf("\n");
@@ -101,14 +96,10 @@ void print_uint8_array_as_hex(uint8_t *arr, size_t size, bool with_spaces)
 
 void print_uint8_array_as_ascii(uint8_t* arr, size_t size, bool with_spaces) {
 	for (size_t i = 0; i < size; ++i) {
-		printf("%c", (char)arr[i]);
+		printf("%c", (char)arr[size-i-1]);
 
 		if(with_spaces) {
-			printf(" "); // Add a space after every character, since each ascii character is 1 byte (= 2 hex chars)
-			// Add a space after every 4 characters
-			if ((i + 1) % 2 == 0 && i + 1 < size) {
-				printf(" ");
-			}
+			printf("  "); // Add a space after every character, since each ascii character is 1 byte (= 2 hex chars), also add a space after every byte
 		}
 	}
 	printf("\n");
@@ -117,48 +108,28 @@ void print_uint8_array_as_ascii(uint8_t* arr, size_t size, bool with_spaces) {
 size_t nb_bytes_hex_string(char* hex_string) {
 	size_t length = strlen(hex_string);
 
-    return ceil(length / 2.0);
+	return ceil(length / 2.0);
 }
 
 bool compare_uint8_arrays(const uint8_t* array1, const uint8_t* array2, size_t size) {
-    for (size_t i = 0; i < size; ++i) {
-        if (array1[i] != array2[i]) {
-            return false; // Arrays are not equal
-        }
-    }
-    return true; // Arrays are equal
+	for (size_t i = 0; i < size; ++i) {
+		if (array1[i] != array2[i]) {
+			return false; // Arrays are not equal
+		}
+	}
+	return true; // Arrays are equal
 }
 
 void convert_hex_string_to_uint8_array(char* hex_string, uint8_t* uint8_array, size_t uint8_array_size) {
 	for (size_t i = 0; i < uint8_array_size; ++i) {
 		char hex[2] = { hex_string[i * 2], hex_string[i * 2 + 1] };
 		// cast to int8_t
-		uint8_array[i] = (uint8_t)strtol(hex, NULL, BASE_16);
+		uint8_array[uint8_array_size-i-1] = (uint8_t)strtol(hex, NULL, BASE_16);
 	}
 }
 
-void convert_uint32_to_uint8_array(uint32_t value, uint8_t* arr) {
-    for (size_t i = 0; i < NB_BYTES_32_BITS; ++i) {
-        arr[i] = (value >> ((NB_BYTES_32_BITS - 1 - i) * 8)) & 0xFF;
-    }
+void convert_ascii_string_to_uint8_array(char* ascii_string, uint8_t* uint8_array, size_t uint8_array_size) {
+	for (size_t i = 0; i < uint8_array_size; ++i) {
+		uint8_array[uint8_array_size-i-1] = (uint8_t)ascii_string[i];
+	}
 }
-
-void convert_uint64_to_uint8_array(uint64_t value, uint8_t* arr) {
-    for (size_t i = 0; i < NB_BYTES_64_BITS; ++i) {
-        arr[i] = (value >> ((NB_BYTES_64_BITS - 1 - i) * 8)) & 0xFF;
-    }
-}
-
-__m128i arr_to_u128(int8_t* arr) {
-	return _mm_loadu_si128((__m128i *) arr);
-}
-
-void u128_to_arr(__m128i value, int8_t* arr) {
-	_mm_storeu_si128((__m128i *)arr, value);
-}
-
-// __m256i arr_to_u256(int8_t* arr) {
-//     __m128i* ptr = (__m128i*)arr;
-//     __m256i result = _mm256_set_m128i(_mm_loadu_si128(ptr + 1), _mm_loadu_si128(ptr));
-//     return result;
-// }

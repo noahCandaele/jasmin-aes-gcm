@@ -34,10 +34,6 @@ size_t nb_bytes_hex_string(char* hex_string);
 bool compare_uint8_arrays(const uint8_t* array1, const uint8_t* array2, size_t size);
 
 void convert_hex_string_to_uint8_array(char* hex_string, uint8_t* uint8_array, size_t uint8_array_size);
-void convert_uint32_to_uint8_array(uint32_t value, uint8_t* arr);
-void convert_uint64_to_uint8_array(uint64_t value, uint8_t* arr);
-
-__m128i arr_to_u128(int8_t* arr);
-void u128_to_arr(__m128i value, int8_t* arr);
+void convert_ascii_string_to_uint8_array(char* ascii_string, uint8_t* uint8_array, size_t uint8_array_size);
 
 #endif
