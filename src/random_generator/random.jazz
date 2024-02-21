@@ -1,77 +1,29 @@
-fn random32() -> reg u32 {
-	reg u32 res;
-	stack u32[1] r;
-	reg ptr u32[1] p;
-	p = r;
-	p = #randombytes(p);
-	r = p;
-	res = r[0];
-	return res;
+require "random.jinc"
+
+export fn random32_jazz(reg u64 ptrout_rand) {
+	ptrout_rand = ptrout_rand;
+	reg u32 rand;
+	rand = random32();
+	(u32)[ptrout_rand] = rand;
 }
 
-fn random64() -> reg u64 {
-	reg u64 res;
-	stack u64[1] r;
-	reg ptr u64[1] p;
-	p = r;
-	p = #randombytes(p);
-	r = p;
-	res = r[0];
-	return res;
+export fn random64_jazz(reg u64 ptrout_rand) {
+	ptrout_rand = ptrout_rand;
+	reg u64 rand;
+	rand = random64();
+	(u64)[ptrout_rand] = rand;
 }
 
-fn random128() -> reg u128 {
-	reg u128 res;
-	stack u128[1] r;
-	reg ptr u128[1] p;
-	p = r;
-	p = #randombytes(p);
-	r = p;
-	res = r[0];
-	return res;
+export fn random128_jazz(reg u64 ptrout_rand) {
+	ptrout_rand = ptrout_rand;
+	reg u128 rand;
+	rand = random128();
+	(u128)[ptrout_rand] = rand;
 }
 
-inline fn iv_init() -> reg u128 {
-	reg u32 rand32;
-	rand32 = random32();
-	// rand32 = 0x12345678;
-
-	// reg u128 rand32_u128;
-	// rand32_u128 = (128u)rand32;
-
-	reg u64 rand64;
-	rand64 = random64();
-	// rand64 = 0xaaaabbbbccccdddd;
-
-	reg u128 res;
-	res = #set0_128();
-
-	res = #VPINSR_4u32(res, rand32, 1);
-	res = #VPINSR_2u64(res, rand64, 1);
-
-	return res;
-}
-
-export fn endianness64() -> reg u64 {
-	reg u64 res;
-	res = 0x0123456789abcdef;
-	return res;
-}
-
-export fn endianness128(reg u64 p) {
-	reg u128 res;
-	reg u64 res64;
-	res64 = 0x0123456789abcdef;
-	res = (128u)res64;
-
-	(u128)[p] = res;
-}
-
-export fn increment() -> reg u128 {
-	reg u128 res;
-	reg u64 res64;
-	res64 = 0x0123456789abcdef;
-	res64 += 1;
-	res = (128u)res64;
-	return res;
+export fn iv_init_jazz(reg u64 ptrout_iv) {
+	ptrout_iv = ptrout_iv;
+	reg u128 iv;
+	iv = iv_init();
+	(u128)[ptrout_iv] = iv;
 }

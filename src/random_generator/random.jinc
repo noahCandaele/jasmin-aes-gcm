@@ -1,0 +1,50 @@
+inline fn random32() -> reg u32 {
+	reg u32 res;
+	stack u32[1] r;
+	reg ptr u32[1] p;
+	p = r;
+	p = #randombytes(p);
+	r = p;
+	res = r[0];
+	return res;
+}
+
+inline fn random64() -> reg u64 {
+	reg u64 res;
+	stack u64[1] r;
+	reg ptr u64[1] p;
+	p = r;
+	p = #randombytes(p);
+	r = p;
+	res = r[0];
+	return res;
+}
+
+inline fn random128() -> reg u128 {
+	reg u128 res;
+	stack u128[1] r;
+	reg ptr u128[1] p;
+	p = r;
+	p = #randombytes(p);
+	r = p;
+	res = r[0];
+	return res;
+}
+
+inline fn iv_init() -> reg u128 {
+	reg u32 rand32;
+	rand32 = random32();
+	// rand32 = 0x12345678; // TODO remove
+
+	reg u64 rand64;
+	rand64 = random64();
+	// rand64 = 0xaaaabbbbccccdddd; // TODO remove
+
+	reg u128 res;
+	res = #set0_128();
+
+	res = #VPINSR_4u32(res, rand32, 1);
+	res = #VPINSR_2u64(res, rand64, 1);
+
+	return res;
+}

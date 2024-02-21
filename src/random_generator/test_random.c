@@ -6,36 +6,28 @@
 #include <stdbool.h>
 
 #include "../utils/utils.h"
-#include "../../lib/jasmin_syscall/jasmin_syscall.h"
 
-extern uint64_t random32();
-extern uint64_t random64();
-extern __m128i random128();
-extern __m128i iv_init();
-extern uint64_t endianness64();
-extern void endianness128(uint8_t* arr);
-extern __m128i increment();
+extern void random32_jazz(uint8_t* out_rand);
+extern void random64_jazz(uint8_t* out_rand);
+extern void random128_jazz(uint8_t* out_rand);
+extern void iv_init_jazz(uint8_t* out_iv);
 
 int test_random32() {
 	printf("######## Test random 32 bits ########\n");
-	uint32_t res = random64();
 
-	uint8_t arr[NB_BYTES_32_BITS];
-	convert_uint32_to_uint8_array(res, arr);
-	printf("bin: "); print_uint8_array_as_binary(arr, NB_BYTES_32_BITS, true);
-	printf("hex: "); print_uint8_array_as_hex(arr, NB_BYTES_32_BITS, true);
+	uint8_t rand[NB_BYTES_32_BITS];
+	random32_jazz(rand);
+	printf("rand (hex): "); print_uint8_array_as_hex(rand, NB_BYTES_32_BITS, true);
 
 	return CODE_INFO;
 }
 
 int test_random64() {
 	printf("######## Test random 64 bits ########\n");
-	uint64_t res = random64();
 
-	uint8_t arr[NB_BYTES_64_BITS];
-	convert_uint64_to_uint8_array(res, arr);
-	printf("bin: "); print_uint8_array_as_binary(arr, NB_BYTES_64_BITS, true);
-	printf("hex: "); print_uint8_array_as_hex(arr, NB_BYTES_64_BITS, true);
+	uint8_t rand[NB_BYTES_64_BITS];
+	random64_jazz(rand);
+	printf("rand (hex): "); print_uint8_array_as_hex(rand, NB_BYTES_64_BITS, true);
 
 	return CODE_INFO;
 }
@@ -43,12 +35,9 @@ int test_random64() {
 int test_random128() {
 	printf("######## Test random 128 bits ########\n");
 
-	__m128i res = random128();
-	uint8_t arr[NB_BYTES_128_BITS];
-	u128_to_arr(res, arr);
-
-	printf("bin: "); print_uint8_array_as_binary(arr, NB_BYTES_128_BITS, true);
-	printf("hex: "); print_uint8_array_as_hex(arr, NB_BYTES_128_BITS, true);
+	uint8_t rand[NB_BYTES_128_BITS];
+	random128_jazz(rand);
+	printf("rand (hex): "); print_uint8_array_as_hex(rand, NB_BYTES_128_BITS, true);
 
 	return CODE_INFO;
 }
@@ -56,47 +45,9 @@ int test_random128() {
 int test_iv_init() {
 	printf("######## Test IV init ########\n");
 
-	__m128i res = iv_init();
-	uint8_t arr[NB_BYTES_128_BITS];
-	u128_to_arr(res, arr);
-
-	printf("bin: "); print_uint8_array_as_binary(arr, NB_BYTES_128_BITS, true);
-	printf("hex: "); print_uint8_array_as_hex(arr, NB_BYTES_128_BITS, true);
-
-	return CODE_INFO;
-}
-
-int test_endianness64() {
-	printf("######## Test endianness 64 bit ########\n");
-
-	uint64_t res = endianness64();
-
-	uint8_t arr[NB_BYTES_64_BITS];
-	convert_uint64_to_uint8_array(res, arr);
-	printf("hex: "); print_uint8_array_as_hex(arr, NB_BYTES_64_BITS, true);
-
-	return CODE_INFO;
-}
-
-int test_endianness128() {
-	printf("######## Test endianness 128 bit ########\n");
-
-	uint8_t arr[NB_BYTES_128_BITS];
-	endianness128(arr);
-
-	printf("hex: "); print_uint8_array_as_hex(arr, NB_BYTES_128_BITS, true);
-
-	return CODE_INFO;
-}
-
-int test_increment() {
-	printf("######## Test increment 128 bit ########\n");
-
-	__m128i res = increment();
-	uint8_t arr[NB_BYTES_128_BITS];
-	u128_to_arr(res, arr);
-
-	printf("hex: "); print_uint8_array_as_hex(arr, NB_BYTES_128_BITS, true);
+	uint8_t iv[NB_BYTES_128_BITS];
+	iv_init_jazz(iv);
+	printf("iv (hex): "); print_uint8_array_as_hex(iv, NB_BYTES_128_BITS, true);
 
 	return CODE_INFO;
 }
@@ -106,10 +57,8 @@ int main()
 	print_test_return_status(test_random32());
 	print_test_return_status(test_random64());
 	print_test_return_status(test_random128());
+
 	print_test_return_status(test_iv_init());
-	print_test_return_status(test_endianness64());
-	print_test_return_status(test_endianness128());
-	print_test_return_status(test_increment());
 
 	return 0;
 }
