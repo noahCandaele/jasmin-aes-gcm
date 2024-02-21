@@ -1,4 +1,4 @@
-export fn random32() -> reg u32 {
+fn random32() -> reg u32 {
 	reg u32 res;
 	stack u32[1] r;
 	reg ptr u32[1] p;
@@ -9,7 +9,7 @@ export fn random32() -> reg u32 {
 	return res;
 }
 
-export fn random64() -> reg u64 {
+fn random64() -> reg u64 {
 	reg u64 res;
 	stack u64[1] r;
 	reg ptr u64[1] p;
@@ -20,7 +20,7 @@ export fn random64() -> reg u64 {
 	return res;
 }
 
-export fn random128() -> reg u128 {
+fn random128() -> reg u128 {
 	reg u128 res;
 	stack u128[1] r;
 	reg ptr u128[1] p;
@@ -31,16 +31,16 @@ export fn random128() -> reg u128 {
 	return res;
 }
 
-export fn iv_init() -> reg u128 {
+inline fn iv_init() -> reg u128 {
 	reg u32 rand32;
-	#inline rand32 = random32();
+	rand32 = random32();
 	// rand32 = 0x12345678;
 
 	// reg u128 rand32_u128;
 	// rand32_u128 = (128u)rand32;
 
 	reg u64 rand64;
-	#inline rand64 = random64();
+	rand64 = random64();
 	// rand64 = 0xaaaabbbbccccdddd;
 
 	reg u128 res;
