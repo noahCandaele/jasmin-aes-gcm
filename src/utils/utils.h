@@ -35,5 +35,6 @@ bool compare_uint8_arrays(const uint8_t* array1, const uint8_t* array2, size_t s
 
 void convert_hex_string_to_uint8_array(char* hex_string, uint8_t* uint8_array, size_t uint8_array_size);
 void convert_ascii_string_to_uint8_array(char* ascii_string, uint8_t* uint8_array, size_t uint8_array_size);
+void convert_uint8_array_to_ascii_string(uint8_t* uint8_array, size_t uint8_array_size, char* ascii_string);
 
 #endif

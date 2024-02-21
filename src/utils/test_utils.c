@@ -121,20 +121,39 @@ int test_convert_hex_string_to_uint8_array() {
 	return CODE_SUCCESS;
 }
 
-int test_convert_ascii_string_to_uint8_array(){
+int test_convert_ascii_string_to_uint8_array() {
 	printf("######## Test convert ascii string to uint8 array ########\n");
-	char ascii_string[] = "bonjour";
+	char ascii_string[] = "ABCD";
 	size_t size = strlen(ascii_string);
 
 	uint8_t uint8_array[size];
 	convert_ascii_string_to_uint8_array(ascii_string, uint8_array, size);
 
-	uint8_t expected_arr[] = {0x72, 0x75, 0x6F, 0x6A, 0x6E, 0x6F, 0x62};
+	uint8_t expected_arr[] = {68, 67, 66, 65};
 	if (!compare_uint8_arrays(uint8_array, expected_arr, size)) {
 		return CODE_FAIL;
 	}
 	
 	return CODE_SUCCESS;
+}
+
+int test_convert_uint8_array_to_ascii_string() {
+	printf("######## Test convert uint8 array to ascii string ########\n");
+
+	uint8_t uint8_array[] = {0x72, 0x75, 0x6F, 0x6A, 0x6E, 0x6F, 0x62};
+	size_t size = sizeof(uint8_array) / sizeof(uint8_array[0]);
+
+	char ascii_string[size];
+	convert_uint8_array_to_ascii_string(uint8_array, size, ascii_string);
+
+	printf("str: %s\n", ascii_string); //TODO
+
+	// char expected_string[] = "bonjour";
+	// if (!compare_uint8_arrays(uint8_array, expected_arr, size)) {
+	// 	return CODE_FAIL;
+	// }
+	
+	return CODE_INFO;
 }
 
 int test_jasmin_u32() {
@@ -197,6 +216,7 @@ int main()
 
 	print_test_return_status(test_convert_hex_string_to_uint8_array());
 	print_test_return_status(test_convert_ascii_string_to_uint8_array());
+	print_test_return_status(test_convert_uint8_array_to_ascii_string());
 
 	print_test_return_status(test_jasmin_u32());
 	print_test_return_status(test_jasmin_u64());

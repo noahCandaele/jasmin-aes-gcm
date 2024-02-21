@@ -1,6 +1,6 @@
 require "../split_to_blocks/split_to_blocks.jazz"
 require "../aes/aes.jazz"
-require "../random_generator/random.jazz"
+require "../random_generator/random.jinc"
 
 // TODO check if the user is not giving a string of size longer than counter max size
 inline fn aes_counter(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u32 length, reg u128 key, reg u128 iv) {
@@ -15,7 +15,7 @@ inline fn aes_counter(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u32 length, 
 		bit_index_u64 = (64u)bit_index;
 		addr_ptrout += bit_index_u64;
 		// get a block of 16 bytes from the input string
-		shrinking(ptr_plain, addr_ptrout, length, block_id);
+		get_block(ptr_plain, addr_ptrout, length, block_id);
 
 		reg u128 result;
 

@@ -5,42 +5,81 @@
 /// 
 /// * `ptrin` - A pointer to the input string.
 /// * `ptrout` - A pointer to the output block of 16 bytes.
-/// * `length` - The length of the input string.
+/// * `length` - The length of the input string in bytes
 /// * `id` - The ID of the block to extract the string.
-inline fn shrinking(reg u64 ptrin, reg u64 ptrout, reg u32 length, reg u32 id){
+inline fn get_block(reg u64 ptrin, reg u64 ptrout, reg u32 length, reg u32 id) {
+	ptrin = ptrin;
+	ptrout = ptrout;
+	length = length;
+	id = id;
+
+	// compute address of last byte
+	// last_byte_addr = ptrin + length - 1
+	reg u64 last_byte_addr;
+	last_byte_addr = (64u)length;
+	last_byte_addr += ptrin;
 	
-	// calculate the pointer to the block
-	reg u64 ptr_block;
-	ptr_block = (64u)id;
-	ptr_block *= 16;
-	ptr_block += ptrin;
-	
-	// calculate if the given block is in the range 0..mod(length, 16)
+	reg u32 modu;
+	modu = 16;
 	reg u32 total;
-	total = id;
-	total += 1;
-	total *= 16;
-	total -= length;
-	// if the block is in the range 0..mod(length, 16), then copy the block to the output
-	if total >= 0{
+	total = length;
+	total %= modu;
+	reg u64 calc;
+	if (total == 0) { // length multiple of 16 (last block is full)
+		calc = (64u)id;
+		calc += 1;
+		calc *= 16;
+		last_byte_addr -= calc;
 		reg u128[1] m;
-		m[0] = (u128)[ptr_block];
+		m[0] = (u128)[last_byte_addr];
 		(u128)[ptrout] = m[0];
-	}else{
-		// if the block is not in the range copy the block byte by byte
-		reg u8 i;
-		i = 0;
-		while (total < 0){
-			(u8)[ptrout] = (u8)[ptr_block];
-			ptr_block += 1;
-			total += 1;
-			i+=1;
+	} else { // last block not full
+		reg u64 nb_blocks;
+		nb_blocks = (64u)length;
+		reg u64 sixteen;
+		sixteen = 16;
+		nb_blocks /= sixteen;
+		if(id != nb_blocks) {
+			// we want a block that is not the last block
+			calc = (64u)id;
+			calc += 1;
+			calc *= 16;
+			last_byte_addr -= calc;
+			reg u128[1] m;
+			m[0] = (u128)[last_byte_addr];
+			(u128)[ptrout] = m[0];
+		}else{
+			// we want the last block
+			reg u32 missing_bytes_last_block temp2;
+			temp2 = length;
+			missing_bytes_last_block = nb_blocks;
+			missing_bytes_last_block *= 16;
+			temp2 -= missing_bytes_last_block;
+			
+			inline int i;
+			for i = 0 to 16 {
+				reg u32 i_u32;
+				i_u32 = i;
+				if i_u32 < temp2 {
+					reg u64 temp;
+					temp = ptrin;
+					temp += (64u)i;
+					(u8)[ptrout] = (u8)[temp];
+				}else{
+					(u8)[ptrout] = 0;
+				}
+				ptrout += 1;
+			}
 		}
-	}
-	
+	}	
 }
 
 
-export fn shrinkstr(reg u64 ptrin, reg u64 ptrout, reg u32 length, reg u32 id){
-	shrinking(ptrin, ptrout, length, id);
+export fn get_block_exp(reg u64 ptrin, reg u64 ptrout, reg u32 length, reg u32 id) {
+	ptrin = ptrin;
+	ptrout = ptrout;
+	length = length;
+	id = id;
+	
+	get_block(ptrin, ptrout, length, id);
 }
