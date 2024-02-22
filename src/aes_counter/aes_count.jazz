@@ -10,25 +10,25 @@ inline fn aes_counter(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u32 length, 
 	key = key;
 	iv = iv;
 
-	reg u32 bit_index block_id;
+	reg u32 byte_index block_id;
 	block_id = 0;
-	bit_index = 0;
+	byte_index = 0;
 
-	while(bit_index < length){
-		reg u64 addr_ptrout bit_index_u64;
+	while(byte_index < length) {
+		reg u64 addr_ptrout byte_index_u64;
 		addr_ptrout = ptrout_cipher;
 
-		bit_index_u64 = (64u)bit_index;
-		addr_ptrout += bit_index_u64;
+		byte_index_u64 = (64u)byte_index;
+		addr_ptrout += byte_index_u64;
 		// get a block of 16 bytes from the input string
 		get_block(ptr_plain, addr_ptrout, length, block_id);
 
 		reg u128 result;
 
 		// SPILL
-		stack u32 s_bit_index s_block_id;
+		stack u32 s_byte_index s_block_id;
 		stack u64 s_addr_ptrout;
-		s_bit_index = bit_index;
+		s_byte_index = byte_index;
 		s_block_id = block_id;
 		s_addr_ptrout = addr_ptrout;
 
@@ -47,20 +47,20 @@ inline fn aes_counter(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u32 length, 
 
 		// increment the IV
 		reg u32 counter;
-		counter = #VPEXTR_32(iv, 0);
+		counter = #VPEXTR_32(iv, 0); // extract 0th 32-bit word from a 128-bit word
 		counter += 1;
-		iv = #VPINSR_4u32(iv, counter, 0);
+		iv = #VPINSR_4u32(iv, counter, 0); // insert 32-bit word to Oth 32-bit word in a 128-bit word
 
 		// if needed to return the IV for debugging
 		// (u128)[addr_ptrout] = iv;
 		
 		// UNSPILL
-		bit_index = s_bit_index;
+		byte_index = s_byte_index;
 		block_id = s_block_id;
 
 		// increment the block id
 		block_id += 1;
-		bit_index += 16;
+		byte_index += 16;
 	}
 }
 
