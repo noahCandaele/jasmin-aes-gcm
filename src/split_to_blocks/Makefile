@@ -14,11 +14,11 @@ run:
 	@./split_to_blocks.out
 
 full:
-	@echo "######## Clean ########" 
+	@echo "-------- Clean --------" 
 	@make -s clean
-	@echo "\n######## Compile ########"
+	@echo "\n-------- Compile --------"
 	@make --no-print-directory compile
-	@echo "\n######## Run ########"
+	@echo "\n-------- Run --------"
 	@make -s run
 
 checks: checksafety checkCT
