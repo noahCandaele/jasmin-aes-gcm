@@ -105,11 +105,11 @@ int test_len6x16_get4() {
 	return test_generic("abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz12345678", 4, "cdefghijklmnopqr");
 }
 int test_len6x16p2_get5() {
-	printf("######## Test: length 6*16 bytes, get block 5 ########\n");
+	printf("######## Test: length 6*16+2 bytes, get block 5 ########\n");
 	return test_generic("abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890", 5, "stuvwxyz12345678");
 }
 int test_len6x16p2_get6() {
-	printf("######## Test: length 6*16 bytes, get block 6 ########\n");
+	printf("######## Test: length 6*16+2 bytes, get block 6 ########\n");
 	return test_generic("abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890", 6, "90");
 }
 
