@@ -118,6 +118,7 @@ inline fn aes(reg u128 key, reg u128 plain) -> reg u128 {
 
 	rkeys = keys_expand(key);
 	cipher = aes_rounds(rkeys, plain);
+
 	return cipher;
 }
 
@@ -127,5 +128,6 @@ inline fn invaes(reg u128 key, reg u128 cipher) -> reg u128 {
 
 	rkeys = keys_expand_inv(key);
 	plain = invaes_rounds(rkeys, cipher);
+	
 	return plain;
 }

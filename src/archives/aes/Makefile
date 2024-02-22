@@ -7,7 +7,7 @@ CFLAGS = -mavx -mrdrnd -lm
 JAZZFLAGS =
 # -lazy-regalloc: used to avoid the error "register allocation failed" when compiling the .jazz file (too many registers used)
 
-UTILS_PATH = ../utils
+UTILS_PATH = ../../utils
 
 default: compile
 

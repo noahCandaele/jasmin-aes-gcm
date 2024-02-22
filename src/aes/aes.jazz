@@ -5,14 +5,31 @@
 
 require "aes.jinc"
 
-export fn aes_jazz(#secret reg u128 key, #secret reg u128 plain) -> #public reg u128 {
+// export fn aes_jazz2(reg u128 key, reg u128 plain, reg u64 ptrout_cipher) {
+export fn aes_jazz2(reg u64 ptrout_cipher, reg u64 ptr_key, reg u64 ptr_plain) {
+	// key = key;
+	// plain = plain;
+	// ptrout_cipher = ptrout_cipher;
+
+	reg u128 key;
+	key = (u128)[ptr_key];
+	reg u128 plain;
+	plain = (u128)[ptr_plain];
+
 	reg u128 cipher;
 	cipher = aes(key, plain);
-	return cipher;
+
+	reg u64 fuck; // TODO remove
+	fuck = 0x69;
+	reg u128 fuck2;
+	fuck2 = (128u) fuck;
+
+	(u128)[ptrout_cipher] = cipher;
 }
 
-export fn invaes_jazz(#secret reg u128 key, #public reg u128 cipher) -> #secret reg u128 {
-	reg u128 plain;
-	plain = invaes(key, cipher);
-	return plain;
-}
+// export fn invaes_jazz2(reg u128 key, reg u128 cipher, reg u64 ptrout_plain) {
+// 	reg u128 plain;
+// 	plain = invaes(key, cipher);
+
+// 	(u128)[ptrout_plain] = plain;
+// }

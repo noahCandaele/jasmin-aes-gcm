@@ -13,7 +13,7 @@
 #include <stdbool.h>
 #include <math.h>
 
-#include "../utils/utils.h"
+#include "../../utils/utils.h"
 
 extern __m128i aes_jazz(__m128i key, __m128i plain);
 extern __m128i invaes_jazz(__m128i key, __m128i cipher);

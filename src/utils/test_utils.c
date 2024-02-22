@@ -146,14 +146,16 @@ int test_convert_uint8_array_to_ascii_string() {
 	char ascii_string[size];
 	convert_uint8_array_to_ascii_string(uint8_array, size, ascii_string);
 
-	printf("str: %s\n", ascii_string); //TODO
+	// printf("str: %s\n", ascii_string);
 
-	// char expected_string[] = "bonjour";
-	// if (!compare_uint8_arrays(uint8_array, expected_arr, size)) {
-	// 	return CODE_FAIL;
-	// }
+	char expected_string[] = "bonjour";
+	uint8_t expected_arr[size];
+	convert_ascii_string_to_uint8_array(expected_string, expected_arr, size);
+	if (!compare_uint8_arrays(uint8_array, expected_arr, size)) {
+		return CODE_FAIL;
+	}
 	
-	return CODE_INFO;
+	return CODE_SUCCESS;
 }
 
 int test_jasmin_u32() {
