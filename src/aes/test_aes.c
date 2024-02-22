@@ -196,11 +196,41 @@ int test_yoda3() {
 	return CODE_INFO;
 }
 
+int test_yoda4() {
+	uint8_t key[NB_BYTES_128_BITS];
+	uint8_t plain[NB_BYTES_128_BITS];
+	uint8_t cipher_expected[NB_BYTES_128_BITS];
+	convert_hex_string_to_uint8_array("5468617473206D79204B756E67204675", key, NB_BYTES_128_BITS);
+	convert_hex_string_to_uint8_array("54776F204F6E65204E696E652054776F", plain, NB_BYTES_128_BITS);
+	convert_hex_string_to_uint8_array("29C3505F571420F6402299B31A02D73A", cipher_expected, NB_BYTES_128_BITS);
+	// uint8_t key[] = {0x75, 0x46, 0x20, 0x67, 0x6E, 0x75, 0x4B, 0x20, 0x79, 0x6D, 0x20, 0x73, 0x74, 0x61, 0x68, 0x54};
+	// uint8_t plain[] = {0x6F, 0x77, 0x54, 0x20, 0x65, 0x6E, 0x69, 0x4E, 0x65, 0x20, 0x6F, 0x4E, 0x20, 0x77, 0x54};
+	// uint8_t cipher_expected[] = {0x3A, 0xD7, 0x02, 0x1A, 0xB3, 0x99, 0x22, 0x40, 0xF6, 0x20, 0x14, 0x57, 0x5F, 0x50, 0xC3, 0x29};
+	
+	// uint8_t key[] = {0x54, 0x68, 0x61, 0x74, 0x73, 0x20, 0x6D, 0x79, 0x20, 0x4B, 0x75, 0x6E, 0x67, 0x20, 0x46, 0x75};
+	// uint8_t plain[] = {0x54, 0x77, 0x6F, 0x20, 0x4F, 0x6E, 0x65, 0x20, 0x4E, 0x69, 0x6E, 0x65, 0x20, 0x54, 0x77, 0x6F};
+	// uint8_t cipher_expected[] = {0x29, 0xC3, 0x50, 0x5F, 0x57, 0x14, 0x20, 0xF6, 0x40, 0x22, 0x99, 0xB3, 0x1A, 0x02, 0xD7, 0x3A};
+
+	uint8_t cipher[NB_BYTES_128_BITS];
+	// aes_jazz2(key, plain, cipher);
+	aes_jazz2(cipher, key, plain);
+	
+	printf("Expected cipher (hex)  : "); print_uint8_array_as_hex(cipher_expected, NB_BYTES_128_BITS, true);
+	printf("Actual cipher   (hex)  : "); print_uint8_array_as_hex(cipher, NB_BYTES_128_BITS, true);
+	
+	if(!compare_uint8_arrays(cipher, cipher_expected, NB_BYTES_128_BITS)) {
+		return CODE_FAIL;
+	}
+
+	return CODE_SUCCESS;
+}
+
 int main()
 {
 	// print_test_return_status(test_yoda());
 	// print_test_return_status(test_yoda2());
 	print_test_return_status(test_yoda3());
+	print_test_return_status(test_yoda4());
 
 	return CODE_SUCCESS;
 }

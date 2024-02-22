@@ -10,6 +10,14 @@ extern void jasmin_u32(uint8_t* byte_array);
 extern void jasmin_u64(uint8_t* byte_array);
 extern void jasmin_u128(uint8_t* byte_array);
 
+extern uint32_t jasmin_in_u32(uint8_t* byte_array);
+extern void jasmin_in_out_u32(uint8_t* byte_array_in, uint8_t* byte_array_out);
+
+extern void srink(uint8_t* ptr_byte_array, uint32_t* shrinked, uint32_t* shrinked2);
+
+
+extern uint8_t int8_sens(uint8_t* byte_array, uint64_t index);
+
 int test_cpu_compatibility(void) {
 	printf("######## Checking CPU compatibility ########\n");
 	return check_cpu_compatibility();
@@ -205,6 +213,73 @@ int test_jasmin_u128() {
 	return CODE_INFO;
 }
 
+int test_jasmin_in_u32() {
+	printf("######## Test jasmin in u32 ########\n");
+
+	uint8_t byte_array[] = {0x01, 0x02, 0x03, 0x04};
+	uint32_t res = jasmin_in_u32(byte_array);
+	printf("Array contents: ");
+	for(int i = 0; i < NB_BYTES_32_BITS; i++) {
+		printf("%02x ", (unsigned char)byte_array[i]);
+	}
+	printf("\n");
+	printf("returned value (uint32_t): %"PRIu32"\n", res);
+	printf("returned value (hex): 0x%" PRIx32 "\n", res);
+
+	return CODE_INFO;
+}
+
+int test_jasmin_in_out_u32() {
+	printf("######## Test jasmin in out u32 ########\n");
+
+	uint8_t byte_array_in[] = {0x01, 0x02, 0x03, 0x04};
+	uint8_t byte_array_out[4];
+	jasmin_in_out_u32(byte_array_in, byte_array_out);
+	printf("Array contents in: ");
+	for(int i = 0; i < NB_BYTES_32_BITS; i++) {
+		printf("%02x ", (unsigned char)byte_array_in[i]);
+	}
+	printf("\n");
+	printf("Array contents out: ");
+	for(int i = 0; i < NB_BYTES_32_BITS; i++) {
+		printf("%02x ", (unsigned char)byte_array_out[i]);
+	}
+	printf("\n");
+
+	return CODE_INFO;
+}
+
+int test_int8_sens() {
+	printf("######## Test int8_sens ########\n");
+
+	uint64_t index = 1;
+	uint8_t byte_array[NB_BYTES_128_BITS] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+											0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
+	uint8_t result = int8_sens(byte_array, index);
+
+	printf("Expected value: %02x\n", byte_array[index]);
+	printf("Actual value:   %02x\n", result);
+
+	return CODE_INFO;
+}
+
+int test_shrink() {
+	printf("######## Test shrink ########\n");
+	uint8_t byte_array[NB_BYTES_128_BITS] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+											 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10};
+	uint32_t extract;
+	uint32_t extract2;
+	srink(byte_array, &extract, &extract2);
+	// printf("Expected value: %02x %02x\n", byte_array[0], byte_array[1]);
+	// printf("Actual value:   %02x\n", extract);
+	// check if extract is equal to extract2
+	if(extract != extract2) {
+		return CODE_FAIL;
+	} 
+
+	return CODE_INFO;
+}
+
 int main()
 {
 	print_test_return_status(test_cpu_compatibility());
@@ -223,6 +298,12 @@ int main()
 	print_test_return_status(test_jasmin_u32());
 	print_test_return_status(test_jasmin_u64());
 	print_test_return_status(test_jasmin_u128());
+
+	print_test_return_status(test_jasmin_in_u32());
+	print_test_return_status(test_jasmin_in_out_u32());
+
+	print_test_return_status(test_int8_sens());
+	print_test_return_status(test_shrink());
 
 	return CODE_SUCCESS;
 }

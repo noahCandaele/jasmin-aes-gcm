@@ -21,3 +21,33 @@ export fn jasmin_u128(reg u64 ptr_byte_array) {
 
 	(u128)[ptr_byte_array] = res;
 }
+
+export fn jasmin_in_u32(reg u64 ptr_byte_array) -> reg u32 {
+	reg u32 bytes;
+	bytes = (u32)[ptr_byte_array];
+
+	return bytes;
+}
+
+export fn jasmin_in_out_u32(reg u64 ptr_bytes_in, reg u64 ptr_bytes_out) {
+	reg u32 bytes;
+	bytes = (u32)[ptr_bytes_in];
+
+	(u32)[ptr_bytes_out] = bytes;
+}
+
+export fn int8_sens(reg u64 ptr_byte_array, reg u64 index) -> reg u8{
+	reg u8 res;
+	res = (u8)[ptr_byte_array + index];
+	return res;
+}
+
+export fn srink(reg u64 ptr_byte_array, reg u64 shrinked, reg u64 shrinked2) {
+	reg u128 result;
+	result = (128u)[ptr_byte_array];
+	reg u32 shr;
+	shr = #VPEXTR_32(result, 0);
+	(u32)[shrinked] = shr;
+
+	(u32)[shrinked2] = (u32)[ptr_byte_array];
+}
