@@ -6,20 +6,33 @@
 
 #include "../utils/utils.h"
 
+// Convention: read the blocks in order, or in reverse?
+bool CONVENTION_IN_ORDER = true;
+
 extern void get_block_export(uint8_t* data, uint8_t* out_block, int data_length, int block_id);
 
 int test_generic(char* data_str, int block_id, char* block_str_expected) {
 	// Data
+	printf("Data: %s\n", data_str);
 	size_t data_length = strlen(data_str);
-	// printf("data length %zu\n", data_length);
+	printf("Data length: %zu\n", data_length);
 	uint8_t data[data_length];
-	convert_ascii_string_to_uint8_array(data_str, data, data_length);
+	if (CONVENTION_IN_ORDER) {
+		convert_ascii_string_to_uint8_array_in_order(data_str, data, data_length);
+	} else {
+		convert_ascii_string_to_uint8_array(data_str, data, data_length);
+	}
 
 	// Expected block
+	printf("Get block: %d\n", block_id);
 	size_t block_length_expected = strlen(block_str_expected);
-	// printf("block length expected %zu\n", block_length_expected);
+	printf("Block length expected: %zu\n", block_length_expected);
 	uint8_t block_expected[block_length_expected];
-	convert_ascii_string_to_uint8_array(block_str_expected, block_expected, block_length_expected);
+	if (CONVENTION_IN_ORDER) {
+		convert_ascii_string_to_uint8_array_in_order(block_str_expected, block_expected, block_length_expected);
+	} else {
+		convert_ascii_string_to_uint8_array(block_str_expected, block_expected, block_length_expected);
+	}
 
 	// Get block
 	uint8_t block[block_length_expected];
@@ -27,7 +40,12 @@ int test_generic(char* data_str, int block_id, char* block_str_expected) {
 	
 	// Print output
 	printf("Expected output: %s\n", block_str_expected);
-	printf("Actual output:   "); print_uint8_array_as_ascii(block, block_length_expected, false);
+	printf("Actual output:   ");
+	if (CONVENTION_IN_ORDER) {
+		print_uint8_array_as_ascii_in_order(block, block_length_expected, false);
+	} else {
+		print_uint8_array_as_ascii(block, block_length_expected, false);
+	}
 	
 	// Compare
 	if(!compare_uint8_arrays(block, block_expected, block_length_expected)) {
