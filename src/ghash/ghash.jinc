@@ -1,0 +1,58 @@
+// inline fn ghash(reg u128 input, reg u128 h, reg u32 i) -> reg u128 {
+// 	// H is the hash key
+// 	// A is the additional authenticated data
+// 	// C is the ciphertext
+
+// 	reg u128 hash_value;
+// 	// Initialize the hash value to zero
+// 	hash_value = #set0_128();
+
+// 	// Process the additional authenticated data (AAD)
+// 	// for each block a_block in A:
+// 	// 	hash_value = multiply_in_gf(hash_value, H)
+// 	// 	hash_value = xor(hash_value, a_block)
+// 	hash_value = #VPXOR(hash_value, a); // xor
+// 	hash_value = #VPCLMULQDQ(hash_value, h, 128); // mult GF(2^128)
+
+// 	// Process the ciphertext
+// 	// for each block c_block in C:
+// 	// 	hash_value = multiply_in_gf(hash_value, H)
+// 	// 	hash_value = xor(hash_value, c_block)
+// 	hash_value = #VPXOR(hash_value, c); // xor
+// 	hash_value = #VPCLMULQDQ(hash_value, h, 128); // mult GF(2^128)
+
+// 	return hash_value;
+// }
+
+inline fn ghash(reg u128 input, reg u128 h, reg u32 i) -> reg u128 {
+	reg u128 hash_value;
+	hash_value = input;
+
+	hash_value = #VPCLMULQDQ(hash_value, h, 128); // mult GF(2^128)
+
+	return hash_value;
+}
+
+inline fn ghash_xor(reg u128 ghash_prev, reg u128 data, reg u128 h, reg u32 i) -> reg u128 {
+	reg u128 hash_value;
+	hash_value = ghash_prev;
+
+	hash_value = #VPXOR(hash_value, data); // xor
+
+
+	hash_value = ghash(hash_value, h, i);
+
+	return hash_value;
+}
+
+// inline fn everything(reg u128 p, reg u128 k, reg u128 iv0, reg u128 iv1) -> reg u128 {
+// 	reg u128 hash_value;
+// 	hash_value = ghash_prev;
+
+// 	hash_value = #VPXOR(hash_value, data); // xor
+
+
+// 	hash_value = ghash(hash_value, h, i);
+
+// 	return hash_value;
+// }
