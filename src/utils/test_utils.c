@@ -64,6 +64,27 @@ int test_print_uint8_array_as_ascii() {
 	return CODE_INFO;
 }
 
+int test_print_uint8_array_as_hex_in_order() {
+	printf("######## Test print uint8 array as hexadecimal in order ########\n");
+	uint8_t arr[] = {0xaa, 0xbb, 0xcc, 0xdd};
+    size_t size = sizeof(arr) / sizeof(arr[0]);
+	printf("Expected output: aa bb cc dd\n");
+    printf("Actual output:   "); print_uint8_array_as_hex_in_order(arr, size, true);
+
+	return CODE_INFO;
+}
+
+int test_print_uint8_array_as_ascii_in_order() {
+	printf("######## Test print uint8 array as ASCII in order ########\n");
+	uint8_t arr[] = {97, 98, 99, 100};
+    size_t size = sizeof(arr) / sizeof(arr[0]);
+
+	printf("Expected output: abcd\n");
+    printf("Actual output:   "); print_uint8_array_as_ascii_in_order(arr, size, false);
+
+	return CODE_INFO;
+}
+
 int test_nb_bytes_hex_string() {
 	printf("######## Test nb bytes hex string ########\n");
 
@@ -159,6 +180,60 @@ int test_convert_uint8_array_to_ascii_string() {
 	char expected_string[] = "bonjour";
 	uint8_t expected_arr[size];
 	convert_ascii_string_to_uint8_array(expected_string, expected_arr, size);
+	if (!compare_uint8_arrays(uint8_array, expected_arr, size)) {
+		return CODE_FAIL;
+	}
+	
+	return CODE_SUCCESS;
+}
+
+int test_convert_hex_string_to_uint8_array_in_order() {
+	printf("######## Test convert hex string to uint8 array in order ########\n");
+
+	char hex_str[] = "12abcdef";
+	size_t nb_bytes = nb_bytes_hex_string(hex_str);
+
+	uint8_t arr[nb_bytes];
+	convert_hex_string_to_uint8_array_in_order(hex_str, arr, nb_bytes);
+
+	uint8_t expected_arr[] = {0x12, 0xab, 0xcd, 0xef};
+	if (!compare_uint8_arrays(arr, expected_arr, nb_bytes)) {
+		return CODE_FAIL;
+	}
+
+	return CODE_SUCCESS;
+}
+
+int test_convert_ascii_string_to_uint8_array_in_order() {
+	printf("######## Test convert ascii string to uint8 array in order ########\n");
+	char ascii_string[] = "ABCD";
+	size_t size = strlen(ascii_string);
+
+	uint8_t uint8_array[size];
+	convert_ascii_string_to_uint8_array_in_order(ascii_string, uint8_array, size);
+
+	uint8_t expected_arr[] = {65, 66, 67, 68};
+	if (!compare_uint8_arrays(uint8_array, expected_arr, size)) {
+		return CODE_FAIL;
+	}
+	
+	return CODE_SUCCESS;
+}
+
+int test_convert_uint8_array_to_ascii_string_in_order() {
+	printf("######## Test convert uint8 array to ascii string in order ########\n");
+
+	uint8_t uint8_array[] = {0x62, 0x6F, 0x6E, 0x6A, 0x6F, 0x75, 0x72};
+	size_t size = sizeof(uint8_array) / sizeof(uint8_array[0]);
+
+	char ascii_string[size];
+	convert_uint8_array_to_ascii_string_in_order(uint8_array, size, ascii_string);
+
+	printf("str: %s\n", ascii_string);
+
+	char expected_string[] = "bonjour";
+	uint8_t expected_arr[size];
+	convert_ascii_string_to_uint8_array_in_order(expected_string, expected_arr, size);
 	if (!compare_uint8_arrays(uint8_array, expected_arr, size)) {
 		return CODE_FAIL;
 	}
@@ -288,12 +363,19 @@ int main()
 	print_test_return_status(test_print_uint8_array_as_hex());
 	print_test_return_status(test_print_uint8_array_as_ascii());
 
+	print_test_return_status(test_print_uint8_array_as_hex_in_order());
+	print_test_return_status(test_print_uint8_array_as_ascii_in_order());
+
 	print_test_return_status(test_nb_bytes_hex_string());
 	print_test_return_status(test_compare_uint8_arrays());
 
 	print_test_return_status(test_convert_hex_string_to_uint8_array());
 	print_test_return_status(test_convert_ascii_string_to_uint8_array());
 	print_test_return_status(test_convert_uint8_array_to_ascii_string());
+
+	print_test_return_status(test_convert_hex_string_to_uint8_array_in_order());
+	print_test_return_status(test_convert_ascii_string_to_uint8_array_in_order());
+	print_test_return_status(test_convert_uint8_array_to_ascii_string_in_order());
 
 	print_test_return_status(test_jasmin_u32());
 	print_test_return_status(test_jasmin_u64());

@@ -105,6 +105,30 @@ void print_uint8_array_as_ascii(uint8_t* arr, size_t size, bool with_spaces) {
 	printf("\n");
 }
 
+void print_uint8_array_as_hex_in_order(uint8_t *arr, size_t size, bool with_spaces)
+{
+	for (int i = 0; i < size; i++)
+	{
+		printf("%02x", (unsigned char)arr[i]);
+
+		if(with_spaces) {
+			printf(" "); // Add a space after every byte
+		}
+	}
+	printf("\n");
+}
+
+void print_uint8_array_as_ascii_in_order(uint8_t* arr, size_t size, bool with_spaces) {
+	for (int i = 0; i < size; i++) {
+		printf("%c", (char)arr[i]);
+
+		if(with_spaces) {
+			printf("  "); // Add a space after every character, since each ascii character is 1 byte (= 2 hex chars), also add a space after every byte
+		}
+	}
+	printf("\n");
+}
+
 size_t nb_bytes_hex_string(char* hex_string) {
 	size_t length = strlen(hex_string);
 
@@ -137,6 +161,28 @@ void convert_ascii_string_to_uint8_array(char* ascii_string, uint8_t* uint8_arra
 void convert_uint8_array_to_ascii_string(uint8_t* uint8_array, size_t uint8_array_size, char* ascii_string) {
 	for (size_t i = 0; i < uint8_array_size; ++i) {
         ascii_string[i] = (char)uint8_array[uint8_array_size-i-1];
+    }
+    // Null-terminate the ASCII string
+    ascii_string[uint8_array_size] = '\0';
+}
+
+void convert_hex_string_to_uint8_array_in_order(char* hex_string, uint8_t* uint8_array, size_t uint8_array_size) {
+	for (size_t i = 0; i < uint8_array_size; ++i) {
+		char hex[2] = { hex_string[i * 2], hex_string[i * 2 + 1] };
+		// cast to int8_t
+		uint8_array[i] = (uint8_t)strtol(hex, NULL, BASE_16);
+	}
+}
+
+void convert_ascii_string_to_uint8_array_in_order(char* ascii_string, uint8_t* uint8_array, size_t uint8_array_size) {
+	for (size_t i = 0; i < uint8_array_size; ++i) {
+		uint8_array[i] = (uint8_t)ascii_string[i];
+	}
+}
+
+void convert_uint8_array_to_ascii_string_in_order(uint8_t* uint8_array, size_t uint8_array_size, char* ascii_string) {
+	for (size_t i = 0; i < uint8_array_size; ++i) {
+        ascii_string[i] = (char)uint8_array[i];
     }
     // Null-terminate the ASCII string
     ascii_string[uint8_array_size] = '\0';
