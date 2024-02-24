@@ -49,7 +49,7 @@ int test_generic(char* data_str, int block_id, char* block_str_expected) {
 	
 	// Compare
 	if(!compare_uint8_arrays(block, block_expected, block_length_expected)) {
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	return CODE_SUCCESS;
