@@ -8,6 +8,7 @@
 AES-NI is needed to compute vanilla AES or
 its inverse */
 
+// TODO add AES-192 and AES-256 support
 
 // Round constant
 // This function is hardcoded for performance and should only be used for

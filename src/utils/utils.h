@@ -18,7 +18,7 @@
 #define RESET_COLOR "\x1b[0m"
 
 #define CODE_SUCCESS 0
-#define CODE_FAIL 1
+#define CODE_FAIL 1 // TODO rename CODE_FAILURE
 #define CODE_WARNING 2
 #define CODE_INFO 3
 

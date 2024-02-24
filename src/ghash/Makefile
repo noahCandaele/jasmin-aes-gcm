@@ -14,11 +14,11 @@ run:
 	@./test_ghash.out
 
 full:
-	@echo "######## Clean ########" 
+	@echo "-------- Clean --------" 
 	@make -s clean
-	@echo "\n######## Compile ########"
+	@echo "\n-------- Compile --------"
 	@make --no-print-directory compile
-	@echo "\n######## Run ########"
+	@echo "\n-------- Run --------"
 	@make -s run
 
 clean:
