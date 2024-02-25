@@ -17,7 +17,7 @@ int test_aes_generic(uint8_t* plain, uint8_t* key, uint8_t* cipher_expected) {
 	printf("Actual cipher   (hex):   "); print_uint8_array_as_hex_in_order(cipher, NB_BYTES_128_BITS, true);
 	
 	if(!compare_uint8_arrays(cipher, cipher_expected, NB_BYTES_128_BITS)) {
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	return CODE_SUCCESS;
@@ -33,7 +33,7 @@ int test_invaes_generic(uint8_t* cipher, uint8_t* key, uint8_t* plain_expected) 
 	printf("Actual plain   (ascii):  "); print_uint8_array_as_ascii_in_order(plain, NB_BYTES_128_BITS, true);
 	
 	if(!compare_uint8_arrays(plain, plain_expected, NB_BYTES_128_BITS)) {
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	return CODE_SUCCESS;
@@ -79,7 +79,7 @@ int test_yoda() {
 	int code2 = test_invaes_generic(cipher_expected, key, plain);
 	
 	if (code1 != CODE_SUCCESS || code2 != CODE_SUCCESS) {
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	return CODE_SUCCESS;

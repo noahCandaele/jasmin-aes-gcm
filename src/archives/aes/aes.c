@@ -88,7 +88,7 @@ int test_aes128() {
 	uint8_t* cipher = (uint8_t*)malloc(NB_BYTES_128_BITS * sizeof(uint8_t));
 	if (key == NULL || plain == NULL || cipher == NULL) {
 		printf("test_aes128: allocation of key, plain or cipher failed");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 	convert_hex_string_to_uint8_array("5468617473206D79204B756E67204675", key, NB_BYTES_128_BITS);
 	convert_hex_string_to_uint8_array("54776F204F6E65204E696E652054776F", plain, NB_BYTES_128_BITS);
@@ -108,7 +108,7 @@ int test_aes128() {
 	uint8_t* cipher_computed = (uint8_t*)malloc(NB_BYTES_128_BITS * sizeof(uint8_t));
 	if (cipher_computed == NULL) {
 		printf("test_aes128: allocation of cipher_computed failed");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 	aes(key, plain, cipher_computed);
 	printf("computed cipher (hex)  : "); print_uint8_array_as_hex(cipher_computed, NB_BYTES_128_BITS, true);
@@ -119,7 +119,7 @@ int test_aes128() {
 	uint8_t* plain_computed = (uint8_t*)malloc(NB_BYTES_128_BITS * sizeof(uint8_t));
 	if (plain_computed == NULL) {
 		printf("test_aes128: allocation of plain_computed failed");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 	invaes(key, cipher_computed, plain_computed);
 	printf("computed plain (hex)  : "); print_uint8_array_as_hex(plain_computed, NB_BYTES_128_BITS, true);
@@ -132,14 +132,14 @@ int test_aes128() {
 		printf("Success: plain has been computed as expected\n");
 	} else {
 		printf("Failure: plain has not been computed as expected\n");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 	bool cipher_success = compare_uint8_arrays(cipher, cipher_computed, NB_BYTES_128_BITS);
 	if(cipher_success) {
 		printf("Success: cipher has been computed as expected\n");
 	} else {
 		printf("Failure: cipher has not been computed as expected\n");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	free(key); free(plain); free(cipher); free(cipher_computed); free(plain_computed);
@@ -155,14 +155,14 @@ int test_aes128() {
 	uint8_t* cipher_computed2 = (uint8_t*)malloc(NB_BYTES_128_BITS * sizeof(uint8_t));
 	if (cipher_computed2 == NULL) {
 		printf("test_aes128: allocation of cipher_computed2 failed");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 	aes(key2, plain2, cipher_computed2);
 
 	uint8_t* plain_computed2 = (uint8_t*)malloc(NB_BYTES_128_BITS * sizeof(uint8_t));
 	if (plain_computed2 == NULL) {
 		printf("test_aes128: allocation of plain_computed2 failed");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 	invaes(key2, cipher_computed2, plain_computed2);
 
@@ -172,14 +172,14 @@ int test_aes128() {
 		printf("Success: plain2 has been computed as expected\n");
 	} else {
 		printf("Failure: plain2 has not been computed as expected\n");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 	bool cipher_success2 = compare_uint8_arrays(cipher2, cipher_computed2, NB_BYTES_128_BITS);
 	if(cipher_success2) {
 		printf("Success: cipher2 has been computed as expected\n");
 	} else {
 		printf("Failure: cipher2 has not been computed as expected\n");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	return CODE_SUCCESS;
@@ -193,7 +193,7 @@ int test_aes256() {
 	uint8_t* cipher = (uint8_t*)malloc(NB_BYTES_128_BITS * sizeof(uint8_t));
 	if (key == NULL || plain == NULL || cipher == NULL) {
 		printf("test_aes256: allocation of key, plain or cipher failed");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 	convert_hex_string_to_uint8_array("c47b0294dbbbee0fec4757f22ffeee3587ca4730c3d33b691df38bab076bc558", key, NB_BYTES_256_BITS);
 	convert_hex_string_to_uint8_array("00000000000000000000000000000000", plain, NB_BYTES_128_BITS);
@@ -202,7 +202,7 @@ int test_aes256() {
 	free(key); free(plain); free(cipher);
 
 	// TODO test not fully implemented
-	return CODE_FAIL;
+	return CODE_FAILURE;
 }
 
 int test_aes128_block_cipher_mode_encryption_module() {
@@ -216,7 +216,7 @@ int test_aes128_block_cipher_mode_encryption_module() {
 	uint8_t* cipher = (uint8_t*)malloc(NB_BYTES_128_BITS * sizeof(uint8_t));
 	if (key == NULL || iv == NULL || plain == NULL || cipher == NULL) {
 		printf("test_aes128_block_cipher_mode: allocation of key, iv, plain or cipher failed");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 	// TODO remettre
 	convert_hex_string_to_uint8_array("5468617473206D79204B756E67204675", key, NB_BYTES_128_BITS);
@@ -228,7 +228,7 @@ int test_aes128_block_cipher_mode_encryption_module() {
 	uint8_t* cipher_computed = (uint8_t*)malloc(NB_BYTES_128_BITS * sizeof(uint8_t));
 	if (cipher_computed == NULL) {
 		printf("test_aes128: allocation of cipher_computed failed");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 	aes_block_cipher_mode(key, iv, plain, cipher_computed);
 	printf("computed cipher (hex)  : "); print_uint8_array_as_hex(cipher_computed, NB_BYTES_128_BITS, true);
@@ -240,7 +240,7 @@ int test_aes128_block_cipher_mode_encryption_module() {
 		printf("Success: cipher has been computed as expected\n");
 	} else {
 		printf("Failure: cipher has not been computed as expected\n");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	free(key); free(iv); free(plain); free(cipher); free(cipher_computed);
@@ -254,7 +254,7 @@ int test_aes128_block_cipher_mode_encryption_module() {
 	uint8_t* plain2 = (uint8_t*)malloc(NB_BYTES_128_BITS * sizeof(uint8_t));
 	if (key2 == NULL || iv2 == NULL || plain2 == NULL) {
 		printf("test_aes128_block_cipher_mode: allocation of key2, plain2 failed");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 	convert_hex_string_to_uint8_array("5468617473206D79204B756E67204675", key2, NB_BYTES_128_BITS);
 	convert_hex_string_to_uint8_array("54776F204F6E65204E696E652054776F", plain2, NB_BYTES_128_BITS);
@@ -268,7 +268,7 @@ int test_aes128_block_cipher_mode_encryption_module() {
 	uint8_t* cipher_computed2 = (uint8_t*)malloc(NB_BYTES_128_BITS * sizeof(uint8_t));
 	if (cipher_computed2 == NULL) {
 		printf("test_aes128_block_cipher_mode: allocation of cipher_computed2 failed");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 	aes_block_cipher_mode(key2, iv2, plain2, cipher_computed2);
 	printf("computed cipher (hex)  : "); print_uint8_array_as_hex(cipher_computed2, NB_BYTES_128_BITS, true);
@@ -279,7 +279,7 @@ int test_aes128_block_cipher_mode_encryption_module() {
 	uint8_t* plain_computed2 = (uint8_t*)malloc(NB_BYTES_128_BITS * sizeof(uint8_t));
 	if (plain_computed2 == NULL) {
 		printf("test_aes128_block_cipher_mode: allocation of plain_computed2 failed");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 	invaes_block_cipher_mode(key2, iv2, cipher_computed2, plain_computed2);
 	printf("computed plain (hex)  : "); print_uint8_array_as_hex(plain_computed2, NB_BYTES_128_BITS, true);
@@ -292,7 +292,7 @@ int test_aes128_block_cipher_mode_encryption_module() {
 		printf("Success: plain has been computed as expected\n");
 	} else {
 		printf("Failure: plain has not been computed as expected\n");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	free(key2); free(iv2); free(plain2); free(cipher_computed2); free(plain_computed2);
@@ -323,7 +323,7 @@ int test_aes128_block_cipher_mode_encryption_full() {
 	uint8_t* counter = (uint8_t*)malloc(NB_BYTES_128_BITS * sizeof(uint8_t));
 	if (key == NULL || iv == NULL || counter == NULL) {
 		printf("test_aes128_block_cipher_mode_encryption_full: allocation failed");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 	convert_hex_string_to_uint8_array("5468617473206D79204B756E67204675", key, NB_BYTES_128_BITS);
 	// generate_iv(iv);
@@ -341,7 +341,7 @@ int test_aes128_block_cipher_mode_encryption_full() {
 	uint8_t* cipher_blocks = (uint8_t*)malloc(nb_cipher_blocks * NB_BYTES_128_BITS * sizeof(uint8_t));
 	if (cipher_blocks == NULL) {
 		printf("test_aes128_block_cipher_mode_encryption_full: allocation failed");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 	// for each 128 bit block of the plaintext
 	for (size_t i = 0; i < nb_cipher_blocks; i++) {
@@ -349,7 +349,7 @@ int test_aes128_block_cipher_mode_encryption_full() {
 		uint8_t* cipher = (uint8_t*)malloc(NB_BYTES_128_BITS * sizeof(uint8_t));
 		if (plain == NULL || cipher == NULL) {
 			printf("test_aes128_block_cipher_mode_encryption_full: allocation failed");
-			return CODE_FAIL;
+			return CODE_FAILURE;
 		}
 		// get ith block of plaintext // TODO mistake here
 		convert_hex_string_to_uint8_array(plaintext_hex_full + i * NB_BYTES_128_BITS*2*sizeof(char), plain, NB_BYTES_128_BITS);
@@ -373,7 +373,7 @@ int test_aes128_block_cipher_mode_encryption_full() {
 		uint8_t* plain_computed = (uint8_t*)malloc(NB_BYTES_128_BITS * sizeof(uint8_t));
 		if (plain_computed == NULL) {
 			printf("test_aes128_block_cipher_mode_encryption_full: allocation failed");
-			return CODE_FAIL;
+			return CODE_FAILURE;
 		}
 		invaes_block_cipher_mode(key, iv, cipher_blocks + i * NB_BYTES_128_BITS, plain_computed);
 		memcpy(plain_computed_full + i * NB_BYTES_128_BITS, plain_computed, NB_BYTES_128_BITS);
@@ -392,7 +392,7 @@ int test_aes128_block_cipher_mode_encryption_full() {
 	
 	// TODO free tout
 	// TODO test pas complet
-	return CODE_FAIL;
+	return CODE_FAILURE;
 }
 
 int main() {

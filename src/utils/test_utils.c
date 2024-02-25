@@ -91,31 +91,31 @@ int test_nb_bytes_hex_string() {
 	char hex_str[] = "abcd";
 	if(nb_bytes_hex_string(hex_str) != 2) {
 		printf("Test 1 failed");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	char hex_str2[] = "";
 	if(nb_bytes_hex_string(hex_str2) != 0) {
 		printf("Test 2 failed");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	char hex_str3[] = "abcde";
 	if(nb_bytes_hex_string(hex_str3) != 3) {
 		printf("Test 3 failed");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	char hex_str4[] = "0123456789abcdef";
 	if(nb_bytes_hex_string(hex_str4) != 8) {
 		printf("Test 4 failed");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	char hex_str5[] = "a";
 	if(nb_bytes_hex_string(hex_str5) != 1) {
 		printf("Test 5 failed");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	return CODE_SUCCESS;
@@ -127,7 +127,7 @@ int test_compare_uint8_arrays() {
 	uint8_t arr1[] = {65, 66, 67, 68};
 	uint8_t arr2[] = {65, 66, 67, 68};
 	if (!compare_uint8_arrays(arr1, arr2, 4)) {
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	return CODE_SUCCESS;
@@ -144,7 +144,7 @@ int test_convert_hex_string_to_uint8_array() {
 
 	uint8_t expected_arr[] = {0xef, 0xcd, 0xab, 0x12};
 	if (!compare_uint8_arrays(arr, expected_arr, nb_bytes)) {
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	return CODE_SUCCESS;
@@ -160,7 +160,7 @@ int test_convert_ascii_string_to_uint8_array() {
 
 	uint8_t expected_arr[] = {68, 67, 66, 65};
 	if (!compare_uint8_arrays(uint8_array, expected_arr, size)) {
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 	
 	return CODE_SUCCESS;
@@ -181,7 +181,7 @@ int test_convert_uint8_array_to_ascii_string() {
 	uint8_t expected_arr[size];
 	convert_ascii_string_to_uint8_array(expected_string, expected_arr, size);
 	if (!compare_uint8_arrays(uint8_array, expected_arr, size)) {
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 	
 	return CODE_SUCCESS;
@@ -198,7 +198,7 @@ int test_convert_hex_string_to_uint8_array_in_order() {
 
 	uint8_t expected_arr[] = {0x12, 0xab, 0xcd, 0xef};
 	if (!compare_uint8_arrays(arr, expected_arr, nb_bytes)) {
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	return CODE_SUCCESS;
@@ -214,7 +214,7 @@ int test_convert_ascii_string_to_uint8_array_in_order() {
 
 	uint8_t expected_arr[] = {65, 66, 67, 68};
 	if (!compare_uint8_arrays(uint8_array, expected_arr, size)) {
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 	
 	return CODE_SUCCESS;
@@ -235,7 +235,7 @@ int test_convert_uint8_array_to_ascii_string_in_order() {
 	uint8_t expected_arr[size];
 	convert_ascii_string_to_uint8_array_in_order(expected_string, expected_arr, size);
 	if (!compare_uint8_arrays(uint8_array, expected_arr, size)) {
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 	
 	return CODE_SUCCESS;
@@ -349,7 +349,7 @@ int test_shrink() {
 	// printf("Actual value:   %02x\n", extract);
 	// check if extract is equal to extract2
 	if(extract != extract2) {
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	} 
 
 	return CODE_INFO;

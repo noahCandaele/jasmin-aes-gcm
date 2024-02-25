@@ -26,7 +26,7 @@ int test_yoda(){
 	printf("Actual cipher   (hex): "); print_uint8_array_as_hex_in_order(cipher, NB_BYTES_128_BITS, true);
 
 	if(!compare_uint8_arrays(cipher, cipher_expected, NB_BYTES_128_BITS)) {
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	return CODE_SUCCESS;
@@ -47,7 +47,7 @@ int test_nist2(){
 	printf("Actual cipher   (hex): "); print_uint8_array_as_hex_in_order(cipher, NB_BYTES_128_BITS, true);
 
 	if(!compare_uint8_arrays(cipher, cipher_expected, NB_BYTES_128_BITS)) {
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	return CODE_SUCCESS;
@@ -84,7 +84,7 @@ int test_nist3(){
 	printf("Actual cipher   (hex): "); print_uint8_array_as_hex_in_order(cipher, cipher_expected_size, true);
 
 	if(!compare_uint8_arrays(cipher, cipher_expected, cipher_expected_size)) {
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	return CODE_SUCCESS;

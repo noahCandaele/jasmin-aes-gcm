@@ -111,7 +111,7 @@ int test_ghash_generic(char* data1_str, char* data2_str, char* ghash_expected_st
 
 	if(!compare_uint8_arrays(ghash, ghash_expected, NB_BYTES_128_BITS)) {
 		printf("Error: expected output and actual output are different.\n");
-		return CODE_FAIL;
+		return CODE_FAILURE;
 	}
 
 	return CODE_SUCCESS;
