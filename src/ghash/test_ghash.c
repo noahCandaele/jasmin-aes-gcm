@@ -106,12 +106,19 @@ int test_ghash_generic(char* data1_str, char* data2_str, char* ghash_expected_st
 	uint8_t ghash[NB_BYTES_128_BITS];
 	ghash_jazz(data1, data2, 0, ghash);
 
+
+
 	printf("Expected output (hex): ");
 	if (in_order) print_uint8_array_as_hex_in_order(ghash_expected, NB_BYTES_128_BITS, false);
 	else print_uint8_array_as_hex(ghash_expected, NB_BYTES_128_BITS, false);
 	printf("Actual output   (hex): ");
 	if (in_order) print_uint8_array_as_hex_in_order(ghash, NB_BYTES_128_BITS, false);
 	else print_uint8_array_as_hex(ghash, NB_BYTES_128_BITS, false);
+
+	// print debug
+	printf("\n\nDEBUG: \n");
+	printf("\nActual output   (binary): \n");
+	print_uint8_array_as_binary(ghash, NB_BYTES_128_BITS, false);
 
 	if(!compare_uint8_arrays(ghash, ghash_expected, NB_BYTES_128_BITS)) {
 		// printf("Error: expected output and actual output are different.\n");
@@ -124,6 +131,7 @@ int test_ghash_generic(char* data1_str, char* data2_str, char* ghash_expected_st
 
 int test_ghash_nist2_sure() {
 	printf("######## Test ghash NIST test case 2 absolutely sure ########\n");
+
 	return test_ghash_generic("0388dace60b6a392f328c2b971b2fe78", "66e94bd4ef8a2c3b884cfa59ca342b2e", "5e2ec746917062882c85b0685353deb7", false);
 }
 int test_ghash_nist2_sure_reverse() {
@@ -143,6 +151,8 @@ int test_reflect() {
 	printf("Output binary: ");
 	print_uint8_array_as_binary(data, NB_BYTES_128_BITS, false);
 
+	// 00011110011111110100110110001110100111010100001100010100110011110100100111000101011011010000011001110011010110110001000111000000
+
 	return CODE_INFO;
 }
 
@@ -152,9 +162,9 @@ int main()
 	// print_test_return_status(test_ghash_nist3());
 
 	print_test_return_status(test_ghash_nist2_sure());
-	print_test_return_status(test_ghash_nist2_sure_reverse());
-	print_test_return_status(test_ghash_nist2());
-	print_test_return_status(test_reflect());
+	// print_test_return_status(test_ghash_nist2_sure_reverse());
+	// print_test_return_status(test_ghash_nist2());
+	// print_test_return_status(test_reflect());
 
 	return 0;
 }
