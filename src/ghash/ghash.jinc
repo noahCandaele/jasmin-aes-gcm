@@ -27,14 +27,9 @@
 inline fn ghash(reg u128 input, reg u128 h, reg u32 i) -> reg u128 {
 	reg u128 hash_value;
 	hash_value = input;
+	
 
 	// VPCLMULQDQ https://www.felixcloutier.com/x86/pclmulqdq
-
-	// reg u128 val2;
-	// temp64 = 4;
-	// val2 = #VPINSR_2u64(val2, temp64, 1);
-	// temp64 = 5;
-	// val2 = #VPINSR_2u64(val2, temp64, 0);
 
 	// https://www.intel.com/content/dam/develop/external/us/en/documents/clmul-wp-rev-2-02-2014-04-20.pdf
 	// Karatsuba multiplication (Intel spec page 13 algo 2)
@@ -46,19 +41,18 @@ inline fn ghash(reg u128 input, reg u128 h, reg u32 i) -> reg u128 {
 	reg u128 a; a = input;
 	reg u128 b; b = h;
 
-	reg u128 c; c = #VPCLMULQDQ(a, b, 0x11);
-	reg u128 d; d = #VPCLMULQDQ(a, b, 0x00);
+	reg u128 c; c = #set0_128(); c = #VPCLMULQDQ(a, b, 0x11);
+	reg u128 d; d = #set0_128(); d = #VPCLMULQDQ(a, b, 0x00);
 
-	reg u64 a0; a0 = #VPEXTR_64(a, 0);
-	reg u64 a1; a1 = #VPEXTR_64(a, 1);
+	reg u64 a0; a0 = 0; a0 = #VPEXTR_64(a, 0);
+	reg u64 a1; a1 = 0; a1 = #VPEXTR_64(a, 1);
 	reg u64 xor_a; xor_a = a0; xor_a ^= a1;
-	reg u64 b0; b0 = #VPEXTR_64(b, 0);
-	reg u64 b1; b1 = #VPEXTR_64(b, 1);
+	reg u64 b0; b0 = 0; b0 = #VPEXTR_64(b, 0);
+	reg u64 b1; b1 = 0; b1 = #VPEXTR_64(b, 1);
 	reg u64 xor_b; xor_b = b0; xor_b ^= b1;
 	reg u128 xor_a_128; xor_a_128 = (128u) xor_a;
 	reg u128 xor_b_128; xor_b_128 = (128u) xor_b;
-	reg u128 e; e = #VPCLMULQDQ(xor_a_128, xor_b_128, 0x00);
-	
+	reg u128 e; e = #set0_128(); e = #VPCLMULQDQ(xor_a_128, xor_b_128, 0x00);
 
 	// Reconstruction of the result (256 bits)
 	// [A1:A0]*[B1:B0] = [X3:X2:X1:X0] = [C1 : C0⊕C1⊕D1⊕E1 : D1⊕C0⊕D0⊕E0 : D0]
@@ -97,29 +91,37 @@ inline fn ghash(reg u128 input, reg u128 h, reg u32 i) -> reg u128 {
 	c_64 = x3;
 	c_64 >>= 57;
 
-	// Step 2
+	// // Step 2
 	reg u64 d_64;
 	d_64 = x2;
 	d_64 ^= a_64;
 	d_64 ^= b_64;
 	d_64 ^= c_64;
 
-	// Step 3
+	// // Step 3
 	reg u128 e_128 f_128 g_128;
+	e_128 = #set0_128();
+	f_128 = #set0_128();
+	g_128 = #set0_128();
+
 	e_128 = #VPINSR_2u64(e_128, x3, 1);
 	e_128 = #VPINSR_2u64(e_128, d_64, 0);
-	e_128 = #VPSLLDQ(e_128, 1);
+	e_128 = #VPSLL_2u64(e_128, 1);
 
 	f_128 = #VPINSR_2u64(f_128, x3, 1);
 	f_128 = #VPINSR_2u64(f_128, d_64, 0);
-	f_128 = #VPSLLDQ(f_128, 2);
+	f_128 = #VPSLL_2u64(f_128, 2);
 
 	g_128 = #VPINSR_2u64(g_128, x3, 1);
 	g_128 = #VPINSR_2u64(g_128, d_64, 0);
-	g_128 = #VPSLLDQ(g_128, 7);
+	g_128 = #VPSLL_2u64(g_128, 7);
 	
 	// Step 4
 	reg u64 h0_64 h1_64 temp;
+	h0_64 = 0;
+	h1_64 = 0;
+	temp = 0;
+		
 	h1_64 = x3;
 	temp = #VPEXTR_64(e_128, 1);
 	h1_64 ^= temp;
@@ -140,6 +142,7 @@ inline fn ghash(reg u128 input, reg u128 h, reg u32 i) -> reg u128 {
 	
 	// Step 5: return
 	reg u128 res;
+	res = #set0_128();
 	reg u64 res0 res1;
 	res0 = x0;
 	res0 ^= h0_64;
@@ -147,20 +150,6 @@ inline fn ghash(reg u128 input, reg u128 h, reg u32 i) -> reg u128 {
 	res1 ^= h1_64;
 	res = #VPINSR_2u64(res, res0, 0);
 	res = #VPINSR_2u64(res, res1, 1);
-
-	// -------------------------------------------------
-
-
-	// Insert 64-bit words into 256-bit result, but hopefully we don't need to do this
-	// reg u256 f0_256; f0_256 = (256u) f0;
-	// reg u256 f1_256; f1_256 = (256u) f1;
-	// reg u256 f2_256; f2_256 = (256u) f2;
-	// reg u256 f3_256; f3_256 = (256u) f3;
-	// reg u256 f; f = #set0_256();
-	// f = #VINSERTI128(f, f0_256, 0);
-	// f = #VINSERTI128(f, f1_256, 1);
-	// f = #VINSERTI128(f, f2_256, 2);
-	// f = #VINSERTI128(f, f3_256, 3);
 
 	return res;
 }

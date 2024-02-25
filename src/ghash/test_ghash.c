@@ -55,12 +55,13 @@ int test_ghash_nist2() {
 	uint8_t c[NB_BYTES_128_BITS];
 	uint8_t h[NB_BYTES_128_BITS];
 
-	convert_hex_string_to_uint8_array_in_order("0388dace60b6a392f328c2b971b2fe78", c, NB_BYTES_128_BITS);
-	convert_hex_string_to_uint8_array_in_order("66e94bd4ef8a2c3b884cfa59ca342b2e", h, NB_BYTES_128_BITS);
+	convert_hex_string_to_uint8_array("0388dace60b6a392f328c2b971b2fe78", c, NB_BYTES_128_BITS);
+	convert_hex_string_to_uint8_array("66e94bd4ef8a2c3b884cfa59ca342b2e", h, NB_BYTES_128_BITS);
 
 	uint8_t ghash[NB_BYTES_128_BITS];
 	ghash_jazz(c, h, 0, ghash);
-	print_uint8_array_as_hex_in_order(ghash, NB_BYTES_128_BITS, false);
+	print_uint8_array_as_hex(ghash, NB_BYTES_128_BITS, false);
+	print_uint8_array_as_binary(ghash, NB_BYTES_128_BITS, true);
 
 	return CODE_INFO;
 }
@@ -102,6 +103,7 @@ int test_ghash_generic(char* data1_str, char* data2_str, char* ghash_expected_st
 
 	uint8_t ghash[NB_BYTES_128_BITS];
 	ghash_jazz(data1, data2, 0, ghash);
+
 	printf("Expected output (hex): ");
 	if (in_order) print_uint8_array_as_hex_in_order(ghash_expected, NB_BYTES_128_BITS, false);
 	else print_uint8_array_as_hex(ghash_expected, NB_BYTES_128_BITS, false);
@@ -110,7 +112,7 @@ int test_ghash_generic(char* data1_str, char* data2_str, char* ghash_expected_st
 	else print_uint8_array_as_hex(ghash, NB_BYTES_128_BITS, false);
 
 	if(!compare_uint8_arrays(ghash, ghash_expected, NB_BYTES_128_BITS)) {
-		printf("Error: expected output and actual output are different.\n");
+		// printf("Error: expected output and actual output are different.\n");
 		return CODE_FAILURE;
 	}
 
@@ -118,38 +120,23 @@ int test_ghash_generic(char* data1_str, char* data2_str, char* ghash_expected_st
 }
 
 
-int test_ghash_gpt1() {
-	printf("######## Test ghash gpt1 ########\n");
-	return test_ghash_generic("00000000000000000000000000000000", "00000000000000000000000000000000", "00000000000000000000000000000000", CONVENTION_IN_ORDER);
+int test_ghash_nist2_sure() {
+	printf("######## Test ghash NIST test case 2 absolutely sure ########\n");
+	return test_ghash_generic("0388dace60b6a392f328c2b971b2fe78", "66e94bd4ef8a2c3b884cfa59ca342b2e", "5e2ec746917062882c85b0685353deb7", false);
 }
-int test_ghash_gpt2() {
-	printf("######## Test ghash gpt2 ########\n");
-	return test_ghash_generic("00112233445566778899AABBCCDDEEFF", "00000000000000000000000000000000", "EDEB76CE2239B29B60B7D35EE9F4B870", CONVENTION_IN_ORDER);
-}
-int test_ghash_gpt3() {
-	printf("######## Test ghash gpt3 ########\n");
-	return test_ghash_generic("01010101010101010101010101010101", "01010101010101010101010101010101", "4C26F14D6E16E4AEDD4FBD4E0B3EDD06", CONVENTION_IN_ORDER);
-}
-int test_ghash_gpt4() {
-	printf("######## Test ghash gpt4 ########\n");
-	return test_ghash_generic("FEDCBA9876543210FEDCBA9876543210", "0123456789ABCDEF0123456789ABCDEF", "E9B795D7BAD43A07F06D9C3E67F94B51", CONVENTION_IN_ORDER);
-}
-int test_ghash_gpt5() {
-	printf("######## Test ghash gpt5 ########\n");
-	return test_ghash_generic("00112233445566778899AABBCCDDEEFF", "00000000000000000000000000000000", "25F4B7D8D4CC6AB7087DE1C49D6BB2C5", CONVENTION_IN_ORDER);
+int test_ghash_nist2_sure_reverse() {
+	printf("######## Test ghash NIST test case 2 absolutely sure REVERSE ########\n");
+	return test_ghash_generic("0388dace60b6a392f328c2b971b2fe78", "66e94bd4ef8a2c3b884cfa59ca342b2e", "5e2ec746917062882c85b0685353deb7", true);
 }
 
 int main()
 {
-	print_test_return_status(test_ghash());
-	print_test_return_status(test_ghash_nist2());
+	// print_test_return_status(test_ghash());
 	// print_test_return_status(test_ghash_nist3());
 
-	// print_test_return_status(test_ghash_gpt1());
-	// print_test_return_status(test_ghash_gpt2());
-	// print_test_return_status(test_ghash_gpt3());
-	// print_test_return_status(test_ghash_gpt4());
-	// print_test_return_status(test_ghash_gpt5());
+	print_test_return_status(test_ghash_nist2_sure());
+	print_test_return_status(test_ghash_nist2_sure_reverse());
+	print_test_return_status(test_ghash_nist2());
 
 	return 0;
 }
