@@ -11,6 +11,8 @@ extern void ghash_jazz(uint8_t* input, uint8_t* h, uint32_t i, uint8_t* out_res)
 extern void ghash_xor_jazz(uint8_t* ghash_prev, uint8_t* data,  uint8_t* h, uint32_t i, uint8_t* out_res);
 extern void tag_jazz(uint8_t* h, uint8_t* ghash, uint8_t* out_tag);
 
+extern void reflecting_bit(uint8_t* in);
+
 const bool CONVENTION_IN_ORDER = true;
 
 int test_ghash() {
@@ -129,6 +131,21 @@ int test_ghash_nist2_sure_reverse() {
 	return test_ghash_generic("0388dace60b6a392f328c2b971b2fe78", "66e94bd4ef8a2c3b884cfa59ca342b2e", "5e2ec746917062882c85b0685353deb7", true);
 }
 
+int test_reflect() {
+	printf("######## Test reflect ########\n");
+
+	uint8_t data[NB_BYTES_128_BITS];
+	convert_hex_string_to_uint8_array("0388dace60b6a392f328c2b971b2fe78", data, NB_BYTES_128_BITS);
+	printf("Input  binary: ");
+	print_uint8_array_as_binary(data, NB_BYTES_128_BITS, false);
+
+	reflecting_bit(data);
+	printf("Output binary: ");
+	print_uint8_array_as_binary(data, NB_BYTES_128_BITS, false);
+
+	return CODE_INFO;
+}
+
 int main()
 {
 	// print_test_return_status(test_ghash());
@@ -137,6 +154,10 @@ int main()
 	print_test_return_status(test_ghash_nist2_sure());
 	print_test_return_status(test_ghash_nist2_sure_reverse());
 	print_test_return_status(test_ghash_nist2());
+	print_test_return_status(test_reflect());
 
 	return 0;
 }
+
+// Expected output: 	5e2ec746917062882c85b0685353deb7
+// no inversed and v1: 	519fa38ac731568e9c1eb21731167f1c

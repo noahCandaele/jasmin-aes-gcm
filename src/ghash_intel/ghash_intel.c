@@ -10,6 +10,11 @@
 
 #include "../utils/utils.h"
 
+void u128_to_arr(__m128i value, int8_t* arr) {
+	_mm_storeu_si128((__m128i *)arr, value);
+}
+
+
 // https://www.intel.com/content/dam/develop/external/us/en/documents/clmul-wp-rev-2-02-2014-04-20.pdf
 // Page 25 figure 5: algorithms 1 and 5
 void gfmul_1_5(__m128i a, __m128i b, __m128i *res){
@@ -107,12 +112,13 @@ void gfmul_2_4(__m128i a, __m128i b, __m128i *res){
 
 __m128i reflect_xmm(__m128i X)
 {
-	__m128i tmp1,tmp2;
+	__m128i tmp1,tmp2, tmp3;
 
 	__m128i AND_MASK = _mm_set_epi32(0x0f0f0f0f, 0x0f0f0f0f, 0x0f0f0f0f, 0x0f0f0f0f);
 	__m128i LOWER_MASK = _mm_set_epi32(0x0f070b03, 0x0d050901, 0x0e060a02, 0x0c040800);
 	__m128i HIGHER_MASK = _mm_set_epi32(0xf070b030, 0xd0509010, 0xe060a020, 0xc0408000);
 	__m128i BSWAP_MASK = _mm_set_epi8(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15);
+
 
 	tmp2 = _mm_srli_epi16(X, 4);
 	tmp1 = _mm_and_si128(X, AND_MASK);
@@ -121,15 +127,18 @@ __m128i reflect_xmm(__m128i X)
 	tmp2 = _mm_shuffle_epi8(LOWER_MASK ,tmp2);
 	tmp1 = _mm_xor_si128(tmp1, tmp2);
 	
-	return _mm_shuffle_epi8(tmp1, BSWAP_MASK);
+	tmp3 = _mm_shuffle_epi8(tmp1, BSWAP_MASK);
+	uint8_t r[NB_BYTES_128_BITS];
+	u128_to_arr(tmp3, r);
+	printf("\n\nDEBUG reflect_xmm X: \n");
+	print_uint8_array_as_binary(r, NB_BYTES_128_BITS, false);
+	printf("\n\n");
+
+	return tmp3;
 }
 
 __m128i arr_to_u128(int8_t* arr) {
 	return _mm_loadu_si128((__m128i *) arr);
-}
-
-void u128_to_arr(__m128i value, int8_t* arr) {
-	_mm_storeu_si128((__m128i *)arr, value);
 }
 
 void test_1_5() {
