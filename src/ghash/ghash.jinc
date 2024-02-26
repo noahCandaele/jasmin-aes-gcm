@@ -1,44 +1,16 @@
-// inline fn ghash(reg u128 input, reg u128 h, reg u32 i) -> reg u128 {
-// 	// H is the hash key
-// 	// A is the additional authenticated data
-// 	// C is the ciphertext
-
-// 	reg u128 hash_value;
-// 	// Initialize the hash value to zero
-// 	hash_value = #set0_128();
-
-// 	// Process the additional authenticated data (AAD)
-// 	// for each block a_block in A:
-// 	// 	hash_value = multiply_in_gf(hash_value, H)
-// 	// 	hash_value = xor(hash_value, a_block)
-// 	hash_value = #VPXOR(hash_value, a); // xor
-// 	hash_value = #VPCLMULQDQ(hash_value, h, 128); // mult GF(2^128)
-
-// 	// Process the ciphertext
-// 	// for each block c_block in C:
-// 	// 	hash_value = multiply_in_gf(hash_value, H)
-// 	// 	hash_value = xor(hash_value, c_block)
-// 	hash_value = #VPXOR(hash_value, c); // xor
-// 	hash_value = #VPCLMULQDQ(hash_value, h, 128); // mult GF(2^128)
-
-// 	return hash_value;
-// }
-
-
 u64[2] AND_MASK = {0x0f0f0f0f0f0f0f0f, 0x0f0f0f0f0f0f0f0f};
 u64[2] LOWER_MASK = {0x0f070b030d050901, 0x0e060a020c040800};
 u64[2] HIGHER_MASK = {0xf070b030d0509010, 0xe060a020c0408000};
-u64[2] BSWAP_MASK = {0x000102030405060708,0x090a0b0c0d0e0f};
 
-inline fn reflecting_bit_128(reg u64 ptr_x) {
+inline fn bit_reflect(reg u128 x) -> reg u128 {
 	reg u128 temp1 temp2 mask;
 	mask = #VPINSR_2u64(mask, AND_MASK[0], 0);
 	mask = #VPINSR_2u64(mask, AND_MASK[1], 1);
 	
-	temp2 = (u128)[ptr_x];
+	temp2 = x;
 	temp2 = #VPSRL_8u16(temp2, 4);
 
-	temp1 = (u128)[ptr_x];
+	temp1 = x;
 	temp1 = #VPAND_128(temp1, mask);
 
 	temp2 = #VPAND_128(temp2, mask);
@@ -59,10 +31,11 @@ inline fn reflecting_bit_128(reg u64 ptr_x) {
     swap_me = (16u8)[ 0, 1 , 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 	
 	temp1 = #VPSHUFB_128(temp1, swap_me);
-	(u128)[ptr_x] = temp1;
+	
+	return temp1;
 }
 
-inline fn ghash(reg u128 input, reg u128 h, reg u32 i) -> reg u128 {
+inline fn mult(reg u128 a, reg u128 b) -> reg u128 {
 	// VPCLMULQDQ https://www.felixcloutier.com/x86/pclmulqdq
 
 	// https://www.intel.com/content/dam/develop/external/us/en/documents/clmul-wp-rev-2-02-2014-04-20.pdf
@@ -71,8 +44,6 @@ inline fn ghash(reg u128 input, reg u128 h, reg u32 i) -> reg u128 {
 	// [C1:C0] = A1*B1
 	// [D1:D0] = A0*B0
 	// [E1:E0] = (A0⊕A1)*(B0⊕B1)
-	reg u128 a; a = input;
-	reg u128 b; b = h;
 	
 	reg u128 c; c = #set0_128(); c = #VPCLMULQDQ(a, b, 0x11);
 	reg u128 d; d = #set0_128(); d = #VPCLMULQDQ(a, b, 0x00);
@@ -86,6 +57,8 @@ inline fn ghash(reg u128 input, reg u128 h, reg u32 i) -> reg u128 {
 	reg u128 xor_a_128; xor_a_128 = (128u) xor_a;
 	reg u128 xor_b_128; xor_b_128 = (128u) xor_b;
 	reg u128 e; e = #set0_128(); e = #VPCLMULQDQ(xor_a_128, xor_b_128, 0x00);
+
+	// reduction
 
 	e = #VPXOR(e, d);
 	e = #VPXOR(e, c);
@@ -147,32 +120,19 @@ inline fn ghash(reg u128 input, reg u128 h, reg u32 i) -> reg u128 {
 	return res;
 }
 
-// DEBUG x0
-// 00011111111101001010011110001010011100000110100010000100101100000100011100111110111111100111010101100000001110000111000111010000
+inline fn ghash(reg u128 a, reg u128 b) -> reg u128 {
+	reg u128 a_reflected; a_reflected = bit_reflect(a);
+	reg u128 b_reflected; b_reflected = bit_reflect(b);
+	
+	reg u128 res; res = mult(a_reflected, b_reflected);
 
-// DEBUG x3
-// 00000000100110110101011101000001100010000001111000000111100010010000001110100010100110110001101001001011010000111100101011110100
-
-inline fn ghash_xor(reg u128 ghash_prev, reg u128 data, reg u128 h, reg u32 i) -> reg u128 {
-	reg u128 hash_value;
-	hash_value = ghash_prev;
-
-	hash_value = #VPXOR(hash_value, data); // xor
-
-
-	hash_value = ghash(hash_value, h, i);
-
-	return hash_value;
+	res = bit_reflect(res);
+	return res;
 }
 
-// inline fn everything(reg u128 p, reg u128 k, reg u128 iv0, reg u128 iv1) -> reg u128 {
-// 	reg u128 hash_value;
-// 	hash_value = ghash_prev;
-
-// 	hash_value = #VPXOR(hash_value, data); // xor
-
-
-// 	hash_value = ghash(hash_value, h, i);
-
-// 	return hash_value;
-// }
+inline fn ghash_xor(reg u128 ghash_prev, reg u128 data, reg u128 h) -> reg u128 {
+	reg u128 res;
+	res = #VPXOR(ghash_prev, data);
+	res = ghash(res, h);
+	return res;
+}

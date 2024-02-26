@@ -10,12 +10,15 @@
 
 #include "../utils/utils.h"
 
+__m128i arr_to_u128(int8_t* arr) {
+	return _mm_loadu_si128((__m128i *) arr);
+}
+
 void u128_to_arr(__m128i value, int8_t* arr) {
 	_mm_storeu_si128((__m128i *)arr, value);
 }
 
-
-// https://www.intel.com/content/dam/develop/external/us/en/documents/clmul-wp-rev-2-02-2014-04-20.pdf
+// Code sample from Intel: https://www.intel.com/content/dam/develop/external/us/en/documents/clmul-wp-rev-2-02-2014-04-20.pdf
 // Page 25 figure 5: algorithms 1 and 5
 void gfmul_1_5(__m128i a, __m128i b, __m128i *res){
 	__m128i tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9;
@@ -65,6 +68,7 @@ void gfmul_1_5(__m128i a, __m128i b, __m128i *res){
 	*res = tmp6;
 }
 
+// Algorithm 2 and 4
 void gfmul_2_4(__m128i a, __m128i b, __m128i *res){
 	__m128i tmp0, tmp1, tmp2, d, e, tmp5, c, tmp7, tmp8, tmp9, tmp10, tmp11, tmp12;
 	__m128i XMMMASK = _mm_setr_epi32(0xffffffff, 0x0, 0x0, 0x0);
@@ -125,10 +129,6 @@ __m128i reflect_xmm(__m128i X)
  	return _mm_shuffle_epi8(tmp1, BSWAP_MASK);
 }
 
-__m128i arr_to_u128(int8_t* arr) {
-	return _mm_loadu_si128((__m128i *) arr);
-}
-
 int test_1_5() {
 	printf("######## Test 1_5 ########\n");
 	// Absolutely sure values (NIST test case 2):
@@ -136,19 +136,14 @@ int test_1_5() {
 	// h = 66e94bd4ef8a2c3b884cfa59ca342b2e
 	// res = 5e2ec746917062882c85b0685353deb7
 
-	uint8_t c[NB_BYTES_128_BITS];
-	uint8_t h[NB_BYTES_128_BITS];
-	convert_hex_string_to_uint8_array("0388dace60b6a392f328c2b971b2fe78", c, NB_BYTES_128_BITS);
-	convert_hex_string_to_uint8_array("66e94bd4ef8a2c3b884cfa59ca342b2e", h, NB_BYTES_128_BITS);
+	uint8_t c[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array("0388dace60b6a392f328c2b971b2fe78", c, NB_BYTES_128_BITS);
+	uint8_t h[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array("66e94bd4ef8a2c3b884cfa59ca342b2e", h, NB_BYTES_128_BITS);
+	
+	__m128i a = arr_to_u128(c);
+	__m128i b = arr_to_u128(h);
 
-	__m128i a, b, res;
-	a = arr_to_u128(c);
-	b = arr_to_u128(h);
-
-	gfmul_1_5(a, b, &res);
-
-	uint8_t r[NB_BYTES_128_BITS];
-	u128_to_arr(res, r);
+	__m128i res; gfmul_1_5(a, b, &res);
+	uint8_t r[NB_BYTES_128_BITS]; u128_to_arr(res, r);
 	print_uint8_array_as_hex(r, NB_BYTES_128_BITS, false);
 
 	return CODE_INFO;
@@ -161,22 +156,18 @@ int test_2_4() {
 	// h = 66e94bd4ef8a2c3b884cfa59ca342b2e
 	// res = 5e2ec746917062882c85b0685353deb7
 
-	uint8_t c[NB_BYTES_128_BITS];
-	uint8_t h[NB_BYTES_128_BITS];
-	convert_hex_string_to_uint8_array("0388dace60b6a392f328c2b971b2fe78", c, NB_BYTES_128_BITS);
-	convert_hex_string_to_uint8_array("66e94bd4ef8a2c3b884cfa59ca342b2e", h, NB_BYTES_128_BITS);
+	uint8_t c[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array("0388dace60b6a392f328c2b971b2fe78", c, NB_BYTES_128_BITS);
+	uint8_t h[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array("66e94bd4ef8a2c3b884cfa59ca342b2e", h, NB_BYTES_128_BITS);
+	
+	__m128i a = arr_to_u128(c);
+	__m128i b = arr_to_u128(h);
 
-	__m128i a, b, res;
-	a = arr_to_u128(c);
-	b = arr_to_u128(h);
+	a = reflect_xmm(a);
+	b = reflect_xmm(b);
+	__m128i res; gfmul_2_4(a, b, &res);
+	res = reflect_xmm(res);
 
-	// a = reflect_xmm(a);
-	// b = reflect_xmm(b);
-	gfmul_2_4(a, b, &res);
-	// res = reflect_xmm(res);
-
-	uint8_t r[NB_BYTES_128_BITS];
-	u128_to_arr(res, r);
+	uint8_t r[NB_BYTES_128_BITS]; u128_to_arr(res, r);
 	print_uint8_array_as_hex(r, NB_BYTES_128_BITS, false);
 
 	return CODE_INFO;
@@ -189,24 +180,19 @@ int test_reflect() {
 	// res = 5e2ec746917062882c85b0685353deb7
 
 
-	uint8_t c[NB_BYTES_128_BITS];
-	uint8_t h[NB_BYTES_128_BITS];
-	convert_hex_string_to_uint8_array("0388dace60b6a392f328c2b971b2fe78", c, NB_BYTES_128_BITS);
-	convert_hex_string_to_uint8_array("66e94bd4ef8a2c3b884cfa59ca342b2e", h, NB_BYTES_128_BITS);
+	uint8_t c[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array("0388dace60b6a392f328c2b971b2fe78", c, NB_BYTES_128_BITS);
+	uint8_t h[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array("66e94bd4ef8a2c3b884cfa59ca342b2e", h, NB_BYTES_128_BITS);
+	
+	__m128i a = arr_to_u128(c);
+	__m128i b = arr_to_u128(h);
 
-	__m128i a, b, res1, res2;
-	a = arr_to_u128(c);
-	b = arr_to_u128(h);
+	__m128i res1 = reflect_xmm(a);
+	__m128i res2 = reflect_xmm(b);
 
-	res1 = reflect_xmm(a);
-	res2 = reflect_xmm(b);
-
-	uint8_t r1[NB_BYTES_128_BITS];
-	u128_to_arr(res1, r1);
+	uint8_t r1[NB_BYTES_128_BITS]; u128_to_arr(res1, r1);
 	print_uint8_array_as_hex(r1, NB_BYTES_128_BITS, false);
 
-	uint8_t r2[NB_BYTES_128_BITS];
-	u128_to_arr(res2, r2);
+	uint8_t r2[NB_BYTES_128_BITS]; u128_to_arr(res2, r2);
 	print_uint8_array_as_hex(r2, NB_BYTES_128_BITS, false);
 
 	return CODE_INFO;
