@@ -4,9 +4,9 @@ require "../aes/aes.jinc"
 // Hash Key: encipher the zero 128-bit string
 inline fn compute_hash_key(reg u128 key) -> reg u128 {
 	key = key;
-	
-	reg u128 hash_key; hash_key = #set0_128();
-	hash_key = aes(key, hash_key);
+
+	reg u128 zero; zero = #set0_128();
+	reg u128 hash_key; hash_key = aes(key, zero);
 	return hash_key;
 }
 
