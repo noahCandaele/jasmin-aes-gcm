@@ -9,7 +9,6 @@ inline fn compute_hash_key(reg u128 key) -> reg u128 {
 	reg u128 hash_key; hash_key = aes(key, zero);
 	return hash_key;
 }
-
 // inline fn aes_gcm(reg u128 key, reg u128 iv, reg u64 ptr_auth_data, reg u64 length_auth_data, reg u64 ptr_plain, reg u64 length_plain, reg u64 ptrout_auth_tag, reg u64 ptrout_cipher) {
 // 	key = key;
 // 	iv = iv;

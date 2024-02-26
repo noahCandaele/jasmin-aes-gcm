@@ -50,6 +50,26 @@ extern void compute_hash_key_jazz(uint8_t* key, uint8_t* out_h);
 // 	return CODE_SUCCESS;
 // }
 
+int test_compute_hash_key_nist2() {
+	printf("######## test_compute_hash_key nist test case 2 ########\n");
+
+	uint8_t key[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("00000000000000000000000000000000", key, NB_BYTES_128_BITS);
+	uint8_t expected_hash_key[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("66e94bd4ef8a2c3b884cfa59ca342b2e", expected_hash_key, NB_BYTES_128_BITS);
+
+	uint8_t hash_key[NB_BYTES_128_BITS]; compute_hash_key_jazz(key, hash_key);
+
+	printf("Key               (hex): "); print_uint8_array_as_hex_in_order(key, NB_BYTES_128_BITS, false);
+	printf("Expected hash key (hex): "); print_uint8_array_as_hex_in_order(expected_hash_key, NB_BYTES_128_BITS, false);
+	printf("Actual hash key   (hex): "); print_uint8_array_as_hex_in_order(hash_key, NB_BYTES_128_BITS, false);
+
+	if (!compare_uint8_arrays(hash_key, expected_hash_key, NB_BYTES_128_BITS)) {
+		printf("ERROR: hash key is not as expected\n");
+		return CODE_FAILURE;
+	}
+
+	return CODE_SUCCESS;
+}
+
 int test_compute_hash_key_nist4() {
 	printf("######## test_compute_hash_key nist test case 4 ########\n");
 
@@ -74,6 +94,7 @@ int main()
 {
 	// print_test_return_status(test_nist4());
 
+	print_test_return_status(test_compute_hash_key_nist2());
 	print_test_return_status(test_compute_hash_key_nist4());
 
 	return CODE_SUCCESS;
