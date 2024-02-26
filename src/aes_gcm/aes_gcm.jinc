@@ -9,15 +9,58 @@ inline fn compute_hash_key(reg u128 key) -> reg u128 {
 	reg u128 hash_key; hash_key = aes(key, zero);
 	return hash_key;
 }
-// inline fn aes_gcm(reg u128 key, reg u128 iv, reg u64 ptr_auth_data, reg u64 length_auth_data, reg u64 ptr_plain, reg u64 length_plain, reg u64 ptrout_auth_tag, reg u64 ptrout_cipher) {
-// 	key = key;
-// 	iv = iv;
-// 	ptr_auth_data = ptr_auth_data;
-// 	length_auth_data = length_auth_data;
-// 	ptr_plain = ptr_plain;
-// 	length_plain = length_plain;
-// 	ptrout_cipher = ptrout_cipher;
-// 	ptrout_auth_tag = ptrout_auth_tag;
 
-// 	// TODO
-// }
+// Computes the length string, which has a size of 1 block (128 bits).
+// We will use the length string to compute the authentication tag.
+// The 64 first bits are the length of the authentication data in bits.
+// The 64 last bits are the length of the plain in bits.
+// The inputs are in bytes.
+inline fn compute_length_str(reg u64 length_auth_data, reg u64 length_plain) -> reg u128 {
+	reg u128 length_str; length_str = #set0_128();
+	reg u64 temp; temp = length_auth_data;
+	temp *= 8;
+	temp = #BSWAP_64(temp);
+	length_str = (128u)temp;
+	temp = length_plain;
+	temp *= 8;
+	temp = #BSWAP_64(temp);
+	length_str = #VPINSR_2u64(length_str, temp, 1);
+	return length_str;
+}
+
+// export fn aes_gcm(reg u128 key, reg u128 iv, reg u64 ptr_auth_data, reg u64 length_auth_data, reg u64 ptr_plain, reg u64 length_plain, reg u64 ptrout_auth_tag, reg u64 ptrout_cipher) {
+export fn aes_gcm(reg u64 ptr_args) {
+	reg u64 ptr_values;
+	ptr_values = ptr_args;
+	reg u64 ptr_key ptr_iv ptr_auth_data ptr_length_auth_data ptr_plain ptr_length_plain ptrout_auth_tag ptrout_cipher;
+
+	ptr_key = (u64)[ptr_values];
+	ptr_iv = (u64)[ptr_values + 8];
+	ptr_auth_data = (u64)[ptr_values + 16];
+	ptr_length_auth_data = (u64)[ptr_values + 24];
+	ptr_plain = (u64)[ptr_values + 32];
+	ptr_length_plain = (u64)[ptr_values + 40];
+	ptrout_auth_tag = (u64)[ptr_values + 48];
+	ptrout_cipher = (u64)[ptr_values + 56];
+
+	reg u128 iv; iv = (u128)[ptr_iv];
+	(u128)[ptr_key] = iv;
+
+
+	// (u128)[ptr_temp] = iv;
+
+	// ptr_auth_data
+	// key = key;
+	// iv = iv;
+	// ptr_auth_data = ptr_auth_data;
+	// length_auth_data = length_auth_data;
+	// ptr_plain = ptr_plain;
+	// length_plain = length_plain;
+	// ptrout_cipher = ptrout_cipher;
+	// ptrout_auth_tag = ptrout_auth_tag;
+
+	// 	uint8_t* args_func[] = {key, iv, auth_data, length_auth_data, plain, length_plain, auth_tag, cipher};
+
+
+	// TODO
+}
