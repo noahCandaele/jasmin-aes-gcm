@@ -34,11 +34,9 @@ inline fn random128() -> reg u128 {
 inline fn iv_init() -> reg u128 {
 	reg u32 rand32;
 	rand32 = random32();
-	// rand32 = 0x12345678; // TODO remove
 
 	reg u64 rand64;
 	rand64 = random64();
-	// rand64 = 0xaaaabbbbccccdddd; // TODO remove
 
 	reg u128 res;
 	res = #set0_128();

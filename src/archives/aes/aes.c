@@ -201,7 +201,7 @@ int test_aes256() {
 
 	free(key); free(plain); free(cipher);
 
-	// TODO test not fully implemented
+	// test not fully implemented
 	return CODE_FAILURE;
 }
 
@@ -218,7 +218,7 @@ int test_aes128_block_cipher_mode_encryption_module() {
 		printf("test_aes128_block_cipher_mode: allocation of key, iv, plain or cipher failed");
 		return CODE_FAILURE;
 	}
-	// TODO remettre
+	// remettre
 	convert_hex_string_to_uint8_array("5468617473206D79204B756E67204675", key, NB_BYTES_128_BITS);
 	convert_hex_string_to_uint8_array("f34481ec3cc627bacd5dc3fb08f273e6", iv, NB_BYTES_128_BITS);
 	convert_hex_string_to_uint8_array("54776F204F6E65204E696E652054776F", plain, NB_BYTES_128_BITS);
@@ -351,7 +351,7 @@ int test_aes128_block_cipher_mode_encryption_full() {
 			printf("test_aes128_block_cipher_mode_encryption_full: allocation failed");
 			return CODE_FAILURE;
 		}
-		// get ith block of plaintext // TODO mistake here
+		// get ith block of plaintext // mistake here
 		convert_hex_string_to_uint8_array(plaintext_hex_full + i * NB_BYTES_128_BITS*2*sizeof(char), plain, NB_BYTES_128_BITS);
 
 		// print plain
@@ -390,8 +390,8 @@ int test_aes128_block_cipher_mode_encryption_full() {
 	printf("full plaintext (hex)  : "); print_uint8_array_as_hex(plain_computed_full, nb_cipher_blocks*NB_BYTES_128_BITS, true);
 	printf("full plaintext (ascii): "); print_uint8_array_as_ascii(plain_computed_full, nb_cipher_blocks*NB_BYTES_128_BITS, true);
 	
-	// TODO free tout
-	// TODO test pas complet
+	// free tout
+	// test pas complet
 	return CODE_FAILURE;
 }
 
