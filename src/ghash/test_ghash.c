@@ -8,47 +8,47 @@
 #include "../utils/utils.h"
 
 extern void ghash_jazz(uint8_t* input, uint8_t* h, uint32_t i, uint8_t* out_res);
-extern void ghash_xor_jazz(uint8_t* ghash_prev, uint8_t* data,  uint8_t* h, uint32_t i, uint8_t* out_res);
-extern void tag_jazz(uint8_t* h, uint8_t* ghash, uint8_t* out_tag);
+// extern void ghash_xor_jazz(uint8_t* ghash_prev, uint8_t* data,  uint8_t* h, uint32_t i, uint8_t* out_res);
+// extern void tag_jazz(uint8_t* h, uint8_t* ghash, uint8_t* out_tag);
 
 extern void reflecting_bit(uint8_t* in);
 
 const bool CONVENTION_IN_ORDER = true;
 
-int test_ghash() {
+// int test_ghash() {
 	
-	printf("######## Test ghash ########\n");
+// 	printf("######## Test ghash ########\n");
 
-	uint8_t k[NB_BYTES_128_BITS];
-	uint8_t p[NB_BYTES_128_BITS];
-	uint8_t iv[NB_BYTES_128_BITS];
-	uint8_t iv0[NB_BYTES_128_BITS];
-	uint8_t c[NB_BYTES_128_BITS];
-	uint8_t h[NB_BYTES_128_BITS];
-	uint8_t len[NB_BYTES_128_BITS];
+// 	uint8_t k[NB_BYTES_128_BITS];
+// 	uint8_t p[NB_BYTES_128_BITS];
+// 	uint8_t iv[NB_BYTES_128_BITS];
+// 	uint8_t iv0[NB_BYTES_128_BITS];
+// 	uint8_t c[NB_BYTES_128_BITS];
+// 	uint8_t h[NB_BYTES_128_BITS];
+// 	uint8_t len[NB_BYTES_128_BITS];
 	
-	convert_hex_string_to_uint8_array("00000000000000000000000000000000", k, NB_BYTES_128_BITS);
-	convert_hex_string_to_uint8_array("00000000000000000000000000000000", p, NB_BYTES_128_BITS);
-	convert_hex_string_to_uint8_array("00000000000000000000000000000001", iv, NB_BYTES_128_BITS);
-	convert_hex_string_to_uint8_array("00000000000000000000000000000000", iv0, NB_BYTES_128_BITS);
-	convert_hex_string_to_uint8_array("0388dace60b6a392f328c2b971b2fe78", c, NB_BYTES_128_BITS);
-	convert_hex_string_to_uint8_array("66e94bd4ef8a2c3b884cfa59ca342b2e", h, NB_BYTES_128_BITS);
-	convert_hex_string_to_uint8_array("00000000000000000000000000000080", len, NB_BYTES_128_BITS);
+// 	convert_hex_string_to_uint8_array("00000000000000000000000000000000", k, NB_BYTES_128_BITS);
+// 	convert_hex_string_to_uint8_array("00000000000000000000000000000000", p, NB_BYTES_128_BITS);
+// 	convert_hex_string_to_uint8_array("00000000000000000000000000000001", iv, NB_BYTES_128_BITS);
+// 	convert_hex_string_to_uint8_array("00000000000000000000000000000000", iv0, NB_BYTES_128_BITS);
+// 	convert_hex_string_to_uint8_array("0388dace60b6a392f328c2b971b2fe78", c, NB_BYTES_128_BITS);
+// 	convert_hex_string_to_uint8_array("66e94bd4ef8a2c3b884cfa59ca342b2e", h, NB_BYTES_128_BITS);
+// 	convert_hex_string_to_uint8_array("00000000000000000000000000000080", len, NB_BYTES_128_BITS);
 
-	uint8_t ghash1[NB_BYTES_128_BITS];
-	ghash_jazz(c, h, 0, ghash1);
-	print_uint8_array_as_hex(ghash1, NB_BYTES_128_BITS, false);
+// 	uint8_t ghash1[NB_BYTES_128_BITS];
+// 	ghash_jazz(c, h, 0, ghash1);
+// 	print_uint8_array_as_hex(ghash1, NB_BYTES_128_BITS, false);
 
-	uint8_t ghash2[NB_BYTES_128_BITS];
-	ghash_xor_jazz(ghash1, len, h, 1, ghash2);
-	print_uint8_array_as_hex(ghash2, NB_BYTES_128_BITS, false);
+// 	uint8_t ghash2[NB_BYTES_128_BITS];
+// 	ghash_xor_jazz(ghash1, len, h, 1, ghash2);
+// 	print_uint8_array_as_hex(ghash2, NB_BYTES_128_BITS, false);
 
-	uint8_t tag[NB_BYTES_128_BITS];
-	tag_jazz(h, ghash2, tag);
-	print_uint8_array_as_hex(tag, NB_BYTES_128_BITS, false);
+// 	uint8_t tag[NB_BYTES_128_BITS];
+// 	tag_jazz(h, ghash2, tag);
+// 	print_uint8_array_as_hex(tag, NB_BYTES_128_BITS, false);
 
-	return CODE_INFO;
-}
+// 	return CODE_INFO;
+// }
 
 int test_ghash_nist2() {
 	
@@ -93,11 +93,11 @@ int test_ghash_generic(char* data1_str, char* data2_str, char* ghash_expected_st
 	else convert_hex_string_to_uint8_array(data2_str, data2, NB_BYTES_128_BITS);
 
 	printf("Input 1         (hex): ");
-	if (in_order) print_uint8_array_as_hex_in_order(data1, NB_BYTES_128_BITS, false);
-	else print_uint8_array_as_hex(data1, NB_BYTES_128_BITS, false);
+	if (in_order) print_uint8_array_as_hex_in_order(data1, NB_BYTES_128_BITS, true);
+	else print_uint8_array_as_hex(data1, NB_BYTES_128_BITS, true);
 	printf("Input 2         (hex): ");
-	if (in_order) print_uint8_array_as_hex_in_order(data2, NB_BYTES_128_BITS, false);
-	else print_uint8_array_as_hex(data2, NB_BYTES_128_BITS, false);
+	if (in_order) print_uint8_array_as_hex_in_order(data2, NB_BYTES_128_BITS, true);
+	else print_uint8_array_as_hex(data2, NB_BYTES_128_BITS, true);
 
 	uint8_t ghash_expected[NB_BYTES_128_BITS];
 	if (in_order) convert_hex_string_to_uint8_array_in_order(ghash_expected_str, ghash_expected, NB_BYTES_128_BITS);
@@ -109,16 +109,16 @@ int test_ghash_generic(char* data1_str, char* data2_str, char* ghash_expected_st
 
 
 	printf("Expected output (hex): ");
-	if (in_order) print_uint8_array_as_hex_in_order(ghash_expected, NB_BYTES_128_BITS, false);
-	else print_uint8_array_as_hex(ghash_expected, NB_BYTES_128_BITS, false);
+	if (in_order) print_uint8_array_as_hex_in_order(ghash_expected, NB_BYTES_128_BITS, true);
+	else print_uint8_array_as_hex(ghash_expected, NB_BYTES_128_BITS, true);
 	printf("Actual output   (hex): ");
-	if (in_order) print_uint8_array_as_hex_in_order(ghash, NB_BYTES_128_BITS, false);
-	else print_uint8_array_as_hex(ghash, NB_BYTES_128_BITS, false);
+	if (in_order) print_uint8_array_as_hex_in_order(ghash, NB_BYTES_128_BITS, true);
+	else print_uint8_array_as_hex(ghash, NB_BYTES_128_BITS, true);
 
-	printf("Expected output (bin): ");
-	print_uint8_array_as_binary(ghash_expected, NB_BYTES_128_BITS, true);
-	printf("Actual output   (bin): ");
-	print_uint8_array_as_binary(ghash, NB_BYTES_128_BITS, true);
+	// printf("Expected output (bin): ");
+	// print_uint8_array_as_binary(ghash_expected, NB_BYTES_128_BITS, true);
+	// printf("Actual output   (bin): ");
+	// print_uint8_array_as_binary(ghash, NB_BYTES_128_BITS, true);
 
 	if(!compare_uint8_arrays(ghash, ghash_expected, NB_BYTES_128_BITS)) {
 		// printf("Error: expected output and actual output are different.\n");

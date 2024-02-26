@@ -1,8 +1,8 @@
 require "ghash.jinc"
 
 export fn ghash_jazz(reg u64 ptr_input, reg u64 ptr_h, reg u32 i, reg u64 ptrout_res) {
-	reflecting_bit_128(ptr_input);
-	reflecting_bit_128(ptr_h);
+	// reflecting_bit_128(ptr_input);
+	// reflecting_bit_128(ptr_h);
 	reg u128 input; input = (u128)[ptr_input];
 	reg u128 h; h = (u128)[ptr_h];
 	i = i;
@@ -10,28 +10,28 @@ export fn ghash_jazz(reg u64 ptr_input, reg u64 ptr_h, reg u32 i, reg u64 ptrout
 	reg u128 res; res = ghash(input, h, i);
 
 	(u128)[ptrout_res] = res;
-	reflecting_bit_128(ptrout_res);
+	// reflecting_bit_128(ptrout_res);
 }
 
-export fn ghash_xor_jazz(reg u64 ptr_ghash_prev, reg u64 ptr_data,  reg u64 ptr_h, reg u32 i, reg u64 ptrout_res) {
-	reg u128 ghash_prev; ghash_prev = (u128)[ptr_ghash_prev];
-	reg u128 data; data = (u128)[ptr_data];
-	reg u128 h; h = (u128)[ptr_h];
-	i = i;
+// export fn ghash_xor_jazz(reg u64 ptr_ghash_prev, reg u64 ptr_data,  reg u64 ptr_h, reg u32 i, reg u64 ptrout_res) {
+// 	reg u128 ghash_prev; ghash_prev = (u128)[ptr_ghash_prev];
+// 	reg u128 data; data = (u128)[ptr_data];
+// 	reg u128 h; h = (u128)[ptr_h];
+// 	i = i;
 
-	reg u128 res; res = ghash_xor(ghash_prev, data, h, i);
+// 	reg u128 res; res = ghash_xor(ghash_prev, data, h, i);
 
-	(u128)[ptrout_res] = res;
-}
+// 	(u128)[ptrout_res] = res;
+// }
 
-export fn tag_jazz(reg u64 ptr_iv_enc, reg u64 ptr_ghash, reg u64 ptrout_tag) {
-	reg u128 iv_enc; iv_enc = (u128)[ptr_iv_enc];
-	reg u128 ghash; ghash = (u128)[ptr_ghash];
+// export fn tag_jazz(reg u64 ptr_iv_enc, reg u64 ptr_ghash, reg u64 ptrout_tag) {
+// 	reg u128 iv_enc; iv_enc = (u128)[ptr_iv_enc];
+// 	reg u128 ghash; ghash = (u128)[ptr_ghash];
 
-	reg u128 tag; tag = #VPXOR(iv_enc, ghash);
+// 	reg u128 tag; tag = #VPXOR(iv_enc, ghash);
 
-	(u128)[ptrout_tag] = tag;
-}
+// 	(u128)[ptrout_tag] = tag;
+// }
 
 export fn reflecting_bit(reg u64 a) {
 	reflecting_bit_128(a);

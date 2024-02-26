@@ -66,50 +66,54 @@ void gfmul_1_5(__m128i a, __m128i b, __m128i *res){
 }
 
 void gfmul_2_4(__m128i a, __m128i b, __m128i *res){
+	// STEP 1
 	__m128i tmp0, tmp1, tmp2, d, e, tmp5, c, tmp7, tmp8, tmp9, tmp10, tmp11, tmp12;
 	__m128i XMMMASK = _mm_setr_epi32(0xffffffff, 0x0, 0x0, 0x0);
 
-	// algo 2
-	uint8_t r2[NB_BYTES_128_BITS];
+	// STEP 2
 	c = _mm_clmulepi64_si128(a, b, 0x11);
 	d = _mm_clmulepi64_si128(a, b, 0x00);
+
+
+	// STEP 3
 	e = _mm_shuffle_epi32(a,78);
 	tmp5 = _mm_shuffle_epi32(b,78);
 	e = _mm_xor_si128(e, a);
 	tmp5 = _mm_xor_si128(tmp5, b);
 	e = _mm_clmulepi64_si128(e, tmp5, 0x00);
 
-
+	// STEP 4
 	e = _mm_xor_si128(e, d);
 	e = _mm_xor_si128(e, c);
 
+	// OK
+
+	// STEP 5
 	tmp5 = _mm_slli_si128(e, 8);
 	e = _mm_srli_si128(e, 8);
 	d = _mm_xor_si128(d, tmp5);
 	c = _mm_xor_si128(c, e);
+	printf("DEBUG: "); uint8_t out[NB_BYTES_128_BITS]; u128_to_arr(tmp5, out); print_uint8_array_as_hex(out, NB_BYTES_128_BITS, true);
 
-	printf("\nDEBUG x0 \n");
-	u128_to_arr(d, r2);
-	print_uint8_array_as_binary(r2, NB_BYTES_128_BITS, false);
-	printf("\nDEBUG x3 \n");
-	u128_to_arr(c, r2);
-	print_uint8_array_as_binary(r2, NB_BYTES_128_BITS, false);
-
+	// STEP 6
 	tmp7 = _mm_srli_epi32(c, 31);
 	tmp8 = _mm_srli_epi32(c, 30);
 	tmp9 = _mm_srli_epi32(c, 25);
 
+	// STEP 7
 	tmp7 = _mm_xor_si128(tmp7, tmp8);
 	tmp7 = _mm_xor_si128(tmp7, tmp9);
 
+	// STEP 8
 	tmp8 = _mm_shuffle_epi32(tmp7, 147);
 
+	// STEP 9
 	tmp7 = _mm_and_si128(XMMMASK, tmp8);
 	tmp8 = _mm_andnot_si128(XMMMASK, tmp8);
 	d = _mm_xor_si128(d, tmp8);
 	c = _mm_xor_si128(c, tmp7);
 
-
+	// STEP 10
 	tmp10 = _mm_slli_epi32(c, 1);
 	d = _mm_xor_si128(d, tmp10);
 	tmp11 = _mm_slli_epi32(c, 2);
@@ -117,8 +121,8 @@ void gfmul_2_4(__m128i a, __m128i b, __m128i *res){
 	tmp12 = _mm_slli_epi32(c, 7);
 	d = _mm_xor_si128(d, tmp12);
 
-	*res = _mm_xor_si128(d, c);;
-
+	// STEP 11
+	*res = _mm_xor_si128(d, c);
 }
 
 __m128i reflect_xmm(__m128i X)
@@ -188,14 +192,15 @@ int test_2_4() {
 	a = arr_to_u128(c);
 	b = arr_to_u128(h);
 
-	a = reflect_xmm(a);
-	b = reflect_xmm(b);
+	// a = reflect_xmm(a);
+	// b = reflect_xmm(b);
 	gfmul_2_4(a, b, &res);
-	res = reflect_xmm(res);
+	// res = reflect_xmm(res);
 
 	uint8_t r[NB_BYTES_128_BITS];
 	u128_to_arr(res, r);
-	print_uint8_array_as_hex(r, NB_BYTES_128_BITS, false);
+	print_uint8_array_as_hex(r, NB_BYTES_128_BITS, true);
+	// print_uint8_array_as_binary(r, NB_BYTES_128_BITS, true);
 
 	return CODE_INFO;
 }
