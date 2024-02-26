@@ -24,12 +24,6 @@ inline fn incr_iv(reg u128 iv) -> reg u128 {
 
 // TODO check if the user is not giving a string of size longer than counter max size
 inline fn aes_counter(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u32 length, reg u128 key, reg u128 iv) {
-	ptr_plain = ptr_plain;
-	ptrout_cipher = ptrout_cipher;
-	length = length;
-	key = key;
-	iv = iv;
-
 	reg u32 byte_index block_id;
 	block_id = 0;
 	byte_index = 0;

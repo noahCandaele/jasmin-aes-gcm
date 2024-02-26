@@ -8,8 +8,8 @@
 
 #include "../utils/utils.h"
 
-extern void aes_counter_jazz(uint8_t* plain, uint8_t* out_cipher, int length, uint8_t* key);
 extern void aes_counter_iv_jazz(uint8_t* plain, uint8_t* out_cipher, int length, uint8_t* key, uint8_t* iv);
+extern void aes_counter_jazz(uint8_t* plain, uint8_t* out_cipher, int length, uint8_t* key);
 
 int test_yoda(){
 	printf("######## Test yoda ########\n");
