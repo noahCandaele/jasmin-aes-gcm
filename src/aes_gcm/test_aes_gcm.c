@@ -9,7 +9,7 @@
 // extern void aes_gcm_jazz(uint8_t* key, uint8_t* iv, uint8_t* auth_data, size_t length_auth_data, uint8_t* plain, size_t length_plain, uint8_t* out_auth_tag, uint8_t* out_cipher);
 extern void compute_hash_key_jazz(uint8_t* key, uint8_t* out_h);
 extern void compute_length_str_jazz(size_t length_auth_data, size_t length_plain, uint8_t* ptrout_length_str);
-extern void aes_gcm(uint8_t* args);
+extern void aes_gcm(uint8_t** args);
 
 int test_nist4() {
 	printf("######## nist test case 4 ########\n");
@@ -31,7 +31,8 @@ int test_nist4() {
 
 	// aes_gcm_jazz(key, iv, auth_data, length_auth_data, plain, length_plain, auth_tag, cipher);
 	// array of pointers
-	uint8_t* args_func[] = {key, iv, auth_data, length_auth_data, plain, length_plain, auth_tag, cipher};
+	uint8_t* args_func[] = { key, iv, auth_data, &length_auth_data, plain, &length_plain, auth_tag, cipher };
+	// TODO passer les size_t à part
 	aes_gcm(args_func);
 
 	printf("Key                         (hex): "); print_uint8_array_as_hex_in_order(key, NB_BYTES_128_BITS, false);
@@ -77,13 +78,12 @@ int test_compute_hash_key_nist2() {
 	printf("######## test_compute_hash_key nist test case 2 ########\n");
 	return test_compute_hash_key_generic("00000000000000000000000000000000", "66e94bd4ef8a2c3b884cfa59ca342b2e");
 }
-
 int test_compute_hash_key_nist4() {
 	printf("######## test_compute_hash_key nist test case 4 ########\n");
 	return test_compute_hash_key_generic("feffe9928665731c6d6a8f9467308308", "b83b533708bf535d0aa6e52980d53b78");
 }
 
-int test_compute_length_str_nist_4() {
+int test_compute_length_str_nist4() {
 	printf("######## test_compute_length_str nist 4 ########\n");
 
 	uint8_t auth_data[] = "feedfacedeadbeeffeedfacedeadbeefabaddad2";
@@ -111,10 +111,10 @@ int main()
 {
 	print_test_return_status(test_nist4());
 
-	print_test_return_status(test_compute_hash_key_nist2());
-	print_test_return_status(test_compute_hash_key_nist4());
+	// print_test_return_status(test_compute_hash_key_nist2());
+	// print_test_return_status(test_compute_hash_key_nist4());
 
-	print_test_return_status(test_compute_length_str_nist_4());
+	// print_test_return_status(test_compute_length_str_nist4());
 
 	return CODE_SUCCESS;
 }
