@@ -9,7 +9,7 @@
 // Convention: read the blocks in order, or in reverse?
 bool CONVENTION_IN_ORDER = true;
 
-extern void get_block_export(uint8_t* data, uint8_t* out_block, int data_length, int block_id);
+extern void get_block_jazz(uint8_t* data, uint8_t* out_block, int data_length, int block_id);
 
 int test_generic(char* data_str, int block_id, char* block_str_expected) {
 	// Data
@@ -36,7 +36,7 @@ int test_generic(char* data_str, int block_id, char* block_str_expected) {
 
 	// Get block
 	uint8_t block[block_length_expected];
-	get_block_export(data, block, data_length, block_id);
+	get_block_jazz(data, block, data_length, block_id);
 	
 	// Print output
 	printf("Expected output: %s\n", block_str_expected);

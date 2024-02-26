@@ -8,8 +8,8 @@
 
 #include "../utils/utils.h"
 
-// void aes_count(int8_t* plain, int8_t* out_cipher, int length, int8_t* key);
-void aes_count_iv(int8_t* plain, int8_t* out_cipher, int length, int8_t* key, int8_t* iv);
+extern void aes_counter_jazz(uint8_t* plain, uint8_t* out_cipher, int length, uint8_t* key);
+extern void aes_counter_iv_jazz(uint8_t* plain, uint8_t* out_cipher, int length, uint8_t* key, uint8_t* iv);
 
 int test_yoda(){
 	printf("######## Test yoda ########\n");
@@ -20,7 +20,7 @@ int test_yoda(){
 	uint8_t iv[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 	uint8_t cipher[NB_BYTES_128_BITS];
 
-	aes_count_iv(iv, cipher, NB_BYTES_128_BITS, key, plain);
+	aes_counter_iv_jazz(iv, cipher, NB_BYTES_128_BITS, key, plain);
 	
 	printf("Expected cipher (hex): "); print_uint8_array_as_hex_in_order(cipher_expected, NB_BYTES_128_BITS, true);
 	printf("Actual cipher   (hex): "); print_uint8_array_as_hex_in_order(cipher, NB_BYTES_128_BITS, true);
@@ -41,7 +41,7 @@ int test_nist2(){
 	uint8_t iv[] = {0x00, 0x00, 0x00 ,0x00, 0x00, 0x00, 0x00, 0x00, 0x00 ,0x00, 0x00, 0x00, 0x00, 0x00, 0x00 ,0x02};
 	uint8_t cipher[NB_BYTES_128_BITS];
 
-	aes_count_iv(plain, cipher, NB_BYTES_128_BITS, key, iv);
+	aes_counter_iv_jazz(plain, cipher, NB_BYTES_128_BITS, key, iv);
 	
 	printf("Expected cipher (hex): "); print_uint8_array_as_hex_in_order(cipher_expected, NB_BYTES_128_BITS, true);
 	printf("Actual cipher   (hex): "); print_uint8_array_as_hex_in_order(cipher, NB_BYTES_128_BITS, true);
@@ -78,7 +78,7 @@ int test_nist3(){
 	convert_hex_string_to_uint8_array_in_order(cipher_expected_str, cipher_expected, cipher_expected_size);
 
 	uint8_t cipher[cipher_expected_size];
-	aes_count_iv(plain, cipher, plain_size, key, iv);
+	aes_counter_iv_jazz(plain, cipher, plain_size, key, iv);
 	
 	printf("Expected cipher (hex): "); print_uint8_array_as_hex_in_order(cipher_expected, cipher_expected_size, true);
 	printf("Actual cipher   (hex): "); print_uint8_array_as_hex_in_order(cipher, cipher_expected_size, true);

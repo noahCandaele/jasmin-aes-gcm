@@ -5,15 +5,15 @@ default: compile
 
 compile: jasmin utils jasmin_syscall main
 jasmin:
-	jasminc aes_count.jazz -o aes_count.s
+	jasminc aes_counter.jazz -o aes_counter.s
 main:
-	gcc aes_count.c jasmin_syscall.o utils.o aes_count.s -o aes_count.out -lm
+	gcc test_aes_counter.c jasmin_syscall.o utils.o aes_counter.s -o test_aes_counter.out -lm
 jasmin_syscall:
 	gcc -c $(LIB_SYSCALL_PATH)/jasmin_syscall.c -o jasmin_syscall.o
 utils:
 	gcc -c $(UTILS_PATH)/utils.c -o utils.o -lm
 run:
-	@./aes_count.out
+	@./test_aes_counter.out
 
 full:
 	@echo "-------- Clean --------" 

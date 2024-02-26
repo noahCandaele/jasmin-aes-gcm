@@ -147,7 +147,7 @@ bool compare_uint8_arrays(const uint8_t* array1, const uint8_t* array2, size_t s
 void convert_hex_string_to_uint8_array(char* hex_string, uint8_t* uint8_array, size_t uint8_array_size) {
 	for (size_t i = 0; i < uint8_array_size; ++i) {
 		char hex[2] = { hex_string[i * 2], hex_string[i * 2 + 1] };
-		// cast to int8_t
+		// cast to uint8_t
 		uint8_array[uint8_array_size-i-1] = (uint8_t)strtol(hex, NULL, BASE_16);
 	}
 }
@@ -169,7 +169,7 @@ void convert_uint8_array_to_ascii_string(uint8_t* uint8_array, size_t uint8_arra
 void convert_hex_string_to_uint8_array_in_order(char* hex_string, uint8_t* uint8_array, size_t uint8_array_size) {
 	for (size_t i = 0; i < uint8_array_size; ++i) {
 		char hex[2] = { hex_string[i * 2], hex_string[i * 2 + 1] };
-		// cast to int8_t
+		// cast to uint8_t
 		uint8_array[i] = (uint8_t)strtol(hex, NULL, BASE_16);
 	}
 }

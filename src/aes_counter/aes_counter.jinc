@@ -80,32 +80,3 @@ inline fn aes_counter(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u32 length, 
 		byte_index += 16;
 	}
 }
-
-
-export fn aes_count(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u32 length, reg u64 ptr_key) {
-	ptr_plain = ptr_plain;
-	ptrout_cipher = ptrout_cipher;
-	length = length;
-	ptr_key = ptr_key;
-	
-	reg u128 iv;
-	iv = iv_init();
-	
-	reg u128 key;
-	key = (u128)[ptr_key];
-
-	aes_counter(ptr_plain, ptrout_cipher, length, key, iv);
-}
-
-export fn aes_count_iv(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u32 length, reg u64 ptr_key, reg u64 ptr_iv) {
-	ptr_plain = ptr_plain;
-	ptrout_cipher = ptrout_cipher;
-	length = length;
-	ptr_key = ptr_key;
-	ptr_iv = ptr_iv;
-
-	reg u128 key iv;
-	key = (u128)[ptr_key];
-	iv = (u128)[ptr_iv];
-	aes_counter(ptr_plain, ptrout_cipher, length, key, iv);
-}
