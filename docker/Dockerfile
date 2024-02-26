@@ -10,7 +10,8 @@ RUN apt-get update && \
 	gpg \
 	gcc \
 	make \
-	vim
+	vim \
+	python3
 
 # Create a non-root user for Nix
 RUN useradd -m -s /bin/bash user
@@ -32,6 +33,12 @@ RUN nix-collect-garbage
 
 # Install Jasmin compiler
 RUN nix-env -iA nixpkgs.jasmin-compiler
+
+# Install pip for python
+RUN curl -L https://bootstrap.pypa.io/get-pip.py | python3
+
+# Install matplotlib
+RUN python3 -m pip install matplotlib
 
 # Color the container bash prompt
 ENV force_color_prompt=yes
