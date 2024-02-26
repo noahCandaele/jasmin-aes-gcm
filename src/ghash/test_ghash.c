@@ -106,7 +106,9 @@ int test_ghash_generic(char* data1_str, char* data2_str, char* ghash_expected_st
 	uint8_t ghash[NB_BYTES_128_BITS];
 	ghash_jazz(data1, data2, 0, ghash);
 
-
+	printf("\n\nDEBUG\n\n");
+	print_uint8_array_as_hex(ghash, NB_BYTES_128_BITS, false);
+	printf("\n\nDEBUG\n\n");	
 
 	printf("Expected output (hex): ");
 	if (in_order) print_uint8_array_as_hex_in_order(ghash_expected, NB_BYTES_128_BITS, false);
