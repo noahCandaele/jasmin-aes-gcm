@@ -115,10 +115,10 @@ int test_ghash_generic(char* data1_str, char* data2_str, char* ghash_expected_st
 	if (in_order) print_uint8_array_as_hex_in_order(ghash, NB_BYTES_128_BITS, false);
 	else print_uint8_array_as_hex(ghash, NB_BYTES_128_BITS, false);
 
-	// print debug
-	printf("\n\nDEBUG: \n");
-	printf("\nActual output   (binary): \n");
-	print_uint8_array_as_binary(ghash, NB_BYTES_128_BITS, false);
+	printf("Expected output (bin): ");
+	print_uint8_array_as_binary(ghash_expected, NB_BYTES_128_BITS, true);
+	printf("Actual output   (bin): ");
+	print_uint8_array_as_binary(ghash, NB_BYTES_128_BITS, true);
 
 	if(!compare_uint8_arrays(ghash, ghash_expected, NB_BYTES_128_BITS)) {
 		// printf("Error: expected output and actual output are different.\n");

@@ -69,6 +69,7 @@ void gfmul_2_4(__m128i a, __m128i b, __m128i *res){
 	__m128i tmp0, tmp1, tmp2, d, e, tmp5, c, tmp7, tmp8, tmp9, tmp10, tmp11, tmp12;
 	__m128i XMMMASK = _mm_setr_epi32(0xffffffff, 0x0, 0x0, 0x0);
 
+	// algo 2
 	uint8_t r2[NB_BYTES_128_BITS];
 	c = _mm_clmulepi64_si128(a, b, 0x11);
 	d = _mm_clmulepi64_si128(a, b, 0x00);
@@ -78,9 +79,6 @@ void gfmul_2_4(__m128i a, __m128i b, __m128i *res){
 	tmp5 = _mm_xor_si128(tmp5, b);
 	e = _mm_clmulepi64_si128(e, tmp5, 0x00);
 
-	// printf("\nDEBUG e \n");
-	// u128_to_arr(e, r2);
-	// print_uint8_array_as_binary(r2, NB_BYTES_128_BITS, false);
 
 	e = _mm_xor_si128(e, d);
 	e = _mm_xor_si128(e, c);
@@ -89,6 +87,13 @@ void gfmul_2_4(__m128i a, __m128i b, __m128i *res){
 	e = _mm_srli_si128(e, 8);
 	d = _mm_xor_si128(d, tmp5);
 	c = _mm_xor_si128(c, e);
+
+	printf("\nDEBUG x0 \n");
+	u128_to_arr(d, r2);
+	print_uint8_array_as_binary(r2, NB_BYTES_128_BITS, false);
+	printf("\nDEBUG x3 \n");
+	u128_to_arr(c, r2);
+	print_uint8_array_as_binary(r2, NB_BYTES_128_BITS, false);
 
 	tmp7 = _mm_srli_epi32(c, 31);
 	tmp8 = _mm_srli_epi32(c, 30);
@@ -142,8 +147,8 @@ __m128i arr_to_u128(int8_t* arr) {
 	return _mm_loadu_si128((__m128i *) arr);
 }
 
-void test_1_5() {
-	printf("Test 1_5\n");
+int test_1_5() {
+	printf("######## Test 1_5 ########\n");
 	// Absolutely sure values (NIST test case 2):
 	// c = 0388dace60b6a392f328c2b971b2fe78
 	// h = 66e94bd4ef8a2c3b884cfa59ca342b2e
@@ -163,10 +168,12 @@ void test_1_5() {
 	uint8_t r[NB_BYTES_128_BITS];
 	u128_to_arr(res, r);
 	print_uint8_array_as_hex(r, NB_BYTES_128_BITS, false);
+
+	return CODE_INFO;
 }
 
-void test_2_4() {
-	printf("Test 2_4\n");
+int test_2_4() {
+	printf("######## Test 2_4 ########\n");
 	// Absolutely sure values (NIST test case 2):
 	// c = 0388dace60b6a392f328c2b971b2fe78
 	// h = 66e94bd4ef8a2c3b884cfa59ca342b2e
@@ -181,18 +188,20 @@ void test_2_4() {
 	a = arr_to_u128(c);
 	b = arr_to_u128(h);
 
-	// a = reflect_xmm(a);
-	// b = reflect_xmm(b);
+	a = reflect_xmm(a);
+	b = reflect_xmm(b);
 	gfmul_2_4(a, b, &res);
-	// res = reflect_xmm(res);
+	res = reflect_xmm(res);
 
 	uint8_t r[NB_BYTES_128_BITS];
 	u128_to_arr(res, r);
 	print_uint8_array_as_hex(r, NB_BYTES_128_BITS, false);
+
+	return CODE_INFO;
 }
 
-void test_reflect() {
-	printf("Test reflect\n");
+int test_reflect() {
+	printf("######## Test reflect ########\n");
 	// c = 0388dace60b6a392f328c2b971b2fe78
 	// h = 66e94bd4ef8a2c3b884cfa59ca342b2e
 	// res = 5e2ec746917062882c85b0685353deb7
@@ -217,10 +226,14 @@ void test_reflect() {
 	uint8_t r2[NB_BYTES_128_BITS];
 	u128_to_arr(res2, r2);
 	print_uint8_array_as_hex(r2, NB_BYTES_128_BITS, false);
+
+	return CODE_INFO;
 }
 
-void main() {
-	test_1_5();
-	test_2_4();
-	test_reflect();
+int main() {
+	print_test_return_status(test_1_5());
+	print_test_return_status(test_2_4());
+	print_test_return_status(test_reflect());
+
+	return CODE_SUCCESS;
 }
