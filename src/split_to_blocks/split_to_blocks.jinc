@@ -1,5 +1,4 @@
-u32 NB_BYTES_FULL_BLOCK_u32 = 16;
-u64 NB_BYTES_FULL_BLOCK_u64 = 16;
+u64 NB_BYTES_FULL_BLOCK = 16;
 
 /// Retrieves a block of data from a given memory address and stores it in another memory address.
 /// 
@@ -9,7 +8,7 @@ u64 NB_BYTES_FULL_BLOCK_u64 = 16;
 /// * `ptrout_block` - The memory address where the block will be stored.
 /// * `data_length` - The length of the data given by ptr_data.
 /// * `block_id` - The ID of the block to retrieve.
-inline fn get_block(reg u64 ptr_data, reg u64 ptrout_block, reg u32 data_length, reg u32 block_id) {
+inline fn get_block(reg u64 ptr_data, reg u64 ptrout_block, reg u64 data_length, reg u64 block_id) {
 	ptr_data = ptr_data;
 	ptrout_block = ptrout_block;
 	data_length = data_length;
@@ -20,9 +19,9 @@ inline fn get_block(reg u64 ptr_data, reg u64 ptrout_block, reg u32 data_length,
 	block_addr = ptr_data;
 	
 	// Compute last block size
-	reg u32 last_block_size;
+	reg u64 last_block_size;
 	last_block_size = data_length;
-	last_block_size %= NB_BYTES_FULL_BLOCK_u32;
+	last_block_size %= NB_BYTES_FULL_BLOCK;
 
 	reg bool is_b;
 	reg u8 temp temp2 temp3;
@@ -30,29 +29,27 @@ inline fn get_block(reg u64 ptr_data, reg u64 ptrout_block, reg u32 data_length,
 	is_b = last_block_size > 0;
 	temp2 = #SETcc(is_b); // SETcc stores a byte at the destination specified by the effective address or register if the condition is met, or a 0 byte if the condition is not met.
 	reg u64 nb;
-	nb = (64u)data_length;
-	nb /= NB_BYTES_FULL_BLOCK_u64;
+	nb = data_length;
+	nb /= NB_BYTES_FULL_BLOCK;
 	is_b = block_id == nb;
 	temp3 = #SETcc(is_b);
 	temp = temp2 & temp3;
 
 	if (temp == 1) { // Check if we want to get the last block and if it is not full
 
-		reg u32 last_block;
+		reg u64 last_block;
 		last_block = data_length;
-		last_block %= NB_BYTES_FULL_BLOCK_u32;
+		last_block %= NB_BYTES_FULL_BLOCK;
 
 		inline int i;
 		for i = 0 to 16 {
-			reg u32 i_u32;
-			i_u32 = i;
-			if i_u32 < last_block {
-				reg u64 temp block_id64;
+			reg u64 i_u64; i_u64 = (64u)i;
+			if (i_u64 < last_block) {
+				reg u64 temp;
 				temp = 16;
-				block_id64 = (64u)block_id;
-				temp *= block_id64;
+				temp *= block_id;
 				temp += ptr_data;
-				temp += (64u)i;
+				temp += i_u64;
 				(u8)[ptrout_block] = (u8)[temp];
 			}else{
 				(u8)[ptrout_block] = 0;
@@ -61,8 +58,8 @@ inline fn get_block(reg u64 ptr_data, reg u64 ptrout_block, reg u32 data_length,
 		}
 	} else { // Get a full block
 		reg u64 offset;
-		offset = (64u)block_id;
-		offset *= NB_BYTES_FULL_BLOCK_u64;
+		offset = block_id;
+		offset *= NB_BYTES_FULL_BLOCK;
 		block_addr += offset;
 		reg u128[1] block_content;
 		block_content[0] = (u128)[block_addr];
@@ -71,7 +68,7 @@ inline fn get_block(reg u64 ptr_data, reg u64 ptrout_block, reg u32 data_length,
 }
 
 // If the data is reversed, use this function
-inline fn get_block_reverse(reg u64 ptr_data, reg u64 ptrout_block, reg u32 data_length, reg u32 block_id) {
+inline fn get_block_reverse(reg u64 ptr_data, reg u64 ptrout_block, reg u64 data_length, reg u64 block_id) {
 	ptr_data = ptr_data;
 	ptrout_block = ptrout_block;
 	data_length = data_length;
@@ -79,13 +76,13 @@ inline fn get_block_reverse(reg u64 ptr_data, reg u64 ptrout_block, reg u32 data
 
 	// Start computing addr of the block
 	reg u64 block_addr;
-	block_addr = (64u)data_length;
+	block_addr = data_length;
 	block_addr += ptr_data;
 	
 	// Compute last block size
-	reg u32 last_block_size;
+	reg u64 last_block_size;
 	last_block_size = data_length;
-	last_block_size %= NB_BYTES_FULL_BLOCK_u32;
+	last_block_size %= NB_BYTES_FULL_BLOCK;
 
 	reg bool is_b;
 	reg u8 temp temp2 temp3;
@@ -93,26 +90,25 @@ inline fn get_block_reverse(reg u64 ptr_data, reg u64 ptrout_block, reg u32 data
 	is_b = last_block_size > 0;
 	temp2 = #SETcc(is_b); // SETcc stores a byte at the destination specified by the effective address or register if the condition is met, or a 0 byte if the condition is not met.
 	reg u64 nb;
-	nb = (64u)data_length;
-	nb /= NB_BYTES_FULL_BLOCK_u64;
+	nb = data_length;
+	nb /= NB_BYTES_FULL_BLOCK;
 	is_b = block_id == nb;
 	temp3 = #SETcc(is_b);
 	temp = temp2 & temp3;
 
 	if (temp == 1) { // Check if we want to get the last block and if it is not full
 
-		reg u32 last_block;
+		reg u64 last_block;
 		last_block = data_length;
-		last_block %= NB_BYTES_FULL_BLOCK_u32;
+		last_block %= NB_BYTES_FULL_BLOCK;
 
 		inline int i;
 		for i = 0 to 16 {
-			reg u32 i_u32;
-			i_u32 = i;
-			if i_u32 < last_block {
+			reg u64 i_u64; i_u64 = (64u)i;
+			if (i_u64 < last_block) {
 				reg u64 temp;
 				temp = ptr_data;
-				temp += (64u)i;
+				temp += i_u64;
 				(u8)[ptrout_block] = (u8)[temp];
 			}else{
 				(u8)[ptrout_block] = 0;
@@ -121,9 +117,9 @@ inline fn get_block_reverse(reg u64 ptr_data, reg u64 ptrout_block, reg u32 data
 		}
 	} else { // Get a full block
 		reg u64 offset;
-		offset = (64u)block_id;
+		offset = block_id;
 		offset += 1;
-		offset *= NB_BYTES_FULL_BLOCK_u64;
+		offset *= NB_BYTES_FULL_BLOCK;
 		block_addr -= offset;
 		reg u128[1] block_content;
 		block_content[0] = (u128)[block_addr];

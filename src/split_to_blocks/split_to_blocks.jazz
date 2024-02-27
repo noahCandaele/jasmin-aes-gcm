@@ -1,6 +1,6 @@
 require "split_to_blocks.jinc"
 
-export fn get_block_jazz(reg u64 ptr_data, reg u64 ptrout_block, reg u32 data_length, reg u32 block_id) {
+export fn get_block_jazz(reg u64 ptr_data, reg u64 ptrout_block, reg u64 data_length, reg u64 block_id) {
 	ptr_data = ptr_data;
 	ptrout_block = ptrout_block;
 	data_length = data_length;
