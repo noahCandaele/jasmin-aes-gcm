@@ -34,8 +34,10 @@ inline fn aes_counter(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u64 length, 
 
 		addr_ptrout += byte_index;
 		// get a block of 16 bytes from the input string
-		get_block(ptr_plain, addr_ptrout, length, block_id);
+		reg u128 block;
 
+		block = get_block(ptr_plain, length, block_id);
+		(u128)[addr_ptrout] = block;
 		reg u128 result;
 
 		// SPILL
