@@ -6,10 +6,10 @@
 
 #include "../utils/utils.h"
 
-// extern void aes_gcm_jazz(uint8_t* key, uint8_t* iv, uint8_t* auth_data, size_t length_auth_data, uint8_t* plain, size_t length_plain, uint8_t* out_auth_tag, uint8_t* out_cipher);
 extern void compute_hash_key_jazz(uint8_t* key, uint8_t* out_h);
 extern void compute_length_str_jazz(size_t length_auth_data, size_t length_plain, uint8_t* ptrout_length_str);
 extern void compute_enciphered_iv_jazz(uint8_t* key, uint8_t* iv, uint8_t* out_enc_iv);
+
 extern void aes_gcm(uint8_t** args, size_t length_auth_data, size_t length_plain);
 
 int test_nist4() {
@@ -17,8 +17,9 @@ int test_nist4() {
 
 	uint8_t key[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("feffe9928665731c6d6a8f9467308308", key, NB_BYTES_128_BITS);
 	uint8_t iv[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("cafebabefacedbaddecaf88800000000", iv, NB_BYTES_128_BITS);
-	uint8_t auth_data[] = "feedfacedeadbeeffeedfacedeadbeefabaddad2";
-	size_t length_auth_data = nb_bytes_hex_string(auth_data);
+	char auth_data_str[] = "feedfacedeadbeeffeedfacedeadbeefabaddad2";
+	size_t length_auth_data = nb_bytes_hex_string(auth_data_str);
+	uint8_t auth_data[length_auth_data]; convert_hex_string_to_uint8_array_in_order(auth_data_str, auth_data, length_auth_data);
 	char plain_str[] = "d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a721c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b39";
 	size_t length_plain = nb_bytes_hex_string(plain_str);
 	uint8_t plain[length_plain]; convert_hex_string_to_uint8_array_in_order(plain_str, plain, length_plain);
@@ -43,16 +44,16 @@ int test_nist4() {
 	printf("Expected cipher             (hex): "); print_uint8_array_as_hex_in_order(expected_cipher, length_plain, false);
 	printf("Actual cipher               (hex): "); print_uint8_array_as_hex_in_order(cipher, length_plain, false);
 
+	int return_code = CODE_SUCCESS;
 	if (!compare_uint8_arrays(auth_tag, expected_auth_tag, NB_BYTES_128_BITS)) {
 		printf("ERROR: Authentication tag is not as expected\n");
-		return CODE_FAILURE;
+		return_code = CODE_FAILURE;
 	}
 	if (!compare_uint8_arrays(cipher, expected_cipher, length_plain)) {
 		printf("ERROR: Cipher is not as expected\n");
-		return CODE_FAILURE;
+		return_code = CODE_FAILURE;
 	}
-
-	return CODE_SUCCESS;
+	return return_code;
 }
 
 int test_compute_hash_key_generic(char* key_str, char* expected_hash_key_str) {
@@ -123,14 +124,14 @@ int test_compute_enciphered_iv_nist3() {
 
 int main()
 {
-	// print_test_return_status(test_nist4());
+	print_test_return_status(test_nist4());
 
 	// print_test_return_status(test_compute_hash_key_nist2());
 	// print_test_return_status(test_compute_hash_key_nist4());
 
 	// print_test_return_status(test_compute_length_str_nist4());
 
-	print_test_return_status(test_compute_enciphered_iv_nist3());
+	// print_test_return_status(test_compute_enciphered_iv_nist3());
 
 	return CODE_SUCCESS;
 }
