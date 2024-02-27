@@ -2,6 +2,8 @@ require "../ghash/ghash.jinc"
 require "../aes/aes.jinc"
 require "../aes_counter/aes_counter.jinc"
 
+u32 NB_BYTES_FULL_BLOCK_u32 = 16;
+
 // Hash Key: encipher the zero 128-bit string
 inline fn compute_hash_key(reg u128 key) -> reg u128 {
 	key = key;
@@ -9,6 +11,17 @@ inline fn compute_hash_key(reg u128 key) -> reg u128 {
 	reg u128 zero; zero = #set0_128();
 	reg u128 hash_key; hash_key = aes(key, zero);
 	return hash_key;
+}
+
+inline fn compute_enciphered_iv(reg u128 key, reg u128 iv) -> reg u128 {
+	reg u128 enc_iv; 
+	reg u64 temp;
+	temp = #VPEXTR_64(iv, 1);
+	temp <<= 32;
+	temp >>= 32;
+	iv = #VPINSR_2u64(iv, temp, 1);
+	enc_iv = aes(key, iv);
+	return enc_iv;
 }
 
 // Computes the length string, which has a size of 1 block (128 bits).
@@ -30,29 +43,47 @@ inline fn compute_length_str(reg u64 length_auth_data, reg u64 length_plain) -> 
 }
 
 // export fn aes_gcm(reg u128 key, reg u128 iv, reg u64 ptr_auth_data, reg u64 length_auth_data, reg u64 ptr_plain, reg u64 length_plain, reg u64 ptrout_auth_tag, reg u64 ptrout_cipher) {
-export fn aes_gcm(reg u64 ptr_args) {
+export fn aes_gcm(reg u64 ptr_args, reg u64 length_auth_data, reg u64 length_plain) {
 	reg u64 ptr_values;
 	ptr_values = ptr_args;
-	reg u64 ptr_key ptr_iv ptr_auth_data ptr_length_auth_data ptr_plain ptr_length_plain ptrout_auth_tag ptrout_cipher;
+	reg u64 ptr_key ptr_iv ptr_auth_data ptr_plain ptrout_auth_tag ptrout_cipher;
 
 	ptr_key = (u64)[ptr_values];
 	ptr_iv = (u64)[ptr_values + 8];
 	ptr_auth_data = (u64)[ptr_values + 16];
-	ptr_length_auth_data = (u64)[ptr_values + 24];
-	ptr_plain = (u64)[ptr_values + 32];
-	ptr_length_plain = (u64)[ptr_values + 40];
-	ptrout_auth_tag = (u64)[ptr_values + 48];
-	ptrout_cipher = (u64)[ptr_values + 56];
+	ptr_plain = (u64)[ptr_values + 24];
+	ptrout_auth_tag = (u64)[ptr_values + 32];
+	ptrout_cipher = (u64)[ptr_values + 40];
 
 	reg u128 key; key = (u128)[ptr_key];
 	reg u128 iv; iv = (u128)[ptr_iv];
-	reg u64 length_auth_data; length_auth_data = (u64)[ptr_length_auth_data];
-	reg u64 length_plain; length_plain = (u64)[ptr_length_plain];
 
-	// reg u128 hash_key; hash_key = compute_hash_key(key);
-	// reg u128 length_str; length_str = compute_length_str(length_auth_data, length_plain);
+	reg u128 hash_key; hash_key = compute_hash_key(key);
 
+	// ********  AUTHENTICATION DATA ********
+	// reg u32 nb_loop_AD is_full i size;
+	// size = 16;
+	// nb_loop_AD = length_auth_data;
+	// nb_loop_AD = nb_loop_AD;
+	// nb_loop_AD /= NB_BYTES_FULL_BLOCK_u32;
+	// is_full = length_auth_data;
+	// is_full %= NB_BYTES_FULL_BLOCK_u32;
+	// i = 0;
+	// if(is_full != 0) {
+	// 	nb_loop_AD += 1;
+	// }
+	// reg u128 ghash; ghash = #set0_128();
+	// while (nb_loop_AD > i) {
+		
+	// 	// ghash = ghash_xor(ghash, block_auth_data, hash_key);
+	// 	i += 1;
+	// }
+		
+	
 
+	// ****************
+
+	// ******** CIPHERTEXT ********
 
 	// reg u32 byte_index block_id;
 	// block_id = 0;
@@ -104,10 +135,10 @@ export fn aes_gcm(reg u64 ptr_args) {
 	// 	byte_index += 16;
 	// }
 
+	// ****************
 
 
 
-	(u128)[ptr_key] = iv;
 
 
 
@@ -123,8 +154,11 @@ export fn aes_gcm(reg u64 ptr_args) {
 	// ptrout_cipher = ptrout_cipher;
 	// ptrout_auth_tag = ptrout_auth_tag;
 
-	// 	uint8_t* args_func[] = {key, iv, auth_data, length_auth_data, plain, length_plain, auth_tag, cipher};
 
+
+
+	
+	reg u128 length_str; length_str = compute_length_str(length_auth_data, length_plain);
 
 	// TODO
 }

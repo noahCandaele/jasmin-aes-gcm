@@ -9,7 +9,8 @@
 // extern void aes_gcm_jazz(uint8_t* key, uint8_t* iv, uint8_t* auth_data, size_t length_auth_data, uint8_t* plain, size_t length_plain, uint8_t* out_auth_tag, uint8_t* out_cipher);
 extern void compute_hash_key_jazz(uint8_t* key, uint8_t* out_h);
 extern void compute_length_str_jazz(size_t length_auth_data, size_t length_plain, uint8_t* ptrout_length_str);
-extern void aes_gcm(uint8_t** args);
+extern void compute_enciphered_iv_jazz(uint8_t* key, uint8_t* iv, uint8_t* out_enc_iv);
+extern void aes_gcm(uint8_t** args, size_t length_auth_data, size_t length_plain);
 
 int test_nist4() {
 	printf("######## nist test case 4 ########\n");
@@ -29,11 +30,9 @@ int test_nist4() {
 	uint8_t auth_tag[NB_BYTES_128_BITS];
 	uint8_t cipher[length_plain];
 
-	// aes_gcm_jazz(key, iv, auth_data, length_auth_data, plain, length_plain, auth_tag, cipher);
 	// array of pointers
-	uint8_t* args_func[] = { key, iv, auth_data, &length_auth_data, plain, &length_plain, auth_tag, cipher };
-	// TODO passer les size_t à part
-	aes_gcm(args_func);
+	uint8_t* args_func[] = { key, iv, auth_data, plain, auth_tag, cipher };
+	aes_gcm(args_func, length_auth_data, length_plain);
 
 	printf("Key                         (hex): "); print_uint8_array_as_hex_in_order(key, NB_BYTES_128_BITS, false);
 	printf("IV                          (hex): "); print_uint8_array_as_hex_in_order(iv, NB_BYTES_128_BITS, false);
@@ -86,8 +85,8 @@ int test_compute_hash_key_nist4() {
 int test_compute_length_str_nist4() {
 	printf("######## test_compute_length_str nist 4 ########\n");
 
-	uint8_t auth_data[] = "feedfacedeadbeeffeedfacedeadbeefabaddad2";
-	size_t length_auth_data = nb_bytes_hex_string(auth_data);
+	char auth_data_str[] = "feedfacedeadbeeffeedfacedeadbeefabaddad2";
+	size_t length_auth_data = nb_bytes_hex_string(auth_data_str);
 	char plain_str[] = "d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a721c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b39";
 	size_t length_plain = nb_bytes_hex_string(plain_str);
 	uint8_t expected_length_str[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("00000000000000a000000000000001e0", expected_length_str, NB_BYTES_128_BITS);
@@ -107,14 +106,31 @@ int test_compute_length_str_nist4() {
 	return CODE_SUCCESS;
 }
 
+int test_compute_enciphered_iv_nist3() {
+	printf("######## test_compute_enciphered_iv_nist3 ########\n");
+
+	uint8_t key[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("feffe9928665731c6d6a8f9467308308", key, NB_BYTES_128_BITS);
+	uint8_t iv[NB_BYTES_128_BITS];  convert_hex_string_to_uint8_array_in_order("cafebabefacedbaddecaf88854000054", iv, NB_BYTES_128_BITS);
+
+	uint8_t enc_iv[NB_BYTES_128_BITS]; compute_enciphered_iv_jazz(key, iv, enc_iv);
+
+	printf("Key           (hex): "); print_uint8_array_as_hex_in_order(key, NB_BYTES_128_BITS, false);
+	printf("IV            (hex): "); print_uint8_array_as_hex_in_order(iv, NB_BYTES_128_BITS, false);
+	printf("Enciphered IV (hex): "); print_uint8_array_as_hex_in_order(enc_iv, NB_BYTES_128_BITS, false);
+
+	return CODE_INFO;
+}
+
 int main()
 {
-	print_test_return_status(test_nist4());
+	// print_test_return_status(test_nist4());
 
 	// print_test_return_status(test_compute_hash_key_nist2());
 	// print_test_return_status(test_compute_hash_key_nist4());
 
 	// print_test_return_status(test_compute_length_str_nist4());
+
+	print_test_return_status(test_compute_enciphered_iv_nist3());
 
 	return CODE_SUCCESS;
 }
