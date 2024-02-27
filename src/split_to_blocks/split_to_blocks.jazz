@@ -6,5 +6,7 @@ export fn get_block_jazz(reg u64 ptr_data, reg u64 ptrout_block, reg u64 data_le
 	data_length = data_length;
 	block_id = block_id;
 	
-	get_block(ptr_data, ptrout_block, data_length, block_id);
+	reg u128 block; block = get_block(ptr_data, data_length, block_id);
+	(u128)[ptrout_block] = block;
 }
+
