@@ -109,16 +109,37 @@ inline fn aes_counter(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u64 length, 
 		nb_blocks >>= 4;
 
 		reg u128 plain;
-		plain = get_block(ptr_plain, length, nb_blocks);
+		// plain = get_block(ptr_plain, length, nb_blocks);
+		stack u128[1] s_plain;
+		reg u64 i; i = 0;
+		reg u64 last_byte;
+		last_byte = length;
+		last_byte -= len16;
+		// reg u8 temp;
+		while (i < last_byte) {
+			// (u8)[ptrout_] = s_cipher[u8 i];
+			s_plain[u8 i] = (u8)[ptr_plain];
+
+			i += 1;
+			ptr_plain += 1;
+		}
+		while (i < 16) {
+			s_plain[u8 i] = 0;
+			i += 1;
+		}
+		plain = s_plain[0];
+
+
 		reg u128 cipher;
 		cipher = aes_rounds(rkeys, iv);
 		cipher ^= plain;
 
 		stack u128[1] s_cipher; s_cipher[0] = cipher;
-		reg u64 i; i = 0;
-		reg u64 last_byte;
-		last_byte = length;
-		last_byte -= len16;
+		// reg u64 i;
+		i = 0;
+		// reg u64 last_byte;
+		// last_byte = length;
+		// last_byte -= len16;
 		while (i < last_byte) {
 			(u8)[ptrout_cipher] = s_cipher[u8 i];
 
