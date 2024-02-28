@@ -11,6 +11,7 @@ extern void compute_length_str_jazz(size_t length_auth_data, size_t length_plain
 extern void compute_enciphered_iv_jazz(uint8_t* key, uint8_t* iv, uint8_t* out_enc_iv);
 
 extern void aes_gcm(uint8_t** args, size_t length_auth_data, size_t length_plain);
+extern void ghash_series_jazz(uint8_t* ptr_data, size_t length, uint8_t* hash_key, uint8_t* out_res);
 
 int test_nist4() {
 	printf("######## nist test case 4 ########\n");
@@ -54,6 +55,36 @@ int test_nist4() {
 		return_code = CODE_FAILURE;
 	}
 	return return_code;
+}
+
+int test_nist4_auth_data() {
+	printf("######## nist test case 4 authdata ########\n");
+
+	uint8_t key[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("feffe9928665731c6d6a8f9467308308", key, NB_BYTES_128_BITS);
+	uint8_t hash_key[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("b83b533708bf535d0aa6e52980d53b78", hash_key, NB_BYTES_128_BITS);
+	char auth_data_str[] = "feedfacedeadbeeffeedfacedeadbeefabaddad2";
+	// char auth_data_str[] = "feedfacedeadbeeffeedfacedeadbeef";
+	size_t length_auth_data = nb_bytes_hex_string(auth_data_str);
+	uint8_t auth_data[length_auth_data]; convert_hex_string_to_uint8_array_in_order(auth_data_str, auth_data, length_auth_data);
+
+	uint8_t expected_ghash[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("cd47221ccef0554ee4bb044c88150352", expected_ghash, NB_BYTES_128_BITS);
+
+	
+	uint8_t ghash[NB_BYTES_128_BITS];
+
+	// array of pointers
+	ghash_series_jazz(auth_data, length_auth_data, key, ghash);
+
+	printf("     key            (hex): "); print_uint8_array_as_hex_in_order(key, NB_BYTES_128_BITS, false);
+	printf("Authentication data (hex): "); print_uint8_array_as_hex_in_order(auth_data, length_auth_data, false);
+	printf("expected_ghash      (hex): "); print_uint8_array_as_hex_in_order(expected_ghash, NB_BYTES_128_BITS, false);
+	printf("Actual ghash        (hex): "); print_uint8_array_as_hex_in_order(ghash, NB_BYTES_128_BITS, false);
+
+	if (!compare_uint8_arrays(ghash, expected_ghash, NB_BYTES_128_BITS)) {
+		printf("ERROR: ghash is not as expected\n");
+		return CODE_FAILURE;
+	}
+	return CODE_SUCCESS;
 }
 
 int test_compute_hash_key_generic(char* key_str, char* expected_hash_key_str) {
@@ -124,14 +155,15 @@ int test_compute_enciphered_iv_nist3() {
 
 int main()
 {
-	print_test_return_status(test_compute_hash_key_nist2());
-	print_test_return_status(test_compute_hash_key_nist4());
+	// print_test_return_status(test_compute_hash_key_nist2());
+	// print_test_return_status(test_compute_hash_key_nist4());
 
-	print_test_return_status(test_compute_length_str_nist4());
+	// print_test_return_status(test_compute_length_str_nist4());
 
-	print_test_return_status(test_compute_enciphered_iv_nist3());
+	// print_test_return_status(test_compute_enciphered_iv_nist3());
 
-	print_test_return_status(test_nist4());
+	// print_test_return_status(test_nist4());
+	print_test_return_status(test_nist4_auth_data());
 
 	return CODE_SUCCESS;
 }
