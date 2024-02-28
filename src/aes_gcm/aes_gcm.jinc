@@ -71,15 +71,16 @@ fn ghash_series(reg u128 prev_ghash, reg u64 ptr_data, reg u64 length, reg u128 
 		reg u64 last_byte;
 		last_byte = length;
 		last_byte -= len16;
+		reg u64 n; n = 16; n -= last_byte;
+		while (i < n) {
+			s_data[u8 i] = 0;
+			i += 1;
+		}
 		while (i < last_byte) {
 			s_data[u8 i] = (u8)[ptr_data];
 
 			i += 1;
 			ptr_data += 1;
-		}
-		while (i < 16) {
-			s_data[u8 i] = 0;
-			i += 1;
 		}
 		block = s_data[0];
 		block = (u128)[ptr_data];

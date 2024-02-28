@@ -152,6 +152,24 @@ void convert_hex_string_to_uint8_array(char* hex_string, uint8_t* uint8_array, s
 	}
 }
 
+void convert_hex_string_to_uint8_array_by_block16(char* hex_string, uint8_t* uint8_array, size_t uint8_array_size) {
+	// size_t nb_bytes = nb_bytes_hex_string(hex_string);
+	size_t nb_blocks = uint8_array_size / 16;
+	int i;
+	for (i = 0; i < nb_blocks; i++) {
+		for (size_t j = 0; j < 16; j++) {
+			char hex[2] = { hex_string[i*32 + j * 2], hex_string[i*32 + j * 2 + 1] };
+			uint8_array[i*16+16-j-1] = (uint8_t)strtol(hex, NULL, BASE_16);
+		}
+	}
+	// if not a multiple of 16
+	int n = uint8_array_size - nb_blocks*16;
+	for (size_t j = 0; j < n; j++) {
+		char hex[2] = { hex_string[i*32 + j * 2], hex_string[i*32 + j * 2 + 1] };
+		uint8_array[i*16+n-j-1] = (uint8_t)strtol(hex, NULL, BASE_16);
+	}
+}
+
 void convert_ascii_string_to_uint8_array(char* ascii_string, uint8_t* uint8_array, size_t uint8_array_size) {
 	for (size_t i = 0; i < uint8_array_size; ++i) {
 		uint8_array[uint8_array_size-i-1] = (uint8_t)ascii_string[i];

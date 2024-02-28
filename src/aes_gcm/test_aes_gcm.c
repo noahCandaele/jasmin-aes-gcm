@@ -11,7 +11,7 @@ extern void compute_length_str_jazz(size_t length_auth_data, size_t length_plain
 extern void compute_enciphered_iv_jazz(uint8_t* key, uint8_t* iv, uint8_t* out_enc_iv);
 
 extern void aes_gcm(uint8_t** args, size_t length_auth_data, size_t length_plain);
-extern void ghash_series_jazz(uint8_t* ptr_data, size_t length, uint8_t* hash_key, uint8_t* out_res);
+extern void ghash_series_jazz(uint8_t* ptr_data, size_t length, uint8_t* hash_key, uint8_t* out_res, uint8_t* prev_ghash);
 
 int test_nist4() {
 	printf("######## nist test case 4 ########\n");
@@ -60,25 +60,82 @@ int test_nist4() {
 int test_nist4_auth_data() {
 	printf("######## nist test case 4 authdata ########\n");
 
-	uint8_t key[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("feffe9928665731c6d6a8f9467308308", key, NB_BYTES_128_BITS);
-	uint8_t hash_key[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("b83b533708bf535d0aa6e52980d53b78", hash_key, NB_BYTES_128_BITS);
-	char auth_data_str[] = "feedfacedeadbeeffeedfacedeadbeefabaddad2";
-	// char auth_data_str[] = "feedfacedeadbeeffeedfacedeadbeef";
-	size_t length_auth_data = nb_bytes_hex_string(auth_data_str);
-	uint8_t auth_data[length_auth_data]; convert_hex_string_to_uint8_array_in_order(auth_data_str, auth_data, length_auth_data);
 
-	uint8_t expected_ghash[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("cd47221ccef0554ee4bb044c88150352", expected_ghash, NB_BYTES_128_BITS);
+	// uint8_t hash_key[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array("66e94bd4ef8a2c3b884cfa59ca342b2e", hash_key, NB_BYTES_128_BITS);
+	// // char auth_data_str[] = "feedfacedeadbeeffeedfacedeadbeefabaddad2";
+	// char auth_data_str[] = "0388dace60b6a392f328c2b971b2fe78";
+	// size_t length_auth_data = nb_bytes_hex_string(auth_data_str);
+	// uint8_t auth_data[length_auth_data]; convert_hex_string_to_uint8_array(auth_data_str, auth_data, length_auth_data);
+
+	// uint8_t expected_ghash[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array("5e2ec746917062882c85b0685353deb7", expected_ghash, NB_BYTES_128_BITS);
+	// // print expected ghash contents
+	// for (size_t i = 0; i < NB_BYTES_128_BITS; i++) {
+	// 	printf("expected_ghash[%zu] = 0x%02x\n", i, expected_ghash[i]);
+	// }
+
+
+
+	// uint8_t hash_key[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array("b83b533708bf535d0aa6e52980d53b78", hash_key, NB_BYTES_128_BITS);
+	// char auth_data_str[] = "42831ec2217774244b7221b784d0d49ce3aa212f2c02a4e035c17e2329aca12e";
+	// // char auth_data_str[] = "42831ec2217774244b7221b784d0d49c";
+	// // char auth_data_str2[] = "e3aa212f2c02a4e035c17e2329aca12e";
+
+	// // size_t length_auth_data = nb_bytes_hex_string(auth_data_str) + nb_bytes_hex_string(auth_data_str);
+	// size_t length_auth_data = nb_bytes_hex_string(auth_data_str);
+	// // uint8_t auth_data1[16]; convert_hex_string_to_uint8_array(auth_data_str, auth_data1, 16);
+	// // uint8_t auth_data2[16]; convert_hex_string_to_uint8_array(auth_data_str2, auth_data2, 16);
+	
+	// uint8_t auth_data[32]; convert_hex_string_to_uint8_array_by_block16(auth_data_str, auth_data, 32);
+	// // memcpy(auth_data, auth_data1, 16);
+	// // memcpy(auth_data+16, auth_data2, 16);
+	// uint8_t prev_ghash[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array("00000000000000000000000000000000", prev_ghash, NB_BYTES_128_BITS);
+
+	// uint8_t expected_ghash[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array("b714c9048389afd9f9bc5c1d4378e052", expected_ghash, NB_BYTES_128_BITS);
+	// // print expected ghash contents
+	// for (size_t i = 0; i < NB_BYTES_128_BITS; i++) {
+	// 	printf("expected_ghash[%zu] = 0x%02x\n", i, expected_ghash[i]);
+	// }
+
+
+
+
+	uint8_t hash_key[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array("b83b533708bf535d0aa6e52980d53b78", hash_key, NB_BYTES_128_BITS);
+	char auth_data_str[] = "feedfacedeadbeeffeedfacedeadbeefabaddad2";
+	size_t length_auth_data = nb_bytes_hex_string(auth_data_str);
+	uint8_t auth_data[length_auth_data]; convert_hex_string_to_uint8_array_by_block16(auth_data_str, auth_data, length_auth_data);
+	uint8_t prev_ghash[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array("00000000000000000000000000000000", prev_ghash, NB_BYTES_128_BITS);
+
+	uint8_t expected_ghash[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array("cd47221ccef0554ee4bb044c88150352", expected_ghash, NB_BYTES_128_BITS);
+	// print expected ghash contents
+	for (size_t i = 0; i < length_auth_data; i++) {
+		printf("auth_data[%zu] = 0x%02x\n", i, auth_data[i]);
+	}
+
+
+
+
+
+	// uint8_t hash_key[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array("b83b533708bf535d0aa6e52980d53b78", hash_key, NB_BYTES_128_BITS);
+	// char auth_data_str[] = "feedfacedeadbeeffeedfacedeadbeefabaddad2";
+	// size_t length_auth_data = nb_bytes_hex_string(auth_data_str);
+	// uint8_t auth_data[length_auth_data]; convert_hex_string_to_uint8_array(auth_data_str, auth_data, length_auth_data);
+
+	// uint8_t expected_ghash[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array("cd47221ccef0554ee4bb044c88150352", expected_ghash, NB_BYTES_128_BITS);
+	// // print expected ghash contents
+	// for (size_t i = 0; i < NB_BYTES_128_BITS; i++) {
+	// 	printf("expected_ghash[%zu] = 0x%02x\n", i, expected_ghash[i]);
+	// }
 
 	
 	uint8_t ghash[NB_BYTES_128_BITS];
 
 	// array of pointers
-	ghash_series_jazz(auth_data, length_auth_data, key, ghash);
+	ghash_series_jazz(auth_data, length_auth_data, hash_key, ghash, prev_ghash);
 
-	printf("     key            (hex): "); print_uint8_array_as_hex_in_order(key, NB_BYTES_128_BITS, false);
-	printf("Authentication data (hex): "); print_uint8_array_as_hex_in_order(auth_data, length_auth_data, false);
-	printf("expected_ghash      (hex): "); print_uint8_array_as_hex_in_order(expected_ghash, NB_BYTES_128_BITS, false);
-	printf("Actual ghash        (hex): "); print_uint8_array_as_hex_in_order(ghash, NB_BYTES_128_BITS, false);
+	printf("     hash key       (hex): "); print_uint8_array_as_hex(hash_key, NB_BYTES_128_BITS, false);
+	printf("Authentication data (hex): "); print_uint8_array_as_hex(auth_data, length_auth_data, false);
+	printf("expected_ghash      (hex): "); print_uint8_array_as_hex(expected_ghash, NB_BYTES_128_BITS, false);
+	printf("Actual ghash        (hex): "); print_uint8_array_as_hex(ghash, NB_BYTES_128_BITS, false);
 
 	if (!compare_uint8_arrays(ghash, expected_ghash, NB_BYTES_128_BITS)) {
 		printf("ERROR: ghash is not as expected\n");
