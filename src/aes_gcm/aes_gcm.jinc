@@ -60,40 +60,31 @@ fn ghash_series(reg u128 prev_ghash, reg u64 ptr_data, reg u64 length, reg u128 
 		ptr_data += 16;
 	}
 
-	// DEBUG_HORRIBLE
-	// instructions : aller dans directory src/aes_gcm, faire "jasminc aes_gcm.jazz -o aes_gcm.s", ou make
-	// pour run le programme cd : faire "make run"
-	// ici si on rappelle ghash_xor, ça ne compile pas (voir autre endroit DEBUG_HORRIBLE dans src/ghash/ghash.jinc)
-	block = (u128)[ptr_data];
-	prev_ghash = ghash_xor(prev_ghash, block, hash_key);
+	if (length > len16) { // last block not full
+		reg u64 nb_blocks;
+		nb_blocks = length;
+		nb_blocks >>= 4;
 
+		reg u128 block;
+		stack u128[1] s_data;
+		reg u64 i; i = 0;
+		reg u64 last_byte;
+		last_byte = length;
+		last_byte -= len16;
+		while (i < last_byte) {
+			s_data[u8 i] = (u8)[ptr_data];
 
-	
-	// if (length > len16) { // last block not full
-	// 	reg u64 nb_blocks;
-	// 	nb_blocks = length;
-	// 	nb_blocks >>= 4;
-
-	// 	reg u128 block;
-	// 	stack u128[1] s_data;
-	// 	reg u64 i; i = 0;
-	// 	reg u64 last_byte;
-	// 	last_byte = length;
-	// 	last_byte -= len16;
-	// 	while (i < last_byte) {
-	// 		s_data[u8 i] = (u8)[ptr_data];
-
-	// 		i += 1;
-	// 		ptr_data += 1;
-	// 	}
-	// 	while (i < 16) {
-	// 		s_data[u8 i] = 0;
-	// 		i += 1;
-	// 	}
-	// 	block = s_data[0];
-	// 	block = (u128)[ptr_data];
-	// 	prev_ghash = ghash_xor(prev_ghash, block, hash_key);
-	// }
+			i += 1;
+			ptr_data += 1;
+		}
+		while (i < 16) {
+			s_data[u8 i] = 0;
+			i += 1;
+		}
+		block = s_data[0];
+		block = (u128)[ptr_data];
+		prev_ghash = ghash_xor(prev_ghash, block, hash_key);
+	}
 	
 	// reg u128 ghash;
 	// ghash = ghash_xor(prev_ghash, block, hash_key);

@@ -130,8 +130,7 @@ inline fn ghash(reg u128 a, reg u128 b) -> reg u128 {
 	return res;
 }
 
-// DEBUG_HORRIBLE : ici si on met inline, ça ne compile pas (voir autre endroit DEBUG_HORRIBLE dans src/aes_gcm/aes_gcm.jinc)
-inline fn ghash_xor(reg u128 ghash_prev, reg u128 data, reg u128 h) -> reg u128 {
+fn ghash_xor(reg u128 ghash_prev, reg u128 data, reg u128 h) -> reg u128 {
 	reg u128 res;
 	res = #VPXOR(ghash_prev, data);
 	res = ghash(res, h);
