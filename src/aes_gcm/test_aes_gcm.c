@@ -124,14 +124,14 @@ int test_compute_enciphered_iv_nist3() {
 
 int main()
 {
+	print_test_return_status(test_compute_hash_key_nist2());
+	print_test_return_status(test_compute_hash_key_nist4());
+
+	print_test_return_status(test_compute_length_str_nist4());
+
+	print_test_return_status(test_compute_enciphered_iv_nist3());
+
 	print_test_return_status(test_nist4());
-
-	// print_test_return_status(test_compute_hash_key_nist2());
-	// print_test_return_status(test_compute_hash_key_nist4());
-
-	// print_test_return_status(test_compute_length_str_nist4());
-
-	// print_test_return_status(test_compute_enciphered_iv_nist3());
 
 	return CODE_SUCCESS;
 }

@@ -3,27 +3,27 @@ u64[2] LOWER_MASK = {0x0f070b030d050901, 0x0e060a020c040800};
 u64[2] HIGHER_MASK = {0xf070b030d0509010, 0xe060a020c0408000};
 
 inline fn bit_reflect(reg u128 x) -> reg u128 {
-	reg u128 temp1 temp2 mask;
+	reg u128 temp2 mask;
 	mask = #VPINSR_2u64(mask, AND_MASK[0], 0);
 	mask = #VPINSR_2u64(mask, AND_MASK[1], 1);
 	
 	temp2 = x;
 	temp2 = #VPSRL_8u16(temp2, 4);
 
+	reg u128 temp1;
 	temp1 = x;
 	temp1 = #VPAND_128(temp1, mask);
 
 	temp2 = #VPAND_128(temp2, mask);
 
-	reg u128 higher_mask;
-	higher_mask = #VPINSR_2u64(higher_mask, HIGHER_MASK[0], 1);
-	higher_mask = #VPINSR_2u64(higher_mask, HIGHER_MASK[1], 0);
-	temp1 = #VPSHUFB(higher_mask, temp1);
+	// reg u128 higher_mask;
+	mask = #VPINSR_2u64(mask, HIGHER_MASK[0], 1);
+	mask = #VPINSR_2u64(mask, HIGHER_MASK[1], 0);
+	temp1 = #VPSHUFB(mask, temp1);
 
-	reg u128 lower_mask;
-	lower_mask = #VPINSR_2u64(lower_mask, LOWER_MASK[0], 1);
-	lower_mask = #VPINSR_2u64(lower_mask, LOWER_MASK[1], 0);
-	temp2 = #VPSHUFB_128(lower_mask, temp2);
+	mask = #VPINSR_2u64(mask, LOWER_MASK[0], 1);
+	mask = #VPINSR_2u64(mask, LOWER_MASK[1], 0);
+	temp2 = #VPSHUFB_128(mask, temp2);
 	
 	temp1 = #VPXOR_128(temp1, temp2);
 
@@ -133,6 +133,9 @@ inline fn ghash(reg u128 a, reg u128 b) -> reg u128 {
 inline fn ghash_xor(reg u128 ghash_prev, reg u128 data, reg u128 h) -> reg u128 {
 	reg u128 res;
 	res = #VPXOR(ghash_prev, data);
-	res = ghash(res, h);
-	return res;
+	stack u128 temp;
+	temp = ghash(temp, h);
+	// res = ghash(res, h);
+
+	return temp;
 }

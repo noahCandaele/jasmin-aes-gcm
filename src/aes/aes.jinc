@@ -114,20 +114,26 @@ inline fn invaes_rounds (reg u128[11] rkeys, reg u128 in) -> reg u128 {
 Note they always compute key expansion, and this may
 not be good in terms of performance. */
 inline fn aes(reg u128 key, reg u128 plain) -> reg u128 {
-	reg u128 cipher;
-	reg u128[11] rkeys;
+	// SPILL
+	stack u128 s_plain; s_plain = plain;
 
+	reg u128[11] rkeys;
 	rkeys = keys_expand(key);
+
+	// UNSPILL
+	plain = s_plain;
+
+	// reg u128 cipher;
+	stack u128 cipher; // TODO warning
 	cipher = aes_rounds(rkeys, plain);
 
 	return cipher;
 }
 
 inline fn invaes(reg u128 key, reg u128 cipher) -> reg u128 {
-	reg u128 plain;
 	reg u128[11] rkeys;
-
 	rkeys = keys_expand_inv(key);
+	reg u128 plain;
 	plain = invaes_rounds(rkeys, cipher);
 	
 	return plain;

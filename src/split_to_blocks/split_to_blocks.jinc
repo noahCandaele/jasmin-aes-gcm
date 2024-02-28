@@ -1,5 +1,18 @@
 u64 NB_BYTES_FULL_BLOCK = 16;
 
+inline fn large_div(reg u64 x y) -> reg u64 { // TODO remove?
+	x = x;
+	y = y;
+	reg u64 a b c q r;
+	a = x & 0xff;
+	b = y;
+	c = 0x400;
+	?{RAX=q, RDX=r} = #DIV(a, b, c);
+	q ^= r;
+	return q;
+}
+
+
 /// Retrieves a block of data from a given memory address and stores it in another memory address.
 /// 
 /// # Arguments
@@ -18,18 +31,19 @@ inline fn get_block(reg u64 ptr_data, reg u64 data_length, reg u64 block_id) -> 
 	block_addr = ptr_data;
 	
 	// Compute last block size
-	reg u64 last_block_size;
-	last_block_size = data_length;
-	last_block_size %= NB_BYTES_FULL_BLOCK;
+	reg u64 nb last_block_size;
+	// reg u64 divider temp;
+	// divider = 16;
+	// temp = 0x00;
+	// nb = large_div(data_length, divider); // TODO remove ?
+	nb = data_length;
+	nb /= NB_BYTES_FULL_BLOCK;
 
 	reg bool is_b;
 	reg u8 temp temp2 temp3;
 
 	is_b = last_block_size > 0;
 	temp2 = #SETcc(is_b); // SETcc stores a byte at the destination specified by the effective address or register if the condition is met, or a 0 byte if the condition is not met.
-	reg u64 nb;
-	nb = data_length;
-	nb /= NB_BYTES_FULL_BLOCK;
 	is_b = block_id == nb;
 	temp3 = #SETcc(is_b);
 	temp = temp2 & temp3;
