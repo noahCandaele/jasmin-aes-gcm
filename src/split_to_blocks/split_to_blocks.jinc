@@ -32,10 +32,6 @@ inline fn get_block(reg u64 ptr_data, reg u64 data_length, reg u64 block_id) -> 
 	
 	// Compute last block size
 	reg u64 nb last_block_size;
-	// reg u64 divider temp;
-	// divider = 16;
-	// temp = 0x00;
-	// nb = large_div(data_length, divider); // TODO remove ?
 	nb = data_length;
 	nb /= NB_BYTES_FULL_BLOCK;
 

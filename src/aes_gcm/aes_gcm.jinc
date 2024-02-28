@@ -161,7 +161,7 @@ export fn aes_gcm(reg u64 ptr_args, reg u64 length_auth_data, reg u64 length_pla
 		
 		// reg u128 result;
 		stack u128 result;
-		result = aes(key, iv);
+		// result = aes(key, iv);
 		
 
 		reg u128 plain;
@@ -176,7 +176,8 @@ export fn aes_gcm(reg u64 ptr_args, reg u64 length_auth_data, reg u64 length_pla
 		// stack u64 s_ptr_values; s_ptr_values = ptr_values;
 		// stack u64 s_i; s_i = i;
 		// stack u64 s_length_auth_data; s_length_auth_data = length_auth_data;
-		// stack u64 s_length_plain; s_length_plain = length_plain;
+		// stack u64 s_length_plain; s_length_plain = length_plain
+		// stack u128[2] s_keys; s_keys = #copy(key[0:2])
 
 		ghash = ghash_xor(ghash, result, s_hash_key);
 
@@ -194,7 +195,7 @@ export fn aes_gcm(reg u64 ptr_args, reg u64 length_auth_data, reg u64 length_pla
 		
 
 		// increment the IV
-		iv = incr_iv(iv);
+		// iv = incr_iv(iv);
 		
 		// if needed to return the IV for debugging
 		// (u128)[addr_ptrout] = iv;
