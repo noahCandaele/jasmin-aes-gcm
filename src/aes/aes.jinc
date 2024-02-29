@@ -8,8 +8,6 @@
 AES-NI is needed to compute vanilla AES or
 its inverse */
 
-// TODO add AES-192 and AES-256 support
-
 // Round constant
 // This function is hardcoded for performance and should only be used for
 // 1 <= i <= 10.
@@ -123,9 +121,7 @@ inline fn aes(reg u128 key, reg u128 plain) -> reg u128 {
 	// UNSPILL
 	plain = s_plain;
 
-	reg u128 cipher;
-	// stack u128 cipher; // TODO warning
-	cipher = aes_rounds(rkeys, plain);
+	reg u128 cipher; cipher = aes_rounds(rkeys, plain);
 
 	return cipher;
 }

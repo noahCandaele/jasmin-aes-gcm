@@ -31,61 +31,6 @@ inline fn set_iv_counter(reg u128 iv, reg u32 counter) -> reg u128 {
 	return iv;
 }
 
-// TODO check if the user is not giving a string of size longer than counter max size
-// inline fn aes_counter(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u64 length, reg u128 key, reg u128 iv) {
-// 	reg u64 byte_index block_id;
-// 	block_id = 0;
-// 	byte_index = 0;
-
-// 	while(byte_index < length) {
-// 		reg u64 addr_ptrout;
-// 		addr_ptrout = ptrout_cipher;
-
-// 		addr_ptrout += byte_index;
-// 		// get a block of 16 bytes from the input string
-// 		reg u128 block;
-
-// 		block = get_block(ptr_plain, length, block_id);
-// 		(u128)[addr_ptrout] = block;
-// 		reg u128 result;
-
-// 		// SPILL
-// 		stack u64 s_byte_index s_block_id;
-// 		stack u64 s_addr_ptrout;
-// 		s_byte_index = byte_index;
-// 		s_block_id = block_id;
-// 		s_addr_ptrout = addr_ptrout;
-
-// 		result = aes(key, iv);
-
-// 		// UNSPILL
-// 		addr_ptrout = s_addr_ptrout;
-
-
-
-// 		reg u128 plain;
-// 		// save the result in out
-// 		plain = (u128)[addr_ptrout];
-// 		result ^= plain;
-// 		(u128)[addr_ptrout] = result;
-
-// 		// increment the IV
-// 		iv = incr_iv(iv);
-		
-// 		// if needed to return the IV for debugging
-// 		// (u128)[addr_ptrout] = iv;
-		
-// 		// UNSPILL
-// 		byte_index = s_byte_index;
-// 		block_id = s_block_id;
-
-// 		// increment the block id
-// 		block_id += 1;
-// 		byte_index += 16;
-// 	}
-// }
-
-// TODO inline enleve
 fn aes_counter(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u64 length, reg u128 key, reg u128 iv) {
 	reg u128[11] rkeys;
 	rkeys = keys_expand(key);

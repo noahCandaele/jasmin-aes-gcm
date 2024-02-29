@@ -157,7 +157,6 @@ inline fn mult(reg u128 a, reg u128 b) -> reg u128 {
 	return res;
 }
 
-// 
 inline fn ghash(reg u128 a, reg u128 b) -> reg u128 {
 	reg u128 mask higher_mask lower_mask;
 	mask = AND_MASK[u128 0];
