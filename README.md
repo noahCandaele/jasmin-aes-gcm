@@ -8,7 +8,8 @@ Students: Noah CANDAELE, Anthony IOZZIA (Master 2 computer science cybersecurity
 Supervisor: Sid TOUATI  
 Co-supervisors: Benjamin GRÉGOIRE, Jean-Christophe LÉCHENET  
 
-[Official Jasmin GitHub repository](https://github.com/jasmin-lang/jasmin)
+[Official Jasmin GitHub repository](https://github.com/jasmin-lang/jasmin)  
+[Official Libjade GitHub repository](https://github.com/formosa-crypto/libjade)
 
 ## Environment setup
 
@@ -89,10 +90,23 @@ Source: [Developing inside a Container](https://code.visualstudio.com/docs/devco
 
 ## Run Jasmin code
 
+TL;DR: to run AES-GCM:
+- `cd src/aes_gcm`
+- `make`
+- `make run`
+
+You can try your own values in `src/aes_gcm/test_aes_gcm.c`.
+
+Here are the commands to run a simple Jasmin program:
+- Compile Jasmin to assembly: `jasminc hello_world.jazz -o hello_world.s`
+- Compile the C program using the Jasmin code: `gcc main.c hello_world.s -o main.out`
+- Run: `/main.out`
+
+There are several modules that can be run in this repository. These modules are in the `src` and `misc` directories. All modules have a Makefile for simplicity. To run a module, follow these instructions:
 - `cd <directory>`
 - Compile: `make`
 - Run: `make run` or `./<name>.out`
-- Run checks:
-	- Run all checks: `make checks`
-	- Check safety: `make checksafety`
-	- Check constant time: `make checkCT`
+
+The main module is `src/aes_gcm`. It uses all other modules in `src`.
+
+If you want to try programming in Jasmin, an hello world example is available in the `misc` directory.
