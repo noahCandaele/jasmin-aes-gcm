@@ -160,6 +160,7 @@ export fn ghash_series_log(reg u64 ptr_data, reg u64 length, reg u64 ptr_hash_ke
 	}
 }
 
+// ptr_args: u128 key iv, u64 ptr_auth_data ptr_plain, u128 auth_tag, u64 ptr_cipher
 export fn aes_gcm(reg u64 ptr_args, reg u64 length_auth_data, reg u64 length_plain) {
 	reg u64 ptr_values; ptr_values = ptr_args;
 
@@ -208,6 +209,73 @@ export fn aes_gcm(reg u64 ptr_args, reg u64 length_auth_data, reg u64 length_pla
 	auth_tag = swap_bytes(auth_tag);
 
 	(u128)[ptrout_auth_tag] = auth_tag;
+}
+
+// ptr_args: u128 key iv, u64 ptr_auth_data ptr_cipher, u128 auth_tag, u64 ptrout_plain
+// returns status: 0 if the authentication tag is correct, 1 otherwise
+export fn aes_gcm_inv(reg u64 ptr_args, reg u64 length_auth_data, reg u64 length_cipher) -> reg u64 {
+	reg u64 ptr_values; ptr_values = ptr_args;
+
+	reg u64 ptr_key; ptr_key = (u64)[ptr_values];
+	reg u128 key; key = (u128)[ptr_key];
+	reg u64 ptr_iv; ptr_iv = (u64)[ptr_values + 8];
+	reg u128 iv; iv = (u128)[ptr_iv];
+	reg u64 ptr_cipher; ptr_cipher = (u64)[ptr_values + 24];
+	reg u64 ptrout_plain; ptrout_plain = (u64)[ptr_values + 40];
+	reg u64 ptr_auth_data; ptr_auth_data = (u64)[ptr_values + 16];
+	
+	// ******** AUTHENTICATION TAG CHECK ********
+	// ********  GHASH AUTHENTICATION DATA LOOP ********
+	reg u128 ghash; ghash = #set0_128();
+	reg u128 hash_key; hash_key = compute_hash_key(key);
+	hash_key = swap_bytes(hash_key);
+	reg u64 length_auth_data2; length_auth_data2 = length_auth_data;
+	ptr_auth_data = ptr_auth_data;
+	ghash = ghash_series(ghash, ptr_auth_data, length_auth_data, hash_key);
+
+	// ********  GHASH CIPHER LOOP ********
+	reg u128 length_str; length_str = compute_length_str(length_auth_data, length_cipher);
+	length_str = swap_bytes(length_str);
+	reg u64 length_cipher2; length_cipher2 = length_cipher;
+	ptr_cipher = ptr_cipher;
+	ghash = ghash_series(ghash, ptr_cipher, length_cipher2, hash_key);
+
+	// ********  AUTHENTICATION TAG ********
+	length_str = length_str;
+	ghash = ghash_xor(ghash, length_str, hash_key);
+	reg u32 counter; counter = 1; iv = (u128)[ptr_iv];
+	iv = set_iv_counter(iv, counter);
+	reg u128 enc_iv; enc_iv = compute_enciphered_iv(key, iv);
+	enc_iv = swap_bytes(enc_iv);
+	reg u128 auth_tag;
+	auth_tag = ghash ^ enc_iv;
+	auth_tag = swap_bytes(auth_tag);
+
+	// (u128)[ptrout_plain] = auth_tag;
+
+	// compare auth_tag with the one given in the arguments
+	reg u64 ptr_auth_tag; ptr_auth_tag = (u64)[ptr_values + 32];
+	reg u128 expected_auth_tag; expected_auth_tag = (u128)[ptr_auth_tag];
+
+	reg u128 comp; comp = auth_tag ^ expected_auth_tag;
+	reg u64 tag_success; tag_success = 0; // 0 = success, 1 = failure
+	reg u64 comp64;
+	comp64 = #VPEXTR_64(comp, 0);
+	reg u64 FAILURE_CODE; FAILURE_CODE = 1;
+	tag_success = FAILURE_CODE if comp64 != 0;
+	comp64 = #VPEXTR_64(comp, 1);
+	tag_success = FAILURE_CODE if comp64 != 0;
+
+	if (tag_success == 0) {
+		// ********  DECRYPT ********
+		reg u32 counter; counter = 2;
+		iv = set_iv_counter(iv, counter);
+		ptr_cipher = (u64)[ptr_values + 24];
+		aes_counter(ptr_cipher, ptrout_plain, length_cipher, key, iv);
+	}
+
+
+	return tag_success;
 }
 
 // export fn aes_gcm(reg u128 key, reg u128 iv, reg u64 ptr_auth_data, reg u64 length_auth_data, reg u64 ptr_plain, reg u64 length_plain, reg u64 ptrout_auth_tag, reg u64 ptrout_cipher) {

@@ -11,6 +11,8 @@ extern void compute_length_str_jazz(size_t length_auth_data, size_t length_plain
 extern void compute_enciphered_iv_jazz(uint8_t* key, uint8_t* iv, uint8_t* out_enc_iv);
 
 extern void aes_gcm(uint8_t** args, size_t length_auth_data, size_t length_plain);
+extern uint64_t aes_gcm_inv(uint8_t** args, size_t length_auth_data, size_t length_cipher);
+
 extern void ghash_series_jazz(uint8_t* ptr_data, size_t length, uint8_t* hash_key, uint8_t* out_res, uint8_t* prev_ghash);
 extern void ghash_series_log(uint8_t* ptr_data, size_t length, uint8_t* hash_key, uint8_t* out_ghashes);
 
@@ -90,6 +92,49 @@ int test_nist4() {
 	}
 	return return_code;
 }
+int test_nous() {
+	printf("######## ultimate ca passe ou ca casse ########\n");
+
+	uint8_t key[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("feffe9928665731c6d6a8f9467308308", key, NB_BYTES_128_BITS);
+	uint8_t iv[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("cafebabefacedbaddecaf88800000000", iv, NB_BYTES_128_BITS);
+	char auth_data_str[] = "Heureusement tout finit bien";
+	size_t length_auth_data = strlen(auth_data_str);
+	uint8_t auth_data[length_auth_data]; convert_ascii_string_to_uint8_array_in_order(auth_data_str, auth_data, length_auth_data);
+	char plain_str[] = "On est ravis de finir notre projet a temps";
+	size_t length_plain = strlen(plain_str);
+	uint8_t plain[length_plain]; convert_ascii_string_to_uint8_array_in_order(plain_str, plain, length_plain);
+
+	uint8_t expected_auth_tag[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("91d999481bad6fc3cc7967ed7ab99f35", expected_auth_tag, NB_BYTES_128_BITS);
+	char expected_cipher_str[] = "d4dc0c82aa8752b38f5d41010b4197260364e6154b163d556fff2b3ed3ef4436589d3846e17aff222233";
+	uint8_t expected_cipher[length_plain]; convert_hex_string_to_uint8_array_in_order(expected_cipher_str, expected_cipher, length_plain);
+
+	uint8_t auth_tag[NB_BYTES_128_BITS];
+	uint8_t cipher[length_plain];
+
+	// array of pointers
+	uint8_t* args_func[] = { key, iv, auth_data, plain, auth_tag, cipher };
+	aes_gcm(args_func, length_auth_data, length_plain);
+
+	printf("Key                         (hex): "); print_uint8_array_as_hex_in_order(key, NB_BYTES_128_BITS, false);
+	printf("IV                          (hex): "); print_uint8_array_as_hex_in_order(iv, NB_BYTES_128_BITS, false);
+	printf("Authentication data         (hex): "); print_uint8_array_as_ascii_in_order(auth_data, length_auth_data, false);
+	printf("Plain                       (hex): "); print_uint8_array_as_ascii_in_order(plain, length_plain, false);
+	printf("Expected authentication tag (hex): "); print_uint8_array_as_hex_in_order(expected_auth_tag, NB_BYTES_128_BITS, false);
+	printf("Actual authentication tag   (hex): "); print_uint8_array_as_hex_in_order(auth_tag, NB_BYTES_128_BITS, false);
+	printf("Expected cipher             (hex): "); print_uint8_array_as_hex_in_order(expected_cipher, length_plain, false);
+	printf("Actual cipher               (hex): "); print_uint8_array_as_hex_in_order(cipher, length_plain, false);
+
+	int return_code = CODE_SUCCESS;
+	if (!compare_uint8_arrays(auth_tag, expected_auth_tag, NB_BYTES_128_BITS)) {
+		printf("ERROR: Authentication tag is not as expected\n");
+		return_code = CODE_FAILURE;
+	}
+	if (!compare_uint8_arrays(cipher, expected_cipher, length_plain)) {
+		printf("ERROR: Cipher is not as expected\n");
+		return_code = CODE_FAILURE;
+	}
+	return return_code;
+}
 
 int test_nist3() {
 	printf("######## nist test case 3 ########\n");
@@ -130,6 +175,90 @@ int test_nist3() {
 	}
 	if (!compare_uint8_arrays(cipher, expected_cipher, length_plain)) {
 		printf("ERROR: Cipher is not as expected\n");
+		return_code = CODE_FAILURE;
+	}
+	return return_code;
+}
+
+int test_nist3_inv() {
+	printf("######## nist test case 3 inv ########\n");
+
+	uint8_t key[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("feffe9928665731c6d6a8f9467308308", key, NB_BYTES_128_BITS);
+	uint8_t iv[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("cafebabefacedbaddecaf88800000000", iv, NB_BYTES_128_BITS);
+	char auth_data_str[] = "";
+	size_t length_auth_data = nb_bytes_hex_string(auth_data_str);
+	uint8_t auth_data[length_auth_data]; convert_hex_string_to_uint8_array_in_order(auth_data_str, auth_data, length_auth_data);
+	char cipher_str[] = "42831ec2217774244b7221b784d0d49ce3aa212f2c02a4e035c17e2329aca12e21d514b25466931c7d8f6a5aac84aa051ba30b396a0aac973d58e091473f5985";
+	size_t length_cipher = nb_bytes_hex_string(cipher_str);
+	uint8_t cipher[length_cipher]; convert_hex_string_to_uint8_array_in_order(cipher_str, cipher, length_cipher);
+
+	uint8_t expected_auth_tag[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("4d5c2af327cd64a62cf35abd2ba6fab4", expected_auth_tag, NB_BYTES_128_BITS);
+	char expected_plain_str[] = "d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a721c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b391aafd255";
+	uint8_t expected_plain[length_cipher]; convert_hex_string_to_uint8_array_in_order(expected_plain_str, expected_plain, length_cipher);
+
+	uint8_t plain[length_cipher];
+
+	// array of pointers
+	uint8_t* args_func[] = { key, iv, auth_data, cipher, expected_auth_tag, plain };
+	uint64_t gcm_status = aes_gcm_inv(args_func, length_auth_data, length_cipher);
+
+	printf("Key                         (hex): "); print_uint8_array_as_hex_in_order(key, NB_BYTES_128_BITS, false);
+	printf("IV                          (hex): "); print_uint8_array_as_hex_in_order(iv, NB_BYTES_128_BITS, false);
+	printf("Authentication data         (hex): "); print_uint8_array_as_hex_in_order(auth_data, length_auth_data, false);
+	printf("Cipher                      (hex): "); print_uint8_array_as_hex_in_order(cipher, length_cipher, false);
+	printf("exprected authentication tag(hex): "); print_uint8_array_as_hex_in_order(expected_auth_tag, NB_BYTES_128_BITS, false);
+	printf("Expected plain              (hex): "); print_uint8_array_as_hex_in_order(expected_plain, length_cipher, false);
+	printf("Actual plain                (hex): "); print_uint8_array_as_hex_in_order(plain, length_cipher, false);
+
+	int return_code = CODE_SUCCESS;
+	if (gcm_status != 0) {
+		printf("ERROR: Tag verification failed\n");
+		return_code = CODE_FAILURE;
+	}
+	if (!compare_uint8_arrays(plain, expected_plain, length_cipher)) {
+		printf("ERROR: Plain is not as expected\n");
+		return_code = CODE_FAILURE;
+	}
+	return return_code;
+}
+
+int test_nist4_inv() {
+	printf("######## nist test case 4 inv ########\n");
+
+	uint8_t key[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("feffe9928665731c6d6a8f9467308308", key, NB_BYTES_128_BITS);
+	uint8_t iv[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("cafebabefacedbaddecaf88800000000", iv, NB_BYTES_128_BITS);
+	char auth_data_str[] = "feedfacedeadbeeffeedfacedeadbeefabaddad2";
+	size_t length_auth_data = nb_bytes_hex_string(auth_data_str);
+	uint8_t auth_data[length_auth_data]; convert_hex_string_to_uint8_array_in_order(auth_data_str, auth_data, length_auth_data);
+	char cipher_str[] = "42831ec2217774244b7221b784d0d49ce3aa212f2c02a4e035c17e2329aca12e21d514b25466931c7d8f6a5aac84aa051ba30b396a0aac973d58e091";
+	size_t length_cipher = nb_bytes_hex_string(cipher_str);
+	uint8_t cipher[length_cipher]; convert_hex_string_to_uint8_array_in_order(cipher_str, cipher, length_cipher);
+
+	uint8_t auth_tag[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("5bc94fbc3221a5db94fae95ae7121a47", auth_tag, NB_BYTES_128_BITS);
+	char expected_plain_str[] = "d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a721c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b39";
+	uint8_t expected_plain[length_cipher]; convert_hex_string_to_uint8_array_in_order(expected_plain_str, expected_plain, length_cipher);
+
+	uint8_t plain[length_cipher];
+
+	// array of pointers
+	uint8_t* args_func[] = { key, iv, auth_data, cipher, auth_tag, plain };
+	uint64_t gcm_status = aes_gcm_inv(args_func, length_auth_data, length_cipher);
+
+	printf("Key                         (hex): "); print_uint8_array_as_hex_in_order(key, NB_BYTES_128_BITS, false);
+	printf("IV                          (hex): "); print_uint8_array_as_hex_in_order(iv, NB_BYTES_128_BITS, false);
+	printf("Authentication data         (hex): "); print_uint8_array_as_hex_in_order(auth_data, length_auth_data, false);
+	printf("Cipher                      (hex): "); print_uint8_array_as_hex_in_order(cipher, length_cipher, false);
+	printf("authentication tag          (hex): "); print_uint8_array_as_hex_in_order(auth_tag, NB_BYTES_128_BITS, false);
+	printf("Expected plain              (hex): "); print_uint8_array_as_hex_in_order(expected_plain, length_cipher, false);
+	printf("Actual plain                (hex): "); print_uint8_array_as_hex_in_order(plain, length_cipher, false);
+
+	int return_code = CODE_SUCCESS;
+	if (gcm_status != 0) {
+		printf("ERROR: Tag verification failed\n");
+		return_code = CODE_FAILURE;
+	}
+	if (!compare_uint8_arrays(plain, expected_plain, length_cipher)) {
+		printf("ERROR: Plain is not as expected\n");
 		return_code = CODE_FAILURE;
 	}
 	return return_code;
@@ -331,7 +460,10 @@ int main()
 	// print_test_return_status(test_compute_enciphered_iv_nist3());
 
 	print_test_return_status(test_nist3());
+	print_test_return_status(test_nist3_inv());
+	print_test_return_status(test_nist4_inv());
 	print_test_return_status(test_nist4());
+	print_test_return_status(test_nous());
 	// print_test_return_status(test_nist4_auth_data());
 
 	print_test_return_status(test_nist3_log());
