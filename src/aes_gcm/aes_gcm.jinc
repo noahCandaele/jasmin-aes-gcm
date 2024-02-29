@@ -44,6 +44,12 @@ inline fn compute_length_str(reg u64 length_auth_data, reg u64 length_plain) -> 
 	return length_str;
 }
 
+inline fn swap_bytes(reg u128 x) -> reg u128 {
+	global u128 swap; swap = (16u8)[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+	x = #VPSHUFB_128(x, swap);
+	return x;
+}
+
 fn ghash_series(reg u128 prev_ghash, reg u64 ptr_data, reg u64 length, reg u128 hash_key) -> reg u128 {
 	reg u64 len16;
 	len16 = length;
@@ -56,10 +62,7 @@ fn ghash_series(reg u128 prev_ghash, reg u64 ptr_data, reg u64 length, reg u128 
 	while (ptr_data < max) {
 		block = (u128)[ptr_data];
 
-		global u128 swap_me;
-		swap_me = (16u8)[ 0, 1 , 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-		block = #VPSHUFB_128(block, swap_me);
-
+		block = swap_bytes(block);
 		prev_ghash = ghash_xor(prev_ghash, block, hash_key);
 
 		ptr_data += 16;
@@ -88,10 +91,7 @@ fn ghash_series(reg u128 prev_ghash, reg u64 ptr_data, reg u64 length, reg u128 
 		}
 		block = s_data[0];
 
-		global u128 swap_me;
-		swap_me = (16u8)[ 0, 1 , 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-		block = #VPSHUFB_128(block, swap_me);
-
+		block = swap_bytes(block);
 		prev_ghash = ghash_xor(prev_ghash, block, hash_key);
 	}
 	
@@ -115,10 +115,7 @@ export fn ghash_series_log(reg u64 ptr_data, reg u64 length, reg u64 ptr_hash_ke
 	while (ptr_data < max) {
 		block = (u128)[ptr_data];
 
-		global u128 swap_me;
-		swap_me = (16u8)[ 0, 1 , 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-		block = #VPSHUFB_128(block, swap_me);
-
+		block = swap_bytes(block);
 		prev_ghash = ghash_xor(prev_ghash, block, hash_key);
 
 		(u128)[ptr_ghashes] = prev_ghash;
@@ -150,10 +147,7 @@ export fn ghash_series_log(reg u64 ptr_data, reg u64 length, reg u64 ptr_hash_ke
 		}
 		block = s_data[0];
 
-		global u128 swap_me;
-		swap_me = (16u8)[ 0, 1 , 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-		block = #VPSHUFB_128(block, swap_me);
-
+		block = swap_bytes(block);
 		prev_ghash = ghash_xor(prev_ghash, block, hash_key);
 
 		(u128)[ptr_ghashes] = prev_ghash;
@@ -180,17 +174,15 @@ export fn aes_gcm(reg u64 ptr_args, reg u64 length_auth_data, reg u64 length_pla
 	reg u128 ghash; ghash = #set0_128();
 
 	reg u128 hash_key; hash_key = compute_hash_key(key);
-	global u128 swap_me;
-	swap_me = (16u8)[ 0, 1 , 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-	hash_key = #VPSHUFB_128(hash_key, swap_me);
 
+	hash_key = swap_bytes(hash_key);
 	ghash = ghash_series(ghash, ptr_auth_data, length_auth_data, hash_key);
 
 	// ********  GHASH CIPHER LOOP ********
 	ptrout_cipher = (u64)[ptr_values + 40];
 	
 	reg u128 length_str; length_str = compute_length_str(length_auth_data, length_plain);
-	length_str = #VPSHUFB_128(length_str, swap_me);
+	length_str = swap_bytes(length_str);
 
 	reg u64 ptrout_cipher2; ptrout_cipher2 = ptrout_cipher;
 	reg u64 length_plain2; length_plain2 = length_plain;
@@ -204,12 +196,10 @@ export fn aes_gcm(reg u64 ptr_args, reg u64 length_auth_data, reg u64 length_pla
 	reg u32 counter; counter = 1; iv = (u128)[ptr_iv];
 	iv = set_iv_counter(iv, counter);
 	reg u128 enc_iv; enc_iv = compute_enciphered_iv(key, iv);
+	enc_iv = swap_bytes(enc_iv);
 	reg u128 auth_tag;
-	// enc_iv = #VPSHUFB_128(enc_iv, swap_me);
-	// auth_tag = enc_iv;
-	enc_iv = #VPSHUFB_128(enc_iv, swap_me);
 	auth_tag = ghash ^ enc_iv;
-	auth_tag = #VPSHUFB_128(auth_tag, swap_me);
+	auth_tag = swap_bytes(auth_tag);
 
 	(u128)[ptrout_auth_tag] = auth_tag;
 }
