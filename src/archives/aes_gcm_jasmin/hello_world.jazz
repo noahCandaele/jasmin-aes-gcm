@@ -1,5 +1,0 @@
-export fn hello_world() -> reg u32 {
-	reg u32 x;
-	x = 42;
-	return x;
-}
