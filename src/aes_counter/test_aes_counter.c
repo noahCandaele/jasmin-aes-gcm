@@ -123,11 +123,80 @@ int test_nist4(){
 	return CODE_SUCCESS;
 }
 
+int test_new(){
+	printf("######## Test new ########\n");
+
+	char key_str[] = "00000000000000000000000000000000";
+	char plain_str[] = "00000000000000000000000000000000";
+	char iv_str[] = "00000000000000000000000000000002";
+	char cipher_expected_str[] = "0388dace60b6a392f328c2b971b2fe78";
+	
+	size_t plain_size = nb_bytes_hex_string(plain_str);
+	size_t cipher_expected_size = nb_bytes_hex_string(cipher_expected_str);
+
+	uint8_t key[NB_BYTES_128_BITS];
+	uint8_t plain[plain_size];
+	uint8_t iv[NB_BYTES_128_BITS];
+	uint8_t cipher_expected[cipher_expected_size];
+	convert_hex_string_to_uint8_array_in_order(key_str, key, NB_BYTES_128_BITS);
+	convert_hex_string_to_uint8_array_in_order(plain_str, plain, plain_size);
+	convert_hex_string_to_uint8_array_in_order(iv_str, iv, NB_BYTES_128_BITS);
+	convert_hex_string_to_uint8_array_in_order(cipher_expected_str, cipher_expected, cipher_expected_size);
+
+	uint8_t cipher[cipher_expected_size];
+	aes_counter_iv_jazz(plain, cipher, plain_size, key, iv);
+	
+	printf("Expected cipher (hex): "); print_uint8_array_as_hex_in_order(cipher_expected, cipher_expected_size, true);
+	printf("Actual cipher   (hex): "); print_uint8_array_as_hex_in_order(cipher, cipher_expected_size, true);
+
+	if(!compare_uint8_arrays(cipher, cipher_expected, cipher_expected_size)) {
+		return CODE_FAILURE;
+	}
+
+	return CODE_SUCCESS;
+}
+
+int test_new2(){
+	printf("######## Test new 2 nist 3 ########\n");
+
+	char key_str[] = "feffe9928665731c6d6a8f9467308308";
+	char plain_str[] = "d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a721c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b391aafd255";
+	char iv_str[] = "cafebabefacedbaddecaf88800000002";
+	char cipher_expected_str[] = "42831ec2217774244b7221b784d0d49ce3aa212f2c02a4e035c17e2329aca12e21d514b25466931c7d8f6a5aac84aa051ba30b396a0aac973d58e091473f5985";
+	
+	size_t plain_size = nb_bytes_hex_string(plain_str);
+	size_t cipher_expected_size = nb_bytes_hex_string(cipher_expected_str);
+
+	uint8_t key[NB_BYTES_128_BITS];
+	uint8_t plain[plain_size];
+	uint8_t iv[NB_BYTES_128_BITS];
+	uint8_t cipher_expected[cipher_expected_size];
+	convert_hex_string_to_uint8_array_in_order(key_str, key, NB_BYTES_128_BITS);
+	convert_hex_string_to_uint8_array_in_order(plain_str, plain, plain_size);
+	convert_hex_string_to_uint8_array_in_order(iv_str, iv, NB_BYTES_128_BITS);
+	convert_hex_string_to_uint8_array_in_order(cipher_expected_str, cipher_expected, cipher_expected_size);
+
+	uint8_t cipher[cipher_expected_size];
+	aes_counter_iv_jazz(plain, cipher, plain_size, key, iv);
+	
+	printf("Expected cipher (hex): "); print_uint8_array_as_hex_in_order(cipher_expected, cipher_expected_size, true);
+	printf("Actual cipher   (hex): "); print_uint8_array_as_hex_in_order(cipher, cipher_expected_size, true);
+
+	if(!compare_uint8_arrays(cipher, cipher_expected, cipher_expected_size)) {
+		return CODE_FAILURE;
+	}
+
+	return CODE_SUCCESS;
+}
+
 int main() {
 	print_test_return_status(test_yoda());
 	print_test_return_status(test_nist2());
 	print_test_return_status(test_nist3());
 	print_test_return_status(test_nist4());
+
+	print_test_return_status(test_new());
+	print_test_return_status(test_new2());
 
 	return CODE_SUCCESS;
 }

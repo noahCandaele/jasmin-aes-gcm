@@ -12,7 +12,41 @@ extern void compute_enciphered_iv_jazz(uint8_t* key, uint8_t* iv, uint8_t* out_e
 
 extern void aes_gcm(uint8_t** args, size_t length_auth_data, size_t length_plain);
 extern void ghash_series_jazz(uint8_t* ptr_data, size_t length, uint8_t* hash_key, uint8_t* out_res, uint8_t* prev_ghash);
+extern void ghash_series_log(uint8_t* ptr_data, size_t length, uint8_t* hash_key, uint8_t* out_ghashes);
 
+int test_nist3_log() {
+	printf("######## nist test case 3 log ########\n");
+
+	uint8_t hash_key[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array("b83b533708bf535d0aa6e52980d53b78", hash_key, NB_BYTES_128_BITS);
+	char data_str[] = "42831ec2217774244b7221b784d0d49ce3aa212f2c02a4e035c17e2329aca12e21d514b25466931c7d8f6a5aac84aa051ba30b396a0aac973d58e091473f5985";
+	// char data_str[] = "42831ec2217774244b7221b784d0d49ce3aa212f2c02a4e035c17e2329aca12e";
+	// size_t length_data = nb_bytes_hex_string(data_str);
+	size_t length_data = nb_bytes_hex_string(data_str);
+	uint8_t data[length_data]; convert_hex_string_to_uint8_array_in_order(data_str, data, length_data);
+
+	char expected_ghashes_str[] = "59ed3f2bb1a0aaa07c9f56c6a504647bb714c9048389afd9f9bc5c1d4378e05247400c6577b1ee8d8f40b2721e86ff104796cf49464704b5dd91f159bb1b7f95";
+	// char expected_ghashes_str[] = "59ed3f2bb1a0aaa07c9f56c6a504647bb714c9048389afd9f9bc5c1d4378e052";
+	uint8_t expected_ghashes[length_data]; convert_hex_string_to_uint8_array_by_block16(expected_ghashes_str, expected_ghashes, length_data);
+
+	uint8_t ghashes[length_data];
+
+	printf("length data: %zu\n", length_data);
+	printf("length expected ghashes: %zu\n", nb_bytes_hex_string(expected_ghashes_str));
+	printf("hash_key (hex): "); print_uint8_array_as_hex(hash_key, NB_BYTES_128_BITS, false);
+	printf("data (hex): "); print_uint8_array_as_hex(data, length_data, false);
+	printf("expected_ghashes (hex): "); print_uint8_array_as_hex(expected_ghashes, length_data, false);
+
+	ghash_series_log(data, length_data, hash_key, ghashes);
+
+	printf("Actual ghashes (hex): "); print_uint8_array_as_hex(ghashes, length_data, false);
+
+	int return_code = CODE_SUCCESS;
+	if (!compare_uint8_arrays(ghashes, expected_ghashes, length_data)) {
+		printf("ERROR: ghashes not as expected\n");
+		return_code = CODE_FAILURE;
+	}
+	return return_code;
+}
 int test_nist4() {
 	printf("######## nist test case 4 ########\n");
 
@@ -144,6 +178,38 @@ int test_nist4_auth_data() {
 	return CODE_SUCCESS;
 }
 
+int test_nist4_log_auth_data() {
+	printf("######## nist test case 4 log auth data ########\n");
+
+	uint8_t hash_key[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array("b83b533708bf535d0aa6e52980d53b78", hash_key, NB_BYTES_128_BITS);
+	char auth_data_str[] = "feedfacedeadbeeffeedfacedeadbeefabaddad2";
+	size_t length_auth_data = nb_bytes_hex_string(auth_data_str);
+	uint8_t auth_data[length_auth_data]; convert_hex_string_to_uint8_array_in_order(auth_data_str, auth_data, length_auth_data);
+	uint8_t prev_ghash[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array("00000000000000000000000000000000", prev_ghash, NB_BYTES_128_BITS);
+
+
+	char expected_ghashes_str[] = "ed56aaf8a72d67049fdb9228edba1322cd47221ccef0554ee4bb044c88150352";
+	uint8_t expected_ghashes[32]; convert_hex_string_to_uint8_array_by_block16(expected_ghashes_str, expected_ghashes, 32);
+
+	uint8_t ghashes[32];
+
+	printf("length data: %zu\n", length_auth_data);
+	printf("hash_key (hex): "); print_uint8_array_as_hex(hash_key, NB_BYTES_128_BITS, false);
+	printf("data (hex): "); print_uint8_array_as_hex(auth_data, length_auth_data, false);
+	printf("expected_ghashes (hex): "); print_uint8_array_as_hex(expected_ghashes, 32, false);
+
+	ghash_series_log(auth_data, length_auth_data, hash_key, ghashes);
+
+	printf("Actual ghashes (hex): "); print_uint8_array_as_hex(ghashes, 32, false);
+
+	int return_code = CODE_SUCCESS;
+	if (!compare_uint8_arrays(ghashes, expected_ghashes, 32)) {
+		printf("ERROR: ghashes not as expected\n");
+		return_code = CODE_FAILURE;
+	}
+	return return_code;
+}
+
 int test_compute_hash_key_generic(char* key_str, char* expected_hash_key_str) {
 	uint8_t key[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order(key_str, key, NB_BYTES_128_BITS);
 	uint8_t expected_hash_key[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order(expected_hash_key_str, expected_hash_key, NB_BYTES_128_BITS);
@@ -221,6 +287,9 @@ int main()
 
 	// print_test_return_status(test_nist4());
 	print_test_return_status(test_nist4_auth_data());
+
+	print_test_return_status(test_nist3_log());
+	print_test_return_status(test_nist4_log_auth_data());
 
 	return CODE_SUCCESS;
 }

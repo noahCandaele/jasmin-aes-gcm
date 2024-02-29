@@ -196,7 +196,10 @@ int test_convert_hex_string_to_uint8_array_in_order() {
 	uint8_t arr[nb_bytes];
 	convert_hex_string_to_uint8_array_in_order(hex_str, arr, nb_bytes);
 
+
 	uint8_t expected_arr[] = {0x12, 0xab, 0xcd, 0xef};
+	printf("Array contents: "); print_uint8_array_as_hex_in_order(arr, nb_bytes, true);
+	printf("Expected array contents: "); print_uint8_array_as_hex_in_order(expected_arr, nb_bytes, true);
 	if (!compare_uint8_arrays(arr, expected_arr, nb_bytes)) {
 		return CODE_FAILURE;
 	}

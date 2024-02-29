@@ -185,7 +185,11 @@ void convert_uint8_array_to_ascii_string(uint8_t* uint8_array, size_t uint8_arra
 }
 
 void convert_hex_string_to_uint8_array_in_order(char* hex_string, uint8_t* uint8_array, size_t uint8_array_size) {
+	// memcpy(uint8_array, hex_string, uint8_array_size);
+	
 	for (size_t i = 0; i < uint8_array_size; ++i) {
+		
+
 		char hex[2] = { hex_string[i * 2], hex_string[i * 2 + 1] };
 		// cast to uint8_t
 		uint8_array[i] = (uint8_t)strtol(hex, NULL, BASE_16);
