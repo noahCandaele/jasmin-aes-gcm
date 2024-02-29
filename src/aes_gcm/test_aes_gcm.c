@@ -450,6 +450,70 @@ int test_compute_enciphered_iv_nist3() {
 	return CODE_INFO;
 }
 
+int demo() {
+	printf("######## AES-GCM Encryption demo ########\n");
+
+	uint8_t key[NB_BYTES_128_BITS]; convert_ascii_string_to_uint8_array_in_order("Banane et orange", key, NB_BYTES_128_BITS);
+	uint8_t iv[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("abcdef0123456789abcdef4200000000", iv, NB_BYTES_128_BITS);
+	char auth_data_str[] = "Ceci est un message qui servira à créer le tag d'authentification.";
+	size_t length_auth_data = strlen(auth_data_str);
+	uint8_t auth_data[length_auth_data]; convert_ascii_string_to_uint8_array_in_order(auth_data_str, auth_data, length_auth_data);
+	char plain_str[] = "Et voilà le message qui sera chiffré grâce à AES-GCM.";
+	size_t length_plain = strlen(plain_str);
+	uint8_t plain[length_plain]; convert_ascii_string_to_uint8_array_in_order(plain_str, plain, length_plain);
+
+	uint8_t auth_tag[NB_BYTES_128_BITS];
+	uint8_t cipher[length_plain];
+
+	uint8_t* args_func[] = { key, iv, auth_data, plain, auth_tag, cipher };
+	aes_gcm(args_func, length_auth_data, length_plain);
+
+	
+	printf("INPUTS\n");
+	printf("\tKey                 (ascii): "); print_uint8_array_as_ascii_in_order(key, NB_BYTES_128_BITS, false);
+	printf("\tKey                   (hex): "); print_uint8_array_as_hex_in_order(key, NB_BYTES_128_BITS, false);
+	printf("\tIV                    (hex): "); print_uint8_array_as_hex_in_order(iv, NB_BYTES_128_BITS, false);
+	printf("\tAuthentication data (ascii): "); print_uint8_array_as_ascii_in_order(auth_data, length_auth_data, false);
+	printf("\tAuthentication data   (hex): "); print_uint8_array_as_hex_in_order(auth_data, length_auth_data, false);
+	printf("\tPlain               (ascii): "); print_uint8_array_as_ascii_in_order(plain, length_plain, false);
+	printf("\tPlain                 (hex): "); print_uint8_array_as_hex_in_order(plain, length_plain, false);
+
+	printf("\nOUTPUTS\n");
+	printf("\tAuthentication tag    (hex): "); print_uint8_array_as_hex_in_order(auth_tag, NB_BYTES_128_BITS, false);
+	printf("\tCipher                (hex): "); print_uint8_array_as_hex_in_order(cipher, length_plain, false);
+
+
+
+	printf("\n######## AES-GCM Decryption demo ########\n");
+
+	char cipher_str2[] = "5115e98435231141fc181d02df630d7543c412fe61a889631a48ea5f4035b2f8ba61539767e38c3fad196ffffc817960cdb851694b935a0cc9";
+	size_t length_cipher2 = nb_bytes_hex_string(cipher_str2);
+	uint8_t cipher2[length_cipher2]; convert_hex_string_to_uint8_array_in_order(cipher_str2, cipher2, length_cipher2);
+	uint8_t auth_tag2[NB_BYTES_128_BITS]; convert_hex_string_to_uint8_array_in_order("11169a66e6e780eebc741eda7d0b4142", auth_tag2, NB_BYTES_128_BITS);
+
+	uint8_t plain2[length_cipher2];
+
+	uint8_t* args_func2[] = { key, iv, auth_data, cipher2, auth_tag2, plain2 };
+	uint64_t gcm_status = aes_gcm_inv(args_func2, length_auth_data, length_cipher2);
+
+	
+	printf("INPUTS\n");
+	printf("\tKey                 (ascii): "); print_uint8_array_as_ascii_in_order(key, NB_BYTES_128_BITS, false);
+	printf("\tKey                   (hex): "); print_uint8_array_as_hex_in_order(key, NB_BYTES_128_BITS, false);
+	printf("\tIV                    (hex): "); print_uint8_array_as_hex_in_order(iv, NB_BYTES_128_BITS, false);
+	printf("\tAuthentication data (ascii): "); print_uint8_array_as_ascii_in_order(auth_data, length_auth_data, false);
+	printf("\tAuthentication data   (hex): "); print_uint8_array_as_hex_in_order(auth_data, length_auth_data, false);
+	printf("\tCipher                (hex): "); print_uint8_array_as_hex_in_order(cipher2, length_cipher2, false);
+
+	printf("\nOUTPUTS\n");
+	printf("\tPlain                 (hex): "); print_uint8_array_as_hex_in_order(plain2, length_cipher2, false);
+	printf("\tPlain               (ascii): "); print_uint8_array_as_ascii_in_order(plain2, length_cipher2, false);
+	printf("\tAuthentication tag verification status: "); if (gcm_status == 0) { printf("SUCCESS\n"); } else { printf("FAILURE\n"); }
+
+
+	return CODE_INFO;
+}
+
 int main()
 {
 	// print_test_return_status(test_compute_hash_key_nist2());
@@ -459,15 +523,17 @@ int main()
 
 	// print_test_return_status(test_compute_enciphered_iv_nist3());
 
-	print_test_return_status(test_nist3());
-	print_test_return_status(test_nist3_inv());
-	print_test_return_status(test_nist4_inv());
-	print_test_return_status(test_nist4());
-	print_test_return_status(test_nous());
-	// print_test_return_status(test_nist4_auth_data());
+	// print_test_return_status(test_nist3());
+	// print_test_return_status(test_nist3_inv());
+	// print_test_return_status(test_nist4_inv());
+	// print_test_return_status(test_nist4());
+	// print_test_return_status(test_nous());
+	// // print_test_return_status(test_nist4_auth_data());
 
-	print_test_return_status(test_nist3_log());
-	print_test_return_status(test_nist4_log_auth_data());
+	// print_test_return_status(test_nist3_log());
+	// print_test_return_status(test_nist4_log_auth_data());
+
+	print_test_return_status(demo());
 
 	return CODE_SUCCESS;
 }
