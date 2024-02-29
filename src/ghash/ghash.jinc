@@ -1,3 +1,14 @@
+/// This code defines several functions related to the GHASH algorithm used in AES-GCM encryption.
+/// The GHASH algorithm is used to calculate the authentication tag for the encrypted data.
+/// The functions in this code perform bitwise operations, reflection, and multiplication using the VPCLMULQDQ instruction.
+/// The `bit_reflect` function reflects the bits of a 128-bit value.
+/// The `bit_reflect_bis` function is an optimized version of `bit_reflect` that takes additional parameters for the mask, higher mask, and lower mask.
+/// The `mult` function performs Karatsuba multiplication on two 128-bit values using the VPCLMULQDQ instruction.
+/// The `ghash` function calculates the GHASH value of two 128-bit values.
+/// The `ghash_xor` function calculates the GHASH value of the XOR of two 128-bit values and a third 128-bit value.
+/// The `ghash_bis` function is an optimized version of `ghash` that takes additional parameters for the mask, higher mask, and lower mask.
+/// The `ghash_xor_bis` function is an optimized version of `ghash_xor` that takes additional parameters for the mask, higher mask, and lower mask.
+
 u64[2] AND_MASK = {0x0f0f0f0f0f0f0f0f, 0x0f0f0f0f0f0f0f0f};
 u64[2] LOWER_MASK = {0x0f070b030d050901, 0x0e060a020c040800};
 u64[2] LOWER_MASK_INV = {0x0e060a020c040800, 0x0f070b030d050901};
@@ -34,6 +45,32 @@ inline fn bit_reflect(reg u128 x) -> reg u128 {
 	
 	return temp1;
 }
+inline fn bit_reflect_bis(reg u128 x mask higher_mask lower_mask) -> reg u128 {
+	reg u128 temp1 temp2;
+	
+	temp2 = x;
+	temp2 = #VPSRL_8u16(temp2, 4);
+
+	temp1 = x;
+	temp1 = #VPAND_128(temp1, mask);
+
+	temp2 = #VPAND_128(temp2, mask);
+
+
+	temp1 = #VPSHUFB(higher_mask, temp1);
+
+	temp2 = #VPSHUFB_128(lower_mask, temp2);
+	
+	temp1 = #VPXOR_128(temp1, temp2);
+
+	global u128 swap_me;
+    swap_me = (16u8)[ 0, 1 , 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+	
+	temp1 = #VPSHUFB_128(temp1, swap_me);
+	
+	return temp1;
+}
+
 
 inline fn mult(reg u128 a, reg u128 b) -> reg u128 {
 	// VPCLMULQDQ https://www.felixcloutier.com/x86/pclmulqdq
@@ -120,13 +157,19 @@ inline fn mult(reg u128 a, reg u128 b) -> reg u128 {
 	return res;
 }
 
+// 
 inline fn ghash(reg u128 a, reg u128 b) -> reg u128 {
-	reg u128 a_reflected; a_reflected = bit_reflect(a);
-	reg u128 b_reflected; b_reflected = bit_reflect(b);
+	reg u128 mask higher_mask lower_mask;
+	mask = AND_MASK[u128 0];
+	higher_mask = HIGHER_MASK_INV[u128 0];
+	lower_mask = LOWER_MASK_INV[u128 0];
+
+	reg u128 a_reflected; a_reflected = bit_reflect_bis(a, mask, higher_mask, lower_mask);
+	reg u128 b_reflected; b_reflected = bit_reflect_bis(b, mask, higher_mask, lower_mask);
 	
 	reg u128 res; res = mult(a_reflected, b_reflected);
 
-	res = bit_reflect(res);
+	res = bit_reflect_bis(res, mask, higher_mask, lower_mask);
 	return res;
 }
 
@@ -134,5 +177,21 @@ fn ghash_xor(reg u128 ghash_prev, reg u128 data, reg u128 h) -> reg u128 {
 	reg u128 res;
 	res = #VPXOR(ghash_prev, data);
 	res = ghash(res, h);
+	return res;
+}
+inline fn ghash_bis(reg u128 a, reg u128 b, reg u128 mask higher_mask lower_mask) -> reg u128 {
+	reg u128 a_reflected; a_reflected = bit_reflect_bis(a, mask, higher_mask, lower_mask);
+	reg u128 b_reflected; b_reflected = bit_reflect_bis(b, mask, higher_mask, lower_mask);
+	
+	reg u128 res; res = mult(a_reflected, b_reflected);
+
+	res = bit_reflect_bis(res, mask, higher_mask, lower_mask);
+	return res;
+}
+
+fn ghash_xor_bis(reg u128 ghash_prev, reg u128 data, reg u128 h, reg u128 mask higher_mask lower_mask) -> reg u128 {
+	reg u128 res;
+	res = #VPXOR(ghash_prev, data);
+	res = ghash_bis(res, h, mask, higher_mask, lower_mask);
 	return res;
 }

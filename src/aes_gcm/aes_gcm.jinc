@@ -59,11 +59,17 @@ fn ghash_series(reg u128 prev_ghash, reg u64 ptr_data, reg u64 length, reg u128 
 	max += len16;
 
 	reg u128 block;
+	reg u128 mask higher_mask lower_mask;
+	mask = AND_MASK[u128 0];
+	higher_mask = HIGHER_MASK_INV[u128 0];
+	lower_mask = LOWER_MASK_INV[u128 0];
 	while (ptr_data < max) {
 		block = (u128)[ptr_data];
 
 		block = swap_bytes(block);
-		prev_ghash = ghash_xor(prev_ghash, block, hash_key);
+
+		
+		prev_ghash = ghash_xor_bis(prev_ghash, block, hash_key, mask, higher_mask, lower_mask);
 
 		ptr_data += 16;
 	}
@@ -92,7 +98,7 @@ fn ghash_series(reg u128 prev_ghash, reg u64 ptr_data, reg u64 length, reg u128 
 		block = s_data[0];
 
 		block = swap_bytes(block);
-		prev_ghash = ghash_xor(prev_ghash, block, hash_key);
+		prev_ghash = ghash_xor_bis(prev_ghash, block, hash_key, mask, higher_mask, lower_mask);
 	}
 	
 	return prev_ghash;
