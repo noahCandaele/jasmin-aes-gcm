@@ -22,6 +22,15 @@ inline fn incr_iv(reg u128 iv) -> reg u128 {
 	return iv;
 }
 
+inline fn set_iv_counter(reg u128 iv, reg u32 counter) -> reg u128 {
+	// Swap bytes
+	counter = #BSWAP_32(counter);
+
+	// Insert counter in iv
+	iv = #VPINSR_4u32(iv, counter, 3); // insert 32-bit word to Oth 32-bit word in a 128-bit word
+	return iv;
+}
+
 // TODO check if the user is not giving a string of size longer than counter max size
 // inline fn aes_counter(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u64 length, reg u128 key, reg u128 iv) {
 // 	reg u64 byte_index block_id;
@@ -76,8 +85,8 @@ inline fn incr_iv(reg u128 iv) -> reg u128 {
 // 	}
 // }
 
-
-inline fn aes_counter(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u64 length, reg u128 key, reg u128 iv) {
+// TODO inline enleve
+fn aes_counter(reg u64 ptr_plain, reg u64 ptrout_cipher, reg u64 length, reg u128 key, reg u128 iv) {
 	reg u128[11] rkeys;
 	rkeys = keys_expand(key);
 
